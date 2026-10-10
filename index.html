@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Museum of Human Decisions — Girish Dunga, UX Designer</title>
   <meta name="description" content="A UX portfolio presented as an exhibition: human moments, the decisions made on their behalf, and the evidence behind them.">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0E0E0E">
   <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,7 @@
   <a class="skip-link" href="#main">Skip to the exhibition</a>
 
   <div class="grain" aria-hidden="true"></div>
+
 
   <!-- Museum header: badge and museum name -->
   <header class="museum-bar" data-theme="dark">
@@ -616,8 +617,7 @@
           <p class="placard-line" data-reveal>Room 06</p>
           <h2 id="impact-title" class="room-title" data-reveal>The Impact Gallery</h2>
           <p class="room-intro" data-reveal>
-            Numbers on a slide are easy to nod at. These installations try to give them weight,
-            so you can feel the scale of what changed.
+            Each installation answers one question about what changed. Drag between before and after launch, and watch the difference take shape.
           </p>
         </div>
       </header>
@@ -627,8 +627,19 @@
           <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.1 &nbsp;·&nbsp; 1,000 lights</p>
-            <p class="install-figure"><span class="count" data-to="1000">1,000</span></p>
-            <p class="install-text">Each light is one patient a day who now books an appointment without making a phone call. Six months after launch, that number reached a thousand.</p>
+            <p class="install-q">How many patients now book without a phone call?</p>
+            <p class="install-figure"><span class="count" data-to="1000">1,000</span><span class="install-unit">a day</span></p>
+            <dl class="install-compare">
+              <div><dt>Before launch</dt><dd>None. Every appointment started with a phone call at 7am.</dd></div>
+              <div><dt>After launch</dt><dd>A thousand patients a day book online, six months after launch.</dd></div>
+            </dl>
+            <div class="install-scrub">
+              <span aria-hidden="true">Before</span>
+              <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
+              <span aria-hidden="true">After</span>
+            </div>
+            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
+            <p class="install-key"><span class="key-dot" aria-hidden="true"></span>One light is one patient, every day.</p>
           </figcaption>
         </figure>
 
@@ -636,8 +647,19 @@
           <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.2 &nbsp;·&nbsp; The shrinking maze</p>
-            <p class="install-figure"><span class="count count--pct" data-from="38" data-to="12">12</span>%</p>
-            <p class="install-text">Checkout drop-off fell from 38% to 12%. The maze loses its dead ends as you scroll, the way the journey lost its unnecessary turns.</p>
+            <p class="install-q">How many people gave up at checkout?</p>
+            <p class="install-figure"><span class="count" data-from="38" data-to="12">12</span>%<span class="install-unit">gave up</span></p>
+            <dl class="install-compare">
+              <div><dt>Before launch</dt><dd>38 in every 100 people abandoned the payment.</dd></div>
+              <div><dt>After launch</dt><dd>12 in every 100. The dead ends were removed from the journey.</dd></div>
+            </dl>
+            <div class="install-scrub">
+              <span aria-hidden="true">Before</span>
+              <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
+              <span aria-hidden="true">After</span>
+            </div>
+            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
+            <p class="install-key"><span class="key-line" aria-hidden="true"></span>The red line is the route people take. Dead ends vanish as the journey is simplified.</p>
           </figcaption>
         </figure>
 
@@ -645,8 +667,19 @@
           <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.3 &nbsp;·&nbsp; Flowing pathways</p>
-            <p class="install-figure"><span class="count" data-to="11400">11,400</span> hours</p>
-            <p class="install-text">Time given back to clinicians each year, once drafting routine replies stopped being their job. Watch the tangled routes straighten into direct ones.</p>
+            <p class="install-q">How much time did clinicians get back?</p>
+            <p class="install-figure"><span class="count" data-to="11400">11,400</span><span class="install-unit">hours a year</span></p>
+            <dl class="install-compare">
+              <div><dt>Before launch</dt><dd>Up to two hours a day spent drafting routine replies.</dd></div>
+              <div><dt>After launch</dt><dd>11,400 hours a year returned across the pilot practices.</dd></div>
+            </dl>
+            <div class="install-scrub">
+              <span aria-hidden="true">Before</span>
+              <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
+              <span aria-hidden="true">After</span>
+            </div>
+            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
+            <p class="install-key"><span class="key-dot" aria-hidden="true"></span>Each moving dot is a reply on its way to a patient. Watch the routes straighten.</p>
           </figcaption>
         </figure>
       </div>
