@@ -130,153 +130,129 @@
   }
 
   /* ------------------------------------------------------------------------
-     Room 01 — The Entrance: sunlight through a tall window, dust in the air
+     Room 01 — The Entrance: a tree of forking paths. Every fork is a decision.
+     A red marker walks it, choosing a branch at each fork; it leans towards
+     the visitor's pointer, so the visitor is the one deciding.
      ------------------------------------------------------------------------ */
   function initEntrance() {
     const section = $('#entrance');
     const canvas = $('.entrance-canvas');
-    if (!window.THREE) return;
-    let renderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
-    } catch (err) { return; }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-    renderer.setClearColor(0x000000, 0);
+    const ctx = canvas.getContext('2d');
+    const INK = '242,242,242';
+    const RED = '#ff3939';
+    const LEVELS = 7;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
-    camera.position.set(0, 0, 10);
+    // The tree, in unit space: the root at the bottom centre, forking upwards
+    const rnd = seeded(5);
+    const build = (x, y, depth, spread, parent) => {
+      const node = { x, y, depth, parent, kids: [] };
+      if (depth < LEVELS) {
+        const rise = (0.88 / LEVELS) * (0.85 + rnd() * 0.3);
+        [-1, 1].forEach((side) => {
+          node.kids.push(build(x + side * spread * (0.8 + rnd() * 0.4), y - rise, depth + 1, spread * 0.5, node));
+        });
+      }
+      return node;
+    };
+    const root = build(0.5, 0.97, 0, 0.2, null);
+    const all = [];
+    (function collect(n) { all.push(n); n.kids.forEach(collect); })(root);
 
-    // The beam: a long plane, rotated so the window sits up and to the left
-    const beamAngle = 0.62;
-    const beamCenter = new THREE.Vector3(-0.5, 0.6, -2.5);
-    const beamDir = new THREE.Vector3(-Math.sin(beamAngle), Math.cos(beamAngle), 0).normalize();
+    // A branch is a soft S-curve from parent to child
+    const point = (a, b, t, w, h) => {
+      const my = (a.y + b.y) / 2;
+      const u = 1 - t;
+      const x = u * u * u * a.x + 3 * u * u * t * a.x + 3 * u * t * t * b.x + t * t * t * b.x;
+      const y = u * u * u * a.y + 3 * u * u * t * my + 3 * u * t * t * my + t * t * t * b.y;
+      return [x * w, y * h];
+    };
+    const branch = (a, b, upTo, w, h) => {
+      const steps = Math.max(2, Math.round(18 * upTo));
+      ctx.beginPath();
+      for (let i = 0; i <= steps; i++) {
+        const [x, y] = point(a, b, (i / steps) * upTo, w, h);
+        if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+    };
 
-    const beamVert = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
-    const beamFrag = `
-      varying vec2 vUv; uniform float uTime; uniform float uIntensity; uniform float uStrength; uniform vec3 uColor;
-      void main(){
-        float bar = step(0.47, abs(fract(vUv.x * 3.0) - 0.5));
-        float a = (1.0 - bar) * uStrength * uIntensity;
-        gl_FragColor = vec4(uColor * a, a);
-      }`;
-    const beamUniforms = { uTime: { value: 0 }, uIntensity: { value: 1 }, uColor: { value: new THREE.Vector3(0.87, 0.87, 0.87) } };
-    const makeBeam = (w, strength, z, yaw) => {
-      const mat = new THREE.ShaderMaterial({
-        uniforms: { ...beamUniforms, uStrength: { value: strength } },
-        vertexShader: beamVert, fragmentShader: beamFrag,
-        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    let grown = reduce ? LEVELS : 0;   // how many levels have grown in
+    let pointerX = null;               // where the visitor is pointing, 0 to 1
+    const walk = { path: [root], t: 0, rest: 0 };
+
+    const choose = (node) => {
+      if (pointerX === null) return node.kids[rnd() < 0.5 ? 0 : 1];
+      return Math.abs(node.kids[0].x - pointerX) < Math.abs(node.kids[1].x - pointerX) ? node.kids[0] : node.kids[1];
+    };
+
+    const draw = () => {
+      const { w, h } = fitCanvas(canvas, ctx);
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineCap = 'round';
+
+      // every possible path, drawn quietly
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(${INK},.13)`;
+      all.forEach((n) => {
+        if (!n.parent) return;
+        const upTo = clamp(grown - (n.depth - 1));
+        if (upTo > 0) branch(n.parent, n, upTo, w, h);
       });
-      mat.uniforms.uTime = beamUniforms.uTime;
-      mat.uniforms.uIntensity = beamUniforms.uIntensity;
-      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, 26), mat);
-      mesh.position.copy(beamCenter).setZ(beamCenter.z + z);
-      mesh.rotation.set(0, yaw, beamAngle);
-      scene.add(mesh);
+      if (grown >= LEVELS) {
+        ctx.fillStyle = `rgba(${INK},.3)`;
+        all.forEach((n) => {
+          if (n.kids.length) return;
+          ctx.beginPath(); ctx.arc(n.x * w, n.y * h, 1.6, 0, Math.PI * 2); ctx.fill();
+        });
+      }
+
+      // the path actually taken
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = `rgba(${INK},.55)`;
+      for (let i = 1; i < walk.path.length; i++) {
+        const last = i === walk.path.length - 1;
+        branch(walk.path[i - 1], walk.path[i], last ? walk.t : 1, w, h);
+      }
+      const n = walk.path.length;
+      const [mx, my] = n > 1 ? point(walk.path[n - 2], walk.path[n - 1], walk.t, w, h) : [root.x * w, root.y * h];
+      ctx.fillStyle = RED;
+      ctx.beginPath(); ctx.arc(mx, my, 4.5, 0, Math.PI * 2); ctx.fill();
     };
-    makeBeam(5.2, 0.09, 0, 0.0);
-
-
-    // Dust
-    const COUNT = window.innerWidth < 700 ? 900 : 2000;
-    const pos = new Float32Array(COUNT * 3);
-    const seed = new Float32Array(COUNT);
-    const size = new Float32Array(COUNT);
-    const rnd = seeded(7);
-    for (let i = 0; i < COUNT; i++) {
-      pos[i * 3] = (rnd() - 0.5) * 22;
-      pos[i * 3 + 1] = (rnd() - 0.5) * 14;
-      pos[i * 3 + 2] = -7 + rnd() * 12;
-      seed[i] = rnd();
-      size[i] = 0.6 + Math.pow(rnd(), 3) * 2.4;
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
-    geo.setAttribute('aSize', new THREE.BufferAttribute(size, 1));
-    const dustUniforms = {
-      uTime: beamUniforms.uTime,
-      uIntensity: beamUniforms.uIntensity,
-      uColor: beamUniforms.uColor,
-      uMouse: { value: new THREE.Vector2(99, 99) },
-      uPixel: { value: renderer.getPixelRatio() },
-      uBeamP: { value: beamCenter },
-      uBeamD: { value: beamDir },
-    };
-    const dust = new THREE.Points(geo, new THREE.ShaderMaterial({
-      uniforms: dustUniforms,
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
-      vertexShader: `
-        uniform float uTime; uniform float uPixel; uniform float uIntensity; uniform vec2 uMouse;
-        uniform vec3 uBeamP; uniform vec3 uBeamD;
-        attribute float aSeed; attribute float aSize;
-        varying float vLight; varying float vAlpha;
-        void main(){
-          vec3 p = position;
-          float t = uTime * (0.08 + aSeed * 0.06);
-          p.y = mod(position.y + 7.0 + uTime * 0.035 * (0.3 + aSeed), 14.0) - 7.0;
-          p.x += sin(t * 2.0 + aSeed * 40.0) * 0.5;
-          p.z += cos(t * 1.6 + aSeed * 20.0) * 0.4;
-          vec2 d = p.xy - uMouse;
-          float f = exp(-dot(d, d) * 0.6);
-          p.xy += normalize(d + 0.0001) * f * 0.9;
-          vec3 w = p - uBeamP;
-          vec3 onAxis = uBeamD * dot(w, uBeamD);
-          float dist = length((w - onAxis).xy);
-          vLight = step(dist, 1.3) * uIntensity;
-          vAlpha = (0.05 + vLight * 0.8) * (0.55 + 0.45 * sin(uTime * 1.3 + aSeed * 60.0));
-          vec4 mv = modelViewMatrix * vec4(p, 1.0);
-          gl_PointSize = aSize * uPixel * (1.0 + vLight * 1.4) * (9.0 / -mv.z);
-          gl_Position = projectionMatrix * mv;
-        }`,
-      fragmentShader: `
-        varying float vLight; varying float vAlpha; uniform vec3 uColor;
-        void main(){
-          float d = length(gl_PointCoord - 0.5);
-          float a = step(d, 0.5) * vAlpha;
-          vec3 c = mix(uColor * 0.75, uColor, vLight);
-          gl_FragColor = vec4(c * a, a);
-        }`,
-    }));
-    scene.add(dust);
-
-    function resize() {
-      const { width, height } = canvas.getBoundingClientRect();
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-    }
-    resize();
-    window.addEventListener('resize', resize);
 
     if (reduce) {
-      beamUniforms.uTime.value = 24;
-      renderer.render(scene, camera);
-      window.addEventListener('resize', () => renderer.render(scene, camera));
+      // a still image: the whole tree, and one path already chosen
+      let node = root;
+      while (node.kids.length) { node = choose(node); walk.path.push(node); }
+      walk.t = 1;
+      requestAnimationFrame(draw);
+      window.addEventListener('resize', draw);
       return;
     }
 
-    // Curiosity: the dust parts gently around the visitor's hand
-    const mouse = { x: 99, y: 99, tx: 99, ty: 99 };
     section.addEventListener('pointermove', (e) => {
-      const r = canvas.getBoundingClientRect();
-      const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      const ny = -(((e.clientY - r.top) / r.height) * 2 - 1);
-      const halfH = Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
-      mouse.tx = nx * halfH * camera.aspect;
-      mouse.ty = ny * halfH;
+      const r = section.getBoundingClientRect();
+      pointerX = (e.clientX - r.left) / r.width;
     });
-    section.addEventListener('pointerleave', () => { mouse.tx = 99; mouse.ty = 99; });
+    section.addEventListener('pointerleave', () => { pointerX = null; });
 
-    loopWhileVisible(section, (dt, t) => {
-      beamUniforms.uTime.value = t;
-      mouse.x = mouse.tx > 50 ? lerp(mouse.x, 99, 0.02) : lerp(mouse.x, mouse.tx, 0.08);
-      mouse.y = mouse.ty > 50 ? lerp(mouse.y, 99, 0.02) : lerp(mouse.y, mouse.ty, 0.08);
-      dustUniforms.uMouse.value.set(mouse.x, mouse.y);
-      renderer.render(scene, camera);
+    loopWhileVisible(section, (dt) => {
+      grown = Math.min(LEVELS, grown + dt * 2.6);
+      if (grown >= 1) {
+        const here = walk.path[walk.path.length - 1];
+        if (walk.path.length === 1) {
+          walk.path.push(choose(root)); walk.t = 0;
+        } else if (walk.t < 1) {
+          walk.t = Math.min(1, walk.t + dt * 1.1);
+        } else if (here.kids.length && here.depth < grown) {
+          walk.path.push(choose(here)); walk.t = 0;
+        } else if (!here.kids.length) {
+          // arrived: rest a moment, then set out again
+          walk.rest += dt;
+          if (walk.rest > 1.6) { walk.path = [root]; walk.t = 0; walk.rest = 0; }
+        }
+      }
+      draw();
     });
-
-    gsap.from(canvas, { opacity: 0, duration: 3, ease: 'power2.out' });
   }
 
   /* ------------------------------------------------------------------------
