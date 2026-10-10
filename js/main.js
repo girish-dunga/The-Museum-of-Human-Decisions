@@ -90,11 +90,7 @@
   function enterRoom(room) {
     if (room === currentRoom) return;
     currentRoom = room;
-    const theme = room.dataset.theme;
-    bar.dataset.theme = theme;
-    bar.style.setProperty('--bar-bg', getComputedStyle(room).backgroundColor);
-    floorplan.dataset.theme = theme;
-    floorplan.style.setProperty('--fp-bg', getComputedStyle(room).backgroundColor);
+    refreshChrome();
     const at = rooms.indexOf(room);
     $$('[data-room-link]').forEach((a, j) => {
       if (j === at) a.setAttribute('aria-current', 'location');
@@ -125,6 +121,14 @@
   window.addEventListener('resize', queueRoute);
   updateRoute();
 
+  // The header and the route take on the colour of the room you are in
+  function refreshChrome() {
+    if (!currentRoom) return;
+    const bg = getComputedStyle(currentRoom).backgroundColor;
+    bar.style.setProperty('--bar-bg', bg);
+    floorplan.style.setProperty('--fp-bg', bg);
+  }
+
   /* ------------------------------------------------------------------------
      Room 01 — The Entrance: sunlight through a tall window, dust in the air
      ------------------------------------------------------------------------ */
@@ -150,13 +154,13 @@
 
     const beamVert = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
     const beamFrag = `
-      varying vec2 vUv; uniform float uTime; uniform float uIntensity; uniform float uStrength;
+      varying vec2 vUv; uniform float uTime; uniform float uIntensity; uniform float uStrength; uniform vec3 uColor;
       void main(){
         float bar = step(0.47, abs(fract(vUv.x * 3.0) - 0.5));
         float a = (1.0 - bar) * uStrength * uIntensity;
-        gl_FragColor = vec4(vec3(0.87, 0.87, 0.87) * a, a);
+        gl_FragColor = vec4(uColor * a, a);
       }`;
-    const beamUniforms = { uTime: { value: 0 }, uIntensity: { value: 1 } };
+    const beamUniforms = { uTime: { value: 0 }, uIntensity: { value: 1 }, uColor: { value: new THREE.Vector3(0.87, 0.87, 0.87) } };
     const makeBeam = (w, strength, z, yaw) => {
       const mat = new THREE.ShaderMaterial({
         uniforms: { ...beamUniforms, uStrength: { value: strength } },
@@ -193,6 +197,7 @@
     const dustUniforms = {
       uTime: beamUniforms.uTime,
       uIntensity: beamUniforms.uIntensity,
+      uColor: beamUniforms.uColor,
       uMouse: { value: new THREE.Vector2(99, 99) },
       uPixel: { value: renderer.getPixelRatio() },
       uBeamP: { value: beamCenter },
@@ -225,11 +230,11 @@
           gl_Position = projectionMatrix * mv;
         }`,
       fragmentShader: `
-        varying float vLight; varying float vAlpha;
+        varying float vLight; varying float vAlpha; uniform vec3 uColor;
         void main(){
           float d = length(gl_PointCoord - 0.5);
           float a = step(d, 0.5) * vAlpha;
-          vec3 c = mix(vec3(0.67, 0.67, 0.67), vec3(0.93, 0.93, 0.93), vLight);
+          vec3 c = mix(uColor * 0.75, uColor, vLight);
           gl_FragColor = vec4(c * a, a);
         }`,
     }));
@@ -518,7 +523,7 @@
         n.links.forEach((j) => {
           const m = nodes[j];
           const k = clamp((t - n.born) / 1.4);
-          ctx.strokeStyle = `rgba(236,230,220,${0.18 * k})`;
+          ctx.strokeStyle = `rgba(232,232,232,${0.18 * k})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(m.x * w, m.y * h);
@@ -540,13 +545,13 @@
         const breathe = reduce ? 1 : 0.85 + 0.15 * Math.sin(time * 1.4 + n.phase);
         if (n.unsure) {
           ctx.setLineDash([3, 4]);
-          ctx.strokeStyle = `rgba(214,128,96,${0.75 * life})`;
+          ctx.strokeStyle = `rgba(255,57,57,${0.75 * life})`;
           ctx.beginPath();
           ctx.arc(n.x * w, n.y * h, (9 + 3 * breathe) * life, 0, Math.PI * 2);
           ctx.stroke();
           ctx.setLineDash([]);
         }
-        ctx.fillStyle = n.unsure ? `rgba(214,128,96,${life})` : `rgba(247,227,188,${0.9 * life})`;
+        ctx.fillStyle = n.unsure ? `rgba(255,57,57,${life})` : `rgba(235,235,235,${0.9 * life})`;
         ctx.beginPath();
         ctx.arc(n.x * w, n.y * h, (n.unsure ? 3.2 : 2.2) * breathe * life, 0, Math.PI * 2);
         ctx.fill();
@@ -907,28 +912,47 @@
     const ctx = canvas.getContext('2d');
     const count = $('.count', fig);
     const figure = $('.install-figure', fig);
-    const state = { p: reduce || !hasGSAP ? 1 : 0 };
+    const range = $('.install-range', fig);
+    const now = $('.install-now', fig);
+    const sides = $$('.install-compare > div', fig);
+    const state = { p: motion ? 0 : 1 };
     const draw = setup(canvas, ctx, state);
+    const still = () => draw(0, 0);
 
     const from = Number(count.dataset.from || 0);
     const to = Number(count.dataset.to);
-    const writeCount = () => {
+    // One position, from before launch (0) to after launch (1), drives the drawing, the number and the labels
+    const render = () => {
       count.textContent = Math.round(lerp(from, to, state.p)).toLocaleString('en-GB');
+      range.value = Math.round(state.p * 100);
+      const label = state.p < 0.02 ? 'Before launch' : state.p > 0.98 ? 'After launch' : `Part way, ${Math.round(state.p * 100)}%`;
+      range.setAttribute('aria-valuetext', label);
+      now.textContent = `Now showing: ${label.toLowerCase()}`;
+      sides[0].classList.toggle('is-on', state.p < 0.5);
+      sides[1].classList.toggle('is-on', state.p >= 0.5);
     };
+    // The moving figure is decorative; the before and after text states the numbers
+    figure.setAttribute('aria-hidden', 'true');
+
+    let demo = null;
+    range.addEventListener('input', () => {
+      if (demo) { demo.kill(); demo = null; }
+      state.p = Number(range.value) / 100;
+      render();
+      if (!motion) still();
+    });
+    render();
 
     if (motion) {
-      // The animated figure is decorative; the caption text states the number
-      figure.setAttribute('aria-hidden', 'true');
-      writeCount();
+      // Play from before to after once, the first time the installation is seen
       const io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
         io.disconnect();
-        gsap.to(state, { p: 1, duration: 4, ease: 'power2.inOut', onUpdate: writeCount });
+        demo = gsap.to(state, { p: 1, duration: 4, ease: 'power2.inOut', onUpdate: render, onComplete: () => { demo = null; } });
       }, { threshold: 0.5 });
       io.observe(fig);
       loopWhileVisible(canvas, (dt, t) => draw(dt, t));
     } else {
-      const still = () => draw(0, 0);
       requestAnimationFrame(still);
       window.addEventListener('resize', still);
     }
@@ -957,10 +981,10 @@
             const fresh = clamp((lit - i) / 30);
             const tw = reduce ? 1 : 0.75 + 0.25 * Math.sin(t * 1.8 + twinkle[i]);
             const s = (1.8 + (1 - fresh) * 3) * tw;
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = `rgb(242,242,242)`;
             ctx.beginPath(); ctx.arc(x, y, s, 0, Math.PI * 2); ctx.fill();
           } else {
-            ctx.fillStyle = 'rgba(245,245,245,.10)';
+            ctx.fillStyle = `rgba(242,242,242,.12)`;
             ctx.beginPath(); ctx.arc(x, y, 1.1, 0, Math.PI * 2); ctx.fill();
           }
         }
@@ -1018,7 +1042,7 @@
         const ox = (w - cell * C) / 2, oy = (h - cell * Rw) / 2;
         ctx.lineCap = 'round';
         // outer boundary, open at entrance and exit
-        ctx.strokeStyle = 'rgba(245,245,245,.55)'; ctx.lineWidth = 1.6;
+        ctx.strokeStyle = `rgba(242,242,242,.55)`; ctx.lineWidth = 1.6;
         ctx.beginPath();
         ctx.moveTo(ox + cell, oy); ctx.lineTo(ox + C * cell, oy); ctx.lineTo(ox + C * cell, oy + (Rw - 1) * cell);
         ctx.moveTo(ox + (C - 1) * cell, oy + Rw * cell); ctx.lineTo(ox, oy + Rw * cell); ctx.lineTo(ox, oy + cell);
@@ -1026,7 +1050,7 @@
         segs.forEach((s) => {
           const a = s.keep ? 0.55 : clamp((s.t + 0.15 - p) / 0.15) * 0.4;
           if (a <= 0.01) return;
-          ctx.strokeStyle = s.keep ? `rgba(236,230,220,${a})` : `rgba(236,230,220,${a})`;
+          ctx.strokeStyle = `rgba(242,242,242,${a})`;
           ctx.beginPath();
           ctx.moveTo(ox + s.x1 * cell, oy + s.y1 * cell);
           ctx.lineTo(ox + s.x2 * cell, oy + s.y2 * cell);
@@ -1036,7 +1060,7 @@
         const pts = path.map(([r, c]) => [ox + (c + 0.5) * cell, oy + (r + 0.5) * cell]);
         const shown = Math.floor(pts.length * clamp(p * 1.3));
         if (shown > 1) {
-          ctx.strokeStyle = 'rgba(149,149,149,.85)'; ctx.lineWidth = 2.2;
+          ctx.strokeStyle = 'rgba(255,57,57,.85)'; ctx.lineWidth = 2.2;
           ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
           for (let i = 1; i < shown; i++) ctx.lineTo(pts[i][0], pts[i][1]);
           ctx.stroke();
@@ -1046,7 +1070,7 @@
         const i0 = Math.floor(travel), f = travel - i0;
         const P = pts[i0], Q = pts[Math.min(i0 + 1, pts.length - 1)];
         const tx = lerp(P[0], Q[0], f), ty = lerp(P[1], Q[1], f);
-        ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(tx, ty, cell * 0.3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgb(242,242,242)`; ctx.beginPath(); ctx.arc(tx, ty, cell * 0.3, 0, Math.PI * 2); ctx.fill();
       };
     });
 
@@ -1065,10 +1089,10 @@
       return (dt, t) => {
         const { w, h } = fitCanvas(canvas, ctx);
         const p = state.p;
-        ctx.fillStyle = '#121212'; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#1C1C1C'; ctx.fillRect(0, 0, w, h);
         if (reduce) {
           // a still image of the straightened routes
-          ctx.strokeStyle = 'rgba(216,216,216,.35)'; ctx.lineWidth = 1;
+          ctx.strokeStyle = `rgba(242,242,242,.35)`; ctx.lineWidth = 1;
           lanes.forEach((L) => {
             ctx.beginPath();
             for (let s = 0; s <= 1.0001; s += 0.01) { const [x, y] = at(L, s, p, w, h); s ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
@@ -1085,7 +1109,7 @@
           if (!reduce) q.s += (q.v * 120 * dt) / seg;
           if (q.s > 1) q.s -= 1;
           const [x, y] = at(L, q.s, p, w, h);
-          ctx.fillStyle = 'rgba(216,216,216,.85)';
+          ctx.fillStyle = `rgba(242,242,242,.85)`;
           ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI * 2); ctx.fill();
         });
         ctx.globalCompositeOperation = 'source-over';
