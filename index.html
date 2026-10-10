@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Museum of Human Decisions — Girish Dunga, UX Designer</title>
+  <meta name="description" content="A UX portfolio presented as an exhibition: human moments, the decisions made on their behalf, and the evidence behind them.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Hide animated content before first paint, but never strand it if scripts fail
+    document.documentElement.classList.add('js');
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('motion');
+      setTimeout(function () { if (!window.__museumReady) document.documentElement.classList.remove('motion'); }, 4000);
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the exhibition</a>
+
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Museum header: badge and museum name -->
+  <header class="museum-bar" data-theme="dark">
+    <div class="brand">
+      <a class="wordmark" href="#entrance" aria-label="Girish Dunga. UX designer, product thinker, experience creator. Back to the entrance">
+        <svg class="badge" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <defs>
+            <path id="badge-ring" d="M100,100 m-84,0 a84,84 0 1,1 168,0 a84,84 0 1,1 -168,0"/>
+          </defs>
+          <g class="badge-ring">
+            <text class="badge-text"><textPath href="#badge-ring" textLength="527" lengthAdjust="spacing">UX Designer • Product thinker • Experience creator •</textPath></text>
+          </g>
+          <circle class="badge-disc" cx="100" cy="100" r="64"/>
+          <svg class="badge-mark" x="73" y="52" width="54" height="96" viewBox="0 0 173.908 313.838">
+            <path d="M298.611,238.145V141.272A34.581,34.581,0,0,0,264.039,106.7v61.581A86.079,86.079,0,0,1,298.611,236.7v1.44a85.717,85.717,0,0,0-40.694-69.864c-40.694-25.209-93.992-12.6-118.84,27.729-23.048,37.093-14.405,84.629,18.006,112-13.684,10.8-23.048,27.009-23.768,45.736a62.068,62.068,0,0,0,61.941,64.462h64.462v-2.161s-2.161-25.568-31.331-31.331a23.829,23.829,0,0,0-5.4-.36H195.976c-15.125,0-28.09-11.164-29.17-26.289a28.111,28.111,0,0,1,28.089-29.89h15.125a115.347,115.347,0,0,1-5.762-14.045,131.036,131.036,0,0,1-5.762-22.687,64.938,64.938,0,0,1-13.685-5.762,52.088,52.088,0,0,1-23.048-55.459,41.785,41.785,0,0,1,6.482-15.485,46.852,46.852,0,0,1,11.164-12.6,51.4,51.4,0,0,1,59.78-3.961c1.44,1.08,2.881,1.8,4.321,2.881a51.509,51.509,0,0,1,18.727,29.17,50.787,50.787,0,0,1-6.482,38.533A53.263,53.263,0,0,1,224.065,291.8a57.819,57.819,0,0,1-24.849,0h-.36a273.566,273.566,0,0,0,15.485,36.732,86.425,86.425,0,0,0,71.3-40.694C295.009,272,299.331,255.07,298.611,238.145Z" transform="translate(-126.095 -106.7)"/>
+            <circle cx="16.406" cy="16.406" r="16.406" transform="translate(141.095 281.025)" fill="#ff3939"/>
+          </svg>
+        </svg>
+      </a>
+      <p class="brand-tagline">The Museum of Human Decisions</p>
+    </div>
+  </header>
+
+  <nav class="floorplan" aria-label="Floor plan">
+    <p class="fp-title" aria-hidden="true">Visitor route</p>
+    <div class="fp-route">
+      <span class="fp-track" aria-hidden="true"><span class="fp-fill"></span><span class="fp-you"></span></span>
+      <ol>
+        <li><a href="#entrance" data-room-link="entrance"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Entrance</span></span><span class="fp-num">01</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#human-room" data-room-link="human-room"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Human Room</span></span><span class="fp-num">02</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#evidence-wall" data-room-link="evidence-wall"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">Evidence Wall</span></span><span class="fp-num">03</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#invisible-work" data-room-link="invisible-work"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Invisible Work</span></span><span class="fp-num">04</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#decision-lab" data-room-link="decision-lab"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Decision Lab</span></span><span class="fp-num">05</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#impact-gallery" data-room-link="impact-gallery"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Impact Gallery</span></span><span class="fp-num">06</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+        <li><a href="#reflection-room" data-room-link="reflection-room"><span class="fp-label"><span class="fp-here">You are here</span><span class="fp-name">The Reflection Room</span></span><span class="fp-num">07</span><span class="fp-dot" aria-hidden="true"></span></a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- ============ ROOM 01 — THE ENTRANCE ============ -->
+    <section id="entrance" class="room room--entrance" data-theme="dark" data-room-name="The Entrance" data-room-num="01" aria-labelledby="entrance-title">
+      <canvas class="entrance-canvas px"  aria-hidden="true"></canvas>
+
+      <div class="entrance-inner">
+        <p class="placard-line" data-reveal>Room 01 &nbsp;·&nbsp; The Entrance</p>
+        <h1 id="entrance-title" class="statement">
+          <span class="statement-line"><span class="statement-inner">I don’t design interfaces.</span></span>
+          <span class="statement-line"><span class="statement-inner">I design <em>decisions.</em></span></span>
+        </h1>
+        <p class="entrance-sub" data-reveal>
+          A permanent collection of human moments, and the choices made on their behalf.
+          Curated by Girish Dunga, UX designer.
+        </p>
+        <a class="walk-in" href="#human-room" data-reveal>
+          <span class="walk-in-text">Walk through my thinking</span>
+          <span class="walk-in-steps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        </a>
+      </div>
+
+      <p class="admission" aria-hidden="true">Admission free &nbsp;·&nbsp; Seven rooms &nbsp;·&nbsp; About six minutes</p>
+    </section>
+
+    <!-- ============ ROOM 02 — THE HUMAN ROOM ============ -->
+    <section id="human-room" class="room room--human" data-theme="light" data-room-name="The Human Room" data-room-num="02" aria-labelledby="human-title">
+      <header class="room-head">
+        <p class="room-num" aria-hidden="true">02</p>
+        <div>
+          <p class="placard-line" data-reveal>Room 02</p>
+          <h2 id="human-title" class="room-title" data-reveal>The Human Room</h2>
+          <p class="room-intro" data-reveal>
+            Before any screen, there is a person in a moment. Each of these is a small experiment
+            you can run yourself. Try the interaction, then read what it was designed to solve.
+          </p>
+        </div>
+      </header>
+
+      <div class="hr" data-hr>
+        <div class="hr-controls">
+          <button class="hr-nav hr-prev" type="button" aria-label="Previous moment">&larr;</button>
+          <div class="hr-dots" role="group" aria-label="Choose a moment">
+            <button class="hr-dot" type="button" aria-current="true">01 · The patient</button>
+            <button class="hr-dot" type="button" aria-current="false">02 · The parent</button>
+            <button class="hr-dot" type="button" aria-current="false">03 · The commuter</button>
+            <button class="hr-dot" type="button" aria-current="false">04 · Under stress</button>
+          </div>
+          <button class="hr-nav hr-next" type="button" aria-label="Next moment">&rarr;</button>
+          <p class="hr-count" aria-live="polite">1 / 4</p>
+        </div>
+
+        <div class="hr-track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Human moments. Use the arrow keys, the buttons or swipe to move between them.">
+
+          <!-- 01 · The patient: choose a slot while the hold timer runs -->
+          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="1 of 4: The patient">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Northfield Clinic · Today</p>
+              <div class="hr-hold"><span>On hold</span><b class="hr-timer" data-timer>00:23</b></div>
+              <p class="hr-q">Pick a time with Dr. Rao</p>
+              <div class="hr-chips">
+                <button class="hr-chip" type="button" data-slot="09:20" aria-pressed="false">09:20</button>
+                <button class="hr-chip" type="button" data-slot="11:40" aria-pressed="false">11:40</button>
+                <button class="hr-chip" type="button" data-slot="14:00" aria-pressed="false">14:00</button>
+                <button class="hr-chip" type="button" data-slot="16:30" aria-pressed="false">16:30</button>
+              </div>
+              <div class="hr-result" aria-live="polite"><p class="hr-note">Pick a time. Nothing else is asked for yet.</p></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.1</p>
+              <h3 class="moment-title">The patient</h3>
+              <p class="moment-time">Tuesday, 07:42 · fourth attempt</p>
+              <div class="moment-story">
+                <p>Ravi has called the clinic three times before work. The hold music is the only thing that answers. He doesn’t want an app. He wants to know whether anyone can see him this week.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Show real availability first, before asking who you are. Booking became three taps, and the morning phone queue fell by 41%.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 02 · The parent: tap each dose as it is given -->
+          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="2 of 4: The parent">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Aria’s medicine · Today</p>
+              <p class="hr-q">Tap a dose each time it is given</p>
+              <div class="hr-doses">
+                <button class="hr-dose" type="button" data-state="0"><span><b>08:00</b> Amoxicillin 5 ml</span><span class="hr-dose-who">Not yet</span></button>
+                <button class="hr-dose" type="button" data-state="0"><span><b>14:00</b> Amoxicillin 5 ml</span><span class="hr-dose-who">Not yet</span></button>
+                <button class="hr-dose" type="button" data-state="0"><span><b>20:00</b> Amoxicillin 5 ml</span><span class="hr-dose-who">Not yet</span></button>
+              </div>
+              <p class="hr-hint">Each tap cycles: not yet, Sam, Priya.</p>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.2</p>
+              <h3 class="moment-title">The parent</h3>
+              <p class="moment-time">Thursday, 02:10 · day three of antibiotics</p>
+              <div class="moment-story">
+                <p>Priya is standing in a dark kitchen with a syringe of medicine. Did Sam give the 8 o’clock dose? The note on the fridge doesn’t say. A double dose is worse than a missed one.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Design for the household, not the individual. One shared timeline that answers a single question at 2am: <em>has it been given?</em></p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 03 · The commuter: switch between the full board and one next step -->
+          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="3 of 4: The commuter">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Monday, 07:58 · Kingsford line</p>
+              <div class="hr-seg" role="group" aria-label="How much to show">
+                <button class="hr-mode" type="button" data-mode="all" aria-pressed="true">Full board</button>
+                <button class="hr-mode" type="button" data-mode="next" aria-pressed="false">Next step only</button>
+              </div>
+              <ul class="hr-board" role="list">
+                <li class="hr-row"><span>08:03 KINGSFORD</span><span>4</span></li>
+                <li class="hr-row"><span>08:07 HARBOUR ST</span><span>2</span></li>
+                <li class="hr-row"><span>08:11 MILL LANE</span><span>—</span></li>
+                <li class="hr-row"><span>PLATFORM CHANGED</span><span>!</span></li>
+              </ul>
+              <div class="hr-next-step" hidden>
+                <p class="hr-kicker">Leave now</p>
+                <p class="hr-big">Platform 4</p>
+                <p class="hr-note">2 min walk. Stairs on the left.</p>
+              </div>
+              <p class="hr-count-down">Time to decide <b data-count>90 sec</b></p>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.3</p>
+              <h3 class="moment-title">The commuter</h3>
+              <p class="moment-time">Monday, 07:58 · 90 seconds to decide</p>
+              <div class="moment-story">
+                <p>Tom is walking fast, coffee in one hand, phone in the other. The platform has changed. He has one glance, maybe two, before he chooses a staircase.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Remove everything that isn’t the next action. One number, one instruction, one countdown. Fewer screens, read faster.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 04 · Under stress: keep trying, and watch the errors give way to something calm -->
+          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="4 of 4: The person under stress">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Sunday, 23:16 · Flood claim</p>
+              <p class="hr-q">Upload the photos of the damage</p>
+              <div class="hr-stack" aria-live="polite"></div>
+              <button class="hr-try" type="button">Upload claim photos</button>
+              <p class="hr-hint">Tap upload to see what Grace sees, three times.</p>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.4</p>
+              <h3 class="moment-title">The person under stress</h3>
+              <p class="moment-time">Insurance claim, after a flood</p>
+              <div class="moment-story">
+                <p>Grace has photographed every ruined room. The upload fails for the third time. Stress narrows attention, so “something went wrong” reads as “you did something wrong.”</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Errors should lower someone’s heart rate. Say what is safe first, then what happened, then exactly one next step, and a human name.</p>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROOM 03 — EVIDENCE WALL ============ -->
+    <section id="evidence-wall" class="room room--evidence" data-theme="light" data-room-name="Evidence Wall" data-room-num="03" aria-labelledby="evidence-title">
+      <header class="room-head">
+        <p class="room-num" aria-hidden="true">03</p>
+        <div>
+          <p class="placard-line" data-reveal>Room 03</p>
+          <h2 id="evidence-title" class="room-title" data-reveal>Evidence Wall</h2>
+          <p class="room-intro" data-reveal>
+            Four investigations, kept as the objects they left behind. Each one started with a
+            person, not a brief. Pick any object up to read its full story.
+          </p>
+        </div>
+      </header>
+
+      <div class="wall">
+        <svg class="wall-threads" aria-hidden="true"></svg>
+
+        <ul class="wall-list" role="list">
+          <!-- Healthcare: medical file -->
+          <li class="wall-item wall-item--file">
+            <button class="artifact artifact--file" type="button" data-project="careline" aria-haspopup="dialog">
+              <span class="pin" aria-hidden="true"></span>
+              <span class="obj obj-file" aria-hidden="true">
+                <span class="file-tab">HC-0117</span>
+                <span class="file-body">
+                  <span class="file-clip"></span>
+                  <span class="file-stamp">Case closed</span>
+                  <span class="file-field"><span>Subject</span>Patient booking flow</span>
+                  <span class="file-field"><span>Site</span>Northfield Clinics, 14 practices</span>
+                  <span class="file-field"><span>Presenting issue</span>Phone queue at 07:00 exceeds 300 callers</span>
+                  <span class="file-lines"><i></i><i></i><i></i><i></i></span>
+                </span>
+              </span>
+              <span class="caption">
+                <span class="caption-kind">Healthcare · 2025</span>
+                <span class="caption-title">CareLine</span>
+                <span class="caption-cue">Open the file</span>
+              </span>
+            </button>
+          </li>
+
+          <!-- Fintech: transaction slips -->
+          <li class="wall-item wall-item--slips">
+            <button class="artifact artifact--slips" type="button" data-project="ledger" aria-haspopup="dialog">
+              <span class="pin" aria-hidden="true"></span>
+              <span class="obj obj-slips" aria-hidden="true">
+                <span class="slip slip--a">
+                  <span class="slip-head">LEDGER · STATEMENT</span>
+                  <span class="slip-row"><span>CARD PMT 0042</span><span>12.40</span></span>
+                  <span class="slip-row"><span>DD MBRSHP</span><span>29.99</span></span>
+                  <span class="slip-row"><span>TFR REF 88-21</span><span>250.00</span></span>
+                  <span class="slip-row"><span>FX ADJ</span><span>0.83</span></span>
+                  <span class="slip-total"><span>BAL</span><span>−63.12</span></span>
+                </span>
+                <span class="slip slip--b">
+                  <span class="slip-head">WHAT IS THIS?</span>
+                  <span class="slip-row"><span>MBRSHP</span><span>??</span></span>
+                  <span class="slip-row"><span>FX ADJ</span><span>??</span></span>
+                </span>
+                <span class="slip-note">People don’t read numbers.<br>They read worry.</span>
+              </span>
+              <span class="caption">
+                <span class="caption-kind">Fintech · 2024</span>
+                <span class="caption-title">Ledger</span>
+                <span class="caption-cue">Read the slips</span>
+              </span>
+            </button>
+          </li>
+
+          <!-- Design system: blueprint -->
+          <li class="wall-item wall-item--blueprint">
+            <button class="artifact artifact--blueprint" type="button" data-project="foundation" aria-haspopup="dialog">
+              <span class="pin" aria-hidden="true"></span>
+              <span class="obj obj-blueprint" aria-hidden="true">
+                <svg viewBox="0 0 320 200" class="bp-drawing">
+                  <rect x="24" y="36" width="120" height="40" rx="6"/>
+                  <text x="84" y="61" text-anchor="middle">Button</text>
+                  <path d="M24 92h120M24 88v8M144 88v8" class="bp-dim"/>
+                  <text x="84" y="108" text-anchor="middle" class="bp-small">120 · 8pt grid</text>
+                  <path d="M160 36v40M156 36h8M156 76h8" class="bp-dim"/>
+                  <text x="170" y="60" class="bp-small">40</text>
+                  <rect x="196" y="28" width="100" height="70" rx="4"/>
+                  <path d="M196 46h100M208 60h60M208 72h44M208 84h52"/>
+                  <circle cx="60" cy="150" r="18"/><circle cx="60" cy="150" r="10"/>
+                  <path d="M96 132h80v36h-80z M110 150h52"/>
+                  <path d="M196 120l40 40 40-40" class="bp-dim"/>
+                </svg>
+                <span class="bp-titleblock">
+                  <span>FOUNDATION DS</span>
+                  <span>SHEET 01 OF 48</span>
+                  <span>SCALE 8 PT</span>
+                </span>
+              </span>
+              <span class="caption">
+                <span class="caption-kind">Design system · 2023 – now</span>
+                <span class="caption-title">Foundation</span>
+                <span class="caption-cue">Unroll the plans</span>
+              </span>
+            </button>
+          </li>
+
+          <!-- AI: intelligence map -->
+          <li class="wall-item wall-item--map">
+            <button class="artifact artifact--map" type="button" data-project="atlas" aria-haspopup="dialog">
+              <span class="pin" aria-hidden="true"></span>
+              <span class="obj obj-map" aria-hidden="true">
+                <canvas class="map-canvas"></canvas>
+                <span class="map-legend">fig. 4 &nbsp;— where the model is unsure</span>
+              </span>
+              <span class="caption">
+                <span class="caption-kind">AI · 2025</span>
+                <span class="caption-title">Atlas</span>
+                <span class="caption-cue">Trace the map</span>
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ ROOM 04 — THE INVISIBLE WORK ============ -->
+    <section id="invisible-work" class="room room--invisible" data-theme="dark" data-room-name="The Invisible Work" data-room-num="04" aria-labelledby="invisible-title">
+      <header class="room-head">
+        <p class="room-num" aria-hidden="true">04</p>
+        <div>
+          <p class="placard-line" data-reveal>Room 04</p>
+          <h2 id="invisible-title" class="room-title" data-reveal>The Invisible Work</h2>
+          <p class="room-intro" data-reveal>
+            Every finished screen sits on layers nobody sees. This is a core sample taken through one of them.
+            Dig down, one layer at a time, and open each of them.
+          </p>
+        </div>
+      </header>
+
+      <div class="dig" data-dig>
+        <aside class="core" aria-label="Core sample. Choose a layer to read.">
+          <p class="core-label">Core sample</p>
+          <div class="bands" role="group" aria-label="Layers">
+            <span class="drill" aria-hidden="true"></span>
+          <button class="band" type="button" aria-current="true"><span class="band-no">00</span><span class="band-name">Surface</span><span class="band-state">Reading</span></button>
+          <button class="band" type="button" aria-current="false"><span class="band-no">01</span><span class="band-name">Research</span><span class="band-state">Unopened</span></button>
+          <button class="band" type="button" aria-current="false"><span class="band-no">02</span><span class="band-name">Decisions</span><span class="band-state">Unopened</span></button>
+          <button class="band" type="button" aria-current="false"><span class="band-no">03</span><span class="band-name">Negotiation</span><span class="band-state">Unopened</span></button>
+          <button class="band" type="button" aria-current="false"><span class="band-no">04</span><span class="band-name">Failures</span><span class="band-state">Unopened</span></button>
+          <button class="band" type="button" aria-current="false"><span class="band-no">05</span><span class="band-name">Iterations</span><span class="band-state">Unopened</span></button>
+          </div>
+          <p class="dig-progress" aria-live="polite">1 of 6 levels opened</p>
+        </aside>
+
+        <div class="well" data-well>
+          <div class="well-surface" tabindex="-1">
+            <div class="polish">
+            <p class="polish-kicker">Booking confirmed</p>
+            <p class="polish-h">Tuesday 11:40<br>with Dr. Rao</p>
+            <p class="polish-p">Northfield Clinic, Room 3. We’ll remind you the evening before.</p>
+            <span class="polish-btn">Add to calendar</span>
+            <p class="polish-foot">Looks simple. It took 22 interviews, 9 versions and 4 arguments.</p>
+          </div>
+          </div>
+          <div class="strata">
+            <section class="stratum" data-layer="1" aria-labelledby="l1-title">
+                        <header class="stratum-head">
+                          <span class="stratum-no">Layer 01</span>
+                          <h3 id="l1-title">Research insights</h3>
+                        </header>
+                        <div class="stratum-body">
+                          <p class="stratum-lede">22 interviews and diary studies. Filter them by what people were really saying.</p>
+                          <div class="chips" role="group" aria-label="Filter quotes">
+                            <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+                            <button class="chip" type="button" data-filter="waiting" aria-pressed="false">Waiting</button>
+                            <button class="chip" type="button" data-filter="phone" aria-pressed="false">Phone</button>
+                            <button class="chip" type="button" data-filter="trust" aria-pressed="false">Trust</button>
+                          </div>
+                          <p class="filter-count" aria-live="polite">Showing 4 of 4</p>
+                          <ul class="quotes" role="list">
+                            <li class="quote" data-tags="waiting phone">“I book at 7am because that’s when I’m brave enough to call.”<cite>P07 · interview 3 of 22</cite></li>
+                            <li class="quote" data-tags="waiting">“If I miss the window, I wait another day, and by then I’ve talked myself out of going.”<cite>P12</cite></li>
+                            <li class="quote" data-tags="trust">“I don’t want to type my details before I know there’s a slot.”<cite>P03</cite></li>
+                            <li class="quote" data-tags="trust phone">“Nobody in my house trusts an app to remember. The calendar stays on the fridge.”<cite>P15 · household of four</cite></li>
+                          </ul>
+                          <p class="stratum-aside">The most useful insight usually arrived after the recorder was switched off.</p>
+                        </div>
+                      </section>
+            <section class="stratum" data-layer="2" aria-labelledby="l2-title">
+                        <header class="stratum-head">
+                          <span class="stratum-no">Layer 02</span>
+                          <h3 id="l2-title">Design decisions</h3>
+                        </header>
+                        <div class="stratum-body">
+                          <p class="stratum-lede">Each decision looks different depending on who is standing in front of it. Choose a point of view.</p>
+                          <div class="decision-cards">
+                            <article class="dec">
+                              <h4>Show availability before login</h4>
+                              <div class="lens" role="group" aria-label="Look at this decision from">
+                                <button class="lens-btn" type="button" data-lens="patient" aria-pressed="true">Patient</button>
+                                <button class="lens-btn" type="button" data-lens="receptionist" aria-pressed="false">Receptionist</button>
+                                <button class="lens-btn" type="button" data-lens="clinician" aria-pressed="false">Clinician</button>
+                              </div>
+                              <p class="lens-out" aria-live="polite"
+                                 data-patient="A slot is visible in under a minute, before anyone asks for personal details."
+                                 data-receptionist="Fewer calls from people asking what is free. The phones are quieter at 7am."
+                                 data-clinician="Patients arrive having chosen a time they can actually keep. Legal asked us to explain what is stored, twice.">A slot is visible in under a minute, before anyone asks for personal details.</p>
+                            </article>
+                            <article class="dec">
+                              <h4>Reminder the evening before</h4>
+                              <div class="lens" role="group" aria-label="Look at this decision from">
+                                <button class="lens-btn" type="button" data-lens="patient" aria-pressed="true">Patient</button>
+                                <button class="lens-btn" type="button" data-lens="receptionist" aria-pressed="false">Receptionist</button>
+                                <button class="lens-btn" type="button" data-lens="clinician" aria-pressed="false">Clinician</button>
+                              </div>
+                              <p class="lens-out" aria-live="polite"
+                                 data-patient="Remembers the appointment for you. Too many reminders would feel like nagging, so we send one."
+                                 data-receptionist="No-shows fell from about 1 in 6 to about 1 in 11. Fewer empty chairs at the end of the morning."
+                                 data-clinician="Cancelled slots reach the waiting list earlier, so someone who needed the time gets it.">Remembers the appointment for you. Too many reminders would feel like nagging, so we send one.</p>
+                            </article>
+                            <article class="dec">
+                              <h4>One shared household timeline</h4>
+                              <div class="lens" role="group" aria-label="Look at this decision from">
+                                <button class="lens-btn" type="button" data-lens="patient" aria-pressed="true">Patient</button>
+                                <button class="lens-btn" type="button" data-lens="receptionist" aria-pressed="false">Receptionist</button>
+                                <button class="lens-btn" type="button" data-lens="clinician" aria-pressed="false">Clinician</button>
+                              </div>
+                              <p class="lens-out" aria-live="polite"
+                                 data-patient="Two adults can see the same list, so nobody has to guess whether a dose was given."
+                                 data-receptionist="Parents stop phoning the clinic to ask whether a prescription was already collected."
+                                 data-clinician="Medication questions arrive with a timeline attached, which makes triage faster and safer.">Two adults can see the same list, so nobody has to guess whether a dose was given.</p>
+                            </article>
+                          </div>
+                        </div>
+                      </section>
+            <section class="stratum" data-layer="3" aria-labelledby="l3-title">
+                        <header class="stratum-head">
+                          <span class="stratum-no">Layer 03</span>
+                          <h3 id="l3-title">Stakeholder negotiations</h3>
+                        </header>
+                        <div class="stratum-body">
+                          <p class="stratum-lede">Slot length took three weeks to settle. Set it yourself and see who pushes back.</p>
+                          <div class="nego">
+                            <div class="nego-type" role="group" aria-label="Which kind of appointment">
+                              <button class="chip" type="button" data-type="follow" aria-pressed="true">Follow-ups</button>
+                              <button class="chip" type="button" data-type="first" aria-pressed="false">First visits</button>
+                            </div>
+                            <div class="nego-len">
+                              <label for="nego-range">Slot length</label>
+                              <output id="nego-val" for="nego-range">15 min</output>
+                            </div>
+                            <input id="nego-range" class="dig-range" type="range" min="10" max="45" step="5" value="15">
+                            <ul class="parties" role="list">
+                              <li class="party" data-party="ops"><span class="party-name">Operations</span><span class="meter"><span class="meter-fill"></span></span><span class="party-score">0%</span></li>
+                              <li class="party" data-party="clinicians"><span class="party-name">Clinicians</span><span class="meter"><span class="meter-fill"></span></span><span class="party-score">0%</span></li>
+                              <li class="party" data-party="patients"><span class="party-name">Patients</span><span class="meter"><span class="meter-fill"></span></span><span class="party-score">0%</span></li>
+                            </ul>
+                            <p class="nego-summary" aria-live="polite"></p>
+                            <button class="settle" type="button">Settle the compromise</button>
+                          </div>
+                        </div>
+                      </section>
+            <section class="stratum" data-layer="4" aria-labelledby="l4-title">
+                        <header class="stratum-head">
+                          <span class="stratum-no">Layer 04</span>
+                          <h3 id="l4-title">Failed experiments</h3>
+                        </header>
+                        <div class="stratum-body">
+                          <p class="stratum-lede">Retired with notes, not shame. Open each one to see why it did not survive.</p>
+                          <details class="failed">
+                            <summary>Book by chatbot, v2</summary>
+                            <div>
+                              <p>Three of eight participants gave up partway through the conversation. Retired within a week.</p>
+                              <p class="note">What survived: the question “what do you need?” became a plain form.</p>
+                            </div>
+                          </details>
+                          <details class="failed">
+                            <summary>Reminder upsell on the confirmation screen</summary>
+                            <div>
+                              <p>A paid reminder upgrade, shown at the moment of relief. Removed before launch. I argued for it, and I was wrong.</p>
+                              <p class="note">Lesson: never sell at the point where someone has just finished something hard.</p>
+                            </div>
+                          </details>
+                        </div>
+                      </section>
+            <section class="stratum" data-layer="5" aria-labelledby="l5-title">
+                        <header class="stratum-head">
+                          <span class="stratum-no">Layer 05</span>
+                          <h3 id="l5-title">Iterations</h3>
+                        </header>
+                        <div class="stratum-body">
+                          <p class="stratum-lede">Nine versions of one button, out of more than 600 small changes. Scrub through them.</p>
+                          <div class="iter">
+                            <div class="iter-stage"><span class="iter-btn" data-iter-btn>Submit</span></div>
+                            <p class="iter-meta"><span data-iter-v>v1</span> · confidence <b data-iter-c>62%</b></p>
+                            <input id="iter-range" class="dig-range" type="range" min="0" max="2" step="1" value="0" aria-label="Version" aria-valuetext="v1: Submit">
+                            <p class="iter-note" data-iter-note>Nobody knew what pressing it would do.</p>
+                          </div>
+                        </div>
+                      </section>
+          </div>
+          <div class="well-footer">
+            <p class="well-depth" aria-live="polite">Layer 00 of 05 · Surface</p>
+            <button class="well-deeper" type="button">Go deeper: 01 Research</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ROOM 05 — THE DECISION LAB ============ -->
+    <section id="decision-lab" class="room room--lab" data-theme="light" data-room-name="The Decision Lab" data-room-num="05" aria-labelledby="lab-title">
+      <header class="room-head">
+        <p class="room-num" aria-hidden="true">05</p>
+        <div>
+          <p class="placard-line" data-reveal>Room 05</p>
+          <h2 id="lab-title" class="room-title" data-reveal>The Decision Lab</h2>
+          <p class="room-intro" data-reveal>
+            Your turn. Each experiment is a real trade-off from my work. Neither option is wrong.
+            Both cost someone something. Choose, and see who pays.
+          </p>
+        </div>
+      </header>
+
+      <div class="lab">
+        <div class="lab-tabs" role="tablist" aria-label="Experiments">
+          <button role="tab" id="tab-a" aria-controls="lab-panel" aria-selected="true" data-exp="0"><span>Experiment A</span>Speed or clarity</button>
+          <button role="tab" id="tab-b" aria-controls="lab-panel" aria-selected="false" tabindex="-1" data-exp="1"><span>Experiment B</span>Simplicity or flexibility</button>
+          <button role="tab" id="tab-c" aria-controls="lab-panel" aria-selected="false" tabindex="-1" data-exp="2"><span>Experiment C</span>Automation or control</button>
+        </div>
+
+        <div class="lab-panel" id="lab-panel" role="tabpanel" aria-labelledby="tab-a" tabindex="0">
+          <div class="lab-brief">
+            <p class="lab-situation-label">The situation</p>
+            <p class="lab-situation"></p>
+            <fieldset class="lab-choices">
+              <legend class="lab-question"></legend>
+              <div class="choice-row"></div>
+            </fieldset>
+          </div>
+
+          <div class="lab-apparatus" aria-hidden="true">
+            <svg class="scale" viewBox="0 0 320 210">
+              <path class="scale-post" d="M160 46v136M120 196h80M132 182h56"/>
+              <circle cx="160" cy="46" r="6" class="scale-pivot"/>
+              <g class="scale-beam">
+                <path d="M40 46h240" class="scale-bar"/>
+                <g class="scale-pan scale-pan--l">
+                  <path d="M40 46l-26 64M40 46l26 64" class="scale-string"/>
+                  <path d="M6 110h68a34 14 0 0 1-68 0z" class="scale-dish"/>
+                  <text x="40" y="136" text-anchor="middle" class="scale-label scale-label--l"></text>
+                </g>
+                <g class="scale-pan scale-pan--r">
+                  <path d="M280 46l-26 64M280 46l26 64" class="scale-string"/>
+                  <path d="M246 110h68a34 14 0 0 1-68 0z" class="scale-dish"/>
+                  <text x="280" y="136" text-anchor="middle" class="scale-label scale-label--r"></text>
+                </g>
+              </g>
+            </svg>
+            <div class="specimen"><div class="specimen-screen"></div></div>
+          </div>
+
+          <div class="lab-results" aria-live="polite">
+            <p class="lab-empty">Make a choice to see its consequences.</p>
+            <div class="lab-outcome" hidden>
+              <p class="lab-situation-label">Consequences</p>
+              <ul class="meters" role="list"></ul>
+              <p class="lab-human"></p>
+              <div class="curator">
+                <p class="lab-situation-label">Curator’s note</p>
+                <p class="curator-text"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <noscript><p class="lab-noscript">The Decision Lab needs JavaScript to run its experiments. The trade-offs it explores are speed against clarity, simplicity against flexibility, and automation against human control.</p></noscript>
+      </div>
+    </section>
+
+    <!-- ============ ROOM 06 — THE IMPACT GALLERY ============ -->
+    <section id="impact-gallery" class="room room--impact" data-theme="dark" data-room-name="The Impact Gallery" data-room-num="06" aria-labelledby="impact-title">
+      <header class="room-head">
+        <p class="room-num" aria-hidden="true">06</p>
+        <div>
+          <p class="placard-line" data-reveal>Room 06</p>
+          <h2 id="impact-title" class="room-title" data-reveal>The Impact Gallery</h2>
+          <p class="room-intro" data-reveal>
+            Numbers on a slide are easy to nod at. These installations try to give them weight,
+            so you can feel the scale of what changed.
+          </p>
+        </div>
+      </header>
+
+      <div class="installations">
+        <figure class="installation" data-install="lights">
+          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+          <figcaption class="install-card">
+            <p class="install-no">Installation 6.1 &nbsp;·&nbsp; 1,000 lights</p>
+            <p class="install-figure"><span class="count" data-to="1000">1,000</span></p>
+            <p class="install-text">Each light is one patient a day who now books an appointment without making a phone call. Six months after launch, that number reached a thousand.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="installation" data-install="maze">
+          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+          <figcaption class="install-card">
+            <p class="install-no">Installation 6.2 &nbsp;·&nbsp; The shrinking maze</p>
+            <p class="install-figure"><span class="count count--pct" data-from="38" data-to="12">12</span>%</p>
+            <p class="install-text">Checkout drop-off fell from 38% to 12%. The maze loses its dead ends as you scroll, the way the journey lost its unnecessary turns.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="installation" data-install="paths">
+          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+          <figcaption class="install-card">
+            <p class="install-no">Installation 6.3 &nbsp;·&nbsp; Flowing pathways</p>
+            <p class="install-figure"><span class="count" data-to="11400">11,400</span> hours</p>
+            <p class="install-text">Time given back to clinicians each year, once drafting routine replies stopped being their job. Watch the tangled routes straighten into direct ones.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ ROOM 07 — THE REFLECTION ROOM ============ -->
+    <section id="reflection-room" class="room room--reflection" data-theme="dark" data-room-name="The Reflection Room" data-room-num="07" aria-labelledby="reflection-title">
+      <div class="reflection-inner">
+        <p class="placard-line" data-reveal>Room 07 &nbsp;·&nbsp; The Reflection Room</p>
+        <h2 id="reflection-title" class="reflection-statement">Every interface changes a human story.</h2>
+        <p class="reflection-coda" data-reveal>
+          My work is not finished when screens launch.<br>
+          My work is finished when humans succeed.
+        </p>
+
+        <div class="guestbook" data-reveal>
+          <p class="guestbook-label">The guestbook</p>
+          <!-- Replace with your real contact details -->
+          <a class="guestbook-mail" href="mailto:hello@example.com">hello@example.com</a>
+          <ul class="guestbook-links" role="list">
+            <li><a href="https://www.linkedin.com/" rel="noopener">LinkedIn</a></li>
+            <li><a href="#" rel="noopener">Résumé (PDF)</a></li>
+            <li><a href="https://read.cv/" rel="noopener">Read.cv</a></li>
+          </ul>
+        </div>
+
+        <p class="visit-summary" data-reveal aria-live="off"></p>
+        <a class="back-to-entrance" href="#entrance">Return to the entrance</a>
+      </div>
+      <footer class="colophon">
+        <p>© 2026 Girish Dunga. Exhibition designed and built by hand. No visitors were tracked.</p>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Project story dialog -->
+  <dialog class="exhibit-dialog" id="exhibit-dialog" aria-labelledby="dlg-title">
+    <div class="dlg-inner">
+      <button class="dlg-close" type="button" aria-label="Close this story and return to the wall">
+        <span aria-hidden="true">Return to the wall</span>
+      </button>
+      <div class="dlg-content"></div>
+    </div>
+  </dialog>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
