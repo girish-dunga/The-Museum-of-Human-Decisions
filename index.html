@@ -27,8 +27,12 @@
   <div class="grain" aria-hidden="true"></div>
 
 
-  <!-- Museum header: badge and museum name -->
+  <!-- Museum header: where you are on the left, the badge in the centre, the way out on the right -->
   <header class="museum-bar" data-theme="dark">
+    <div class="bar-left">
+      <p class="brand-tagline">The Museum of Human Decisions</p>
+      <p class="bar-here" aria-hidden="true"><span class="bar-here-no">01</span><span class="bar-here-of">/ 07</span><span class="bar-here-name">The Entrance</span></p>
+    </div>
     <div class="brand">
       <a class="wordmark" href="#entrance" aria-label="Girish Dunga. UX designer, product thinker, experience creator. Back to the entrance">
         <svg class="badge" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
@@ -45,8 +49,24 @@
           </svg>
         </svg>
       </a>
-      <p class="brand-tagline">The Museum of Human Decisions</p>
     </div>
+    <nav class="bar-nav" aria-label="Quick links">
+      <a class="bar-link bar-link--text" href="#case-studies" data-open-index>Case studies</a>
+      <a class="bar-link bar-link--text" href="#contact">Contact</a>
+      <div class="rooms-menu">
+        <button class="bar-link rooms-toggle" type="button" aria-expanded="false" aria-controls="rooms-list">Rooms</button>
+        <ol class="rooms-list" id="rooms-list" hidden>
+          <li><a href="#entrance"><span>01</span>The Entrance</a></li>
+          <li><a href="#human-room"><span>02</span>The Human Room</a></li>
+          <li><a href="#evidence-wall"><span>03</span>Evidence Wall</a></li>
+          <li><a href="#invisible-work"><span>04</span>The Invisible Work</a></li>
+          <li><a href="#decision-lab"><span>05</span>The Decision Lab</a></li>
+          <li><a href="#impact-gallery"><span>06</span>The Impact Gallery</a></li>
+          <li><a href="#reflection-room"><span>07</span>The Reflection Room</a></li>
+        </ol>
+      </div>
+    </nav>
+    <span class="bar-progress" aria-hidden="true"></span>
   </header>
 
   <nav class="floorplan" aria-label="Floor plan">
@@ -85,6 +105,9 @@
           <span class="walk-in-text">Walk through my thinking</span>
           <span class="walk-in-steps" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
         </a>
+        <p class="entrance-alt" data-reveal>
+          Short on time? <a href="#case-studies" data-open-index>Go straight to the case studies</a>
+        </p>
       </div>
 
       <p class="admission" aria-hidden="true">Admission free &nbsp;·&nbsp; Seven rooms &nbsp;·&nbsp; About six minutes</p>
@@ -106,21 +129,41 @@
 
       <div class="hr" data-hr>
         <div class="hr-controls">
-          <button class="hr-nav hr-prev" type="button" aria-label="Previous moment">&larr;</button>
-          <div class="hr-dots" role="group" aria-label="Choose a moment">
-            <button class="hr-dot" type="button" aria-current="true">01 · The patient</button>
-            <button class="hr-dot" type="button" aria-current="false">02 · The parent</button>
-            <button class="hr-dot" type="button" aria-current="false">03 · The commuter</button>
-            <button class="hr-dot" type="button" aria-current="false">04 · Under stress</button>
+          <div class="hr-bar">
+            <!-- One kind of moment at a time: the toggle switches the row below -->
+            <div class="hr-switch" role="tablist" aria-label="Kind of moment" data-kind="human">
+              <button class="hr-tab" type="button" role="tab" id="hr-tab-human" aria-controls="hr-group-human" aria-selected="true" data-tab="human" aria-label="Human moments">Human <span class="hr-tab-n" data-n></span></button>
+              <button class="hr-tab" type="button" role="tab" id="hr-tab-ai" aria-controls="hr-group-ai" aria-selected="false" tabindex="-1" data-tab="ai" aria-label="AI moments">AI <span class="hr-tab-n" data-n></span></button>
+            </div>
+            <div class="hr-steps">
+              <button class="hr-nav hr-prev" type="button" aria-label="Previous moment">&larr;</button>
+              <p class="hr-count" aria-live="polite">1 / 8</p>
+              <button class="hr-nav hr-next" type="button" aria-label="Next moment">&rarr;</button>
+            </div>
           </div>
-          <button class="hr-nav hr-next" type="button" aria-label="Next moment">&rarr;</button>
-          <p class="hr-count" aria-live="polite">1 / 4</p>
+          <!-- The index is built from the slides below: each one says its name and its kind -->
+          <div class="hr-index">
+            <div class="hr-group" data-group="human" id="hr-group-human" role="tabpanel" aria-labelledby="hr-tab-human">
+              <div class="hr-rail">
+                <button class="hr-scroll hr-scroll--back" type="button" aria-label="Show earlier moments" tabindex="-1" hidden>&larr;</button>
+                <div class="hr-dots" role="group" aria-label="Human moments"></div>
+                <button class="hr-scroll hr-scroll--more" type="button" tabindex="-1" hidden><span data-more></span> &rarr;</button>
+              </div>
+            </div>
+            <div class="hr-group" data-group="ai" id="hr-group-ai" role="tabpanel" aria-labelledby="hr-tab-ai" hidden>
+              <div class="hr-rail">
+                <button class="hr-scroll hr-scroll--back" type="button" aria-label="Show earlier moments" tabindex="-1" hidden>&larr;</button>
+                <div class="hr-dots" role="group" aria-label="AI moments"></div>
+                <button class="hr-scroll hr-scroll--more" type="button" tabindex="-1" hidden><span data-more></span> &rarr;</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="hr-track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Human moments. Use the arrow keys, the buttons or swipe to move between them.">
 
-          <!-- 01 · The patient: choose a slot while the hold timer runs -->
-          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="1 of 4: The patient">
+          <!-- The patient: choose a slot while the hold timer runs -->
+          <article class="hr-slide" data-case="patient" data-name="The patient" data-kind="human" role="group" aria-roledescription="slide" aria-label="The patient">
             <div class="hr-stage hr-unfold">
               <p class="hr-kicker">Northfield Clinic · Today</p>
               <div class="hr-hold"><span>On hold</span><b class="hr-timer" data-timer>00:23</b></div>
@@ -145,10 +188,59 @@
                 <p>Show real availability first, before asking who you are. Booking became three taps, and the morning phone queue fell by 41%.</p>
               </div>
             </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">CareLine · Healthcare · 9 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>CareLine, online booking for Northfield Clinics, 14 practices</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 researcher, 6 engineers</dd></div>
+                    <div><dt>Method</dt><dd>22 interviews, two weeks in waiting rooms and on reception phones</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The phone line was the only door, and it was open for 40 minutes a day.</h4>
+                      <p>More than 300 people called at 07:00 for the same handful of appointments. Older patients, carers and shift workers were hit hardest, because they had no other way in.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Most callers already knew what they needed. What they lacked was visibility: nobody could see whether an appointment existed before committing to the queue. In the old online flow, 40% left before they ever saw a time slot.</p>
+                      <blockquote class="hr-case-quote">“I book at 7am because that’s when I’m brave enough to call.”<cite>Participant 07, age 68</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Availability before identity. Real slots are shown first, and details are asked for only once a time is chosen.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Booking by chatbot. Three of eight participants gave up partway through the conversation.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A paid reminder upgrade on the confirmation screen. I argued for it, and I was wrong.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>A three-tap booking flow, one reminder the evening before, and symptoms described in the patient’s own words. The phone line stayed open for the people who need it most.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>−41%</b>calls to the morning queue within three months</li>
+                        <li><b>3 taps</b>to book from the home screen, down from 11</li>
+                        <li><b>1,000</b>patients a day booking without calling, by month six</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d bring receptionists into co-design from week one, not week six. They knew the edge cases better than any dataset.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
           </article>
 
-          <!-- 02 · The parent: tap each dose as it is given -->
-          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="2 of 4: The parent">
+          <!-- The parent: tap each dose as it is given -->
+          <article class="hr-slide" data-case="parent" data-name="The parent" data-kind="human" role="group" aria-roledescription="slide" aria-label="The parent">
             <div class="hr-stage hr-unfold">
               <p class="hr-kicker">Aria’s medicine · Today</p>
               <p class="hr-q">Tap a dose each time it is given</p>
@@ -172,10 +264,59 @@
                 <p>Design for the household, not the individual. One shared timeline that answers a single question at 2am: <em>has it been given?</em></p>
               </div>
             </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">CareLine Household · Healthcare · 10 weeks</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Shared medicine timeline, an extension of CareLine</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>1 designer, 1 researcher, 3 engineers, 1 pharmacist</dd></div>
+                    <div><dt>Method</dt><dd>Two-week diary study with 12 households, 6 home visits</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>Medicine is given by a household, but every tool assumed one person.</h4>
+                      <p>A course of antibiotics for a child passes between two or three adults over several days. The record lived on fridge notes, in text messages and in memory, and it failed at exactly the moment it mattered: at night, when one adult was asleep.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Nobody wanted reminders. They wanted an answer to one question, has it been given, without waking anyone up. Eight of twelve households described at least one near miss in the past year.</p>
+                      <blockquote class="hr-case-quote">“Nobody in my house trusts an app to remember. The calendar stays on the fridge.”<cite>Participant 15, household of four</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>One shared list with a name on every dose, so the answer is readable in a glance.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Per-person accounts with notifications to the other adult. It woke people up and still left the question open.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A dose calculator. The pharmacist showed us it moved risk from the label to our screen.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>A single timeline per child, visible to every adult in the household. One tap records a dose and who gave it. A dose can be corrected, and the correction is shown, never hidden.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>2 taps</b>to record a dose, from a locked phone</li>
+                        <li><b>71%</b>of households had a second adult join in the first week</li>
+                        <li><b>0</b>double doses reported in the eight-week pilot</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d test with grandparents and childminders sooner. The household was always bigger than the two parents we recruited.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
           </article>
 
-          <!-- 03 · The commuter: switch between the full board and one next step -->
-          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="3 of 4: The commuter">
+          <!-- The commuter: switch between the full board and one next step -->
+          <article class="hr-slide" data-case="commuter" data-name="The commuter" data-kind="human" role="group" aria-roledescription="slide" aria-label="The commuter">
             <div class="hr-stage hr-unfold">
               <p class="hr-kicker">Monday, 07:58 · Kingsford line</p>
               <div class="hr-seg" role="group" aria-label="How much to show">
@@ -207,10 +348,59 @@
                 <p>Remove everything that isn’t the next action. One number, one instruction, one countdown. Fewer screens, read faster.</p>
               </div>
             </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Kingsford Line · Transport · 5 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Live departures for the Kingsford Line app</dd></div>
+                    <div><dt>My role</dt><dd>Product designer</dd></div>
+                    <div><dt>Team</dt><dd>1 designer, 1 content designer, 4 engineers</dd></div>
+                    <div><dt>Method</dt><dd>30 shadowed commutes, glance tests at 1.5 seconds</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The departure board was complete, accurate and unreadable at walking speed.</h4>
+                      <p>The app copied the station board: every service, every platform, every note. A platform change appeared as one more row among many, at the moment when people had the least attention to spare.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>People walking through a station look at their phone for about a second and a half at a time. In glance tests, fewer than half could name their platform from the old screen after one look.</p>
+                      <blockquote class="hr-case-quote">“I don’t read it. I look for my number, and if I can’t find it I follow the crowd.”<cite>Commuter, shadowed journey 11</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>One next action for the journey you are on: platform, walking time, which way to turn.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Colour-coded rows on the full board. Faster to scan, still too much to scan.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Push alerts for every platform change. People had muted them by day three.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>A “next step” view that opens by default during a saved commute, with the full board one tap away. Platform changes replace the instruction on screen instead of adding a line to it.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>3 sec</b>to find the right platform, down from 11</li>
+                        <li><b>−27%</b>missed-connection complaints in the first quarter</li>
+                        <li><b>1 screen</b>instead of four for a changed platform</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d design the full board and the next step together. Shipping them a release apart made the simple view feel like a mode, not the default.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
           </article>
 
-          <!-- 04 · Under stress: keep trying, and watch the errors give way to something calm -->
-          <article class="hr-slide" role="group" aria-roledescription="slide" aria-label="4 of 4: The person under stress">
+          <!-- Under stress: keep trying, and watch the errors give way to something calm -->
+          <article class="hr-slide" data-case="stress" data-name="Under stress" data-kind="human" role="group" aria-roledescription="slide" aria-label="The person under stress">
             <div class="hr-stage hr-unfold">
               <p class="hr-kicker">Sunday, 23:16 · Flood claim</p>
               <p class="hr-q">Upload the photos of the damage</p>
@@ -229,6 +419,768 @@
                 <p class="decision-label">The decision</p>
                 <p>Errors should lower someone’s heart rate. Say what is safe first, then what happened, then exactly one next step, and a human name.</p>
               </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Fairweather Insurance · Claims · 4 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Home claims journey for Fairweather Insurance</dd></div>
+                    <div><dt>My role</dt><dd>Senior product designer</dd></div>
+                    <div><dt>Team</dt><dd>1 designer, 1 content designer, 5 engineers, claims handlers</dd></div>
+                    <div><dt>Method</dt><dd>14 recorded claim calls, 9 interviews after a claim</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The error messages were written for the system, at the worst hour of someone’s year.</h4>
+                      <p>After a flood, people upload dozens of large photos on a weak connection. Uploads failed often, and every failure said the same thing: something went wrong. Many people assumed their whole claim was gone and started again from the first page.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>On the recorded calls, the first question was almost never about the error. It was “have I lost everything?” People under stress read a vague message as blame, and a blank one as loss.</p>
+                      <blockquote class="hr-case-quote">“I didn’t know if I’d broken it or if it had broken. I just closed it and cried.”<cite>Claimant, interview 4</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>A fixed order for every error: what is safe, what happened, one next step, a named person.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A friendlier tone on the same vague message. Warm words with no information tested worse.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Error codes for support. Useful to us, frightening to read.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>Uploads now retry by themselves and save after each photo. When something does fail, the message starts with what has been kept, and offers a direct line to a handler who can already see the claim.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>81%</b>of claims completed online, up from 58%</li>
+                        <li><b>−33%</b>repeat calls about the same claim</li>
+                        <li><b>0</b>claims restarted from page one after an upload error</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d fix the upload before rewriting the message. The best error is still the one nobody has to read.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The reader: grow the text and see which layout survives -->
+          <article class="hr-slide" data-case="reader" data-name="The reader" data-kind="human" role="group" aria-roledescription="slide" aria-label="The reader">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Harbour Bank · Margaret’s phone</p>
+              <p class="hr-q">Set the text to the size Margaret reads at</p>
+              <div class="hr-size">
+                <label for="hr-size-range">Text size</label>
+                <output id="hr-size-val" for="hr-size-range">100%</output>
+              </div>
+              <input id="hr-size-range" class="dig-range" type="range" min="100" max="200" step="25" value="100">
+              <div class="hr-seg" role="group" aria-label="Which layout">
+                <button class="hr-mode" type="button" data-layout="fixed" aria-pressed="true">Old layout</button>
+                <button class="hr-mode" type="button" data-layout="fluid" aria-pressed="false">Reflowing layout</button>
+              </div>
+              <div class="hr-screen" data-layout="fixed">
+                <span class="hr-bal-k">Current account</span>
+                <span class="hr-bal-v">£1,284.60</span>
+                <div class="hr-bal-row"><span>Pension credit</span><span>+£201.05</span></div>
+                <div class="hr-bal-row"><span>Gas and electricity</span><span>−£86.40</span></div>
+              </div>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.5</p>
+              <h3 class="moment-title">The reader</h3>
+              <p class="moment-time">Wednesday, 16:20 · glasses in the other room</p>
+              <div class="moment-story">
+                <p>Margaret is 74 and keeps her phone’s text at the largest size, because that is the size she can read. She opens her bank to check that her pension has arrived. The balance is there. She just can’t see the end of it.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Design at 200% first, then scale down. A layout that survives the largest text survives everything smaller.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Harbour Bank · Accessibility · 6 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Large-text redesign of the Harbour Bank mobile app</dd></div>
+                    <div><dt>My role</dt><dd>Senior product designer, accessibility lead</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 6 engineers, 1 accessibility specialist</dd></div>
+                    <div><dt>Method</dt><dd>11 sessions with customers aged 65 and over, audit of 38 screens at 200%</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The app worked perfectly at the one text size its designers used.</h4>
+                      <p>Every screen had been designed and reviewed at the default size. At the largest system setting, balances were cut off mid-number, buttons overlapped, and two screens could not be completed at all.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Almost a quarter of customers had increased their phone’s text size. They were not a special case. They were one of the largest groups we had, and they were the most likely to phone a branch instead.</p>
+                      <blockquote class="hr-case-quote">“I can see there’s money in there. I just can’t see how much.”<cite>Customer, age 74, session 6</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Designing at 200% first, then scaling down. Rows stack, amounts wrap, nothing has a fixed height.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A separate “simple mode”. People did not want a different app, they wanted this one to listen to their phone.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Capping text at 130% to protect the layout. It protected the layout and nobody else.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>Every core journey rebuilt on a reflowing layout, with large text checked in design review and in automated tests. No setting to find: the app follows the size the phone is already set to.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>38 of 38</b>core screens usable at 200% text, up from 9</li>
+                        <li><b>23%</b>of customers use a larger text size</li>
+                        <li><b>−18%</b>branch calls asking for a balance</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d put large text in the definition of done from the first sprint. Retrofitting 38 screens cost far more than building them right.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The nurse: a handover that is interrupted, and picks up where it stopped -->
+          <article class="hr-slide" data-case="nurse" data-name="The nurse" data-kind="human" role="group" aria-roledescription="slide" aria-label="The nurse">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Ward 6B · Night handover</p>
+              <p class="hr-q">Hand over bed 12 before the shift ends</p>
+              <ol class="hr-checks" role="list">
+                <li class="hr-item" data-state="todo"><span>Allergies confirmed</span><span class="hr-item-state">To do</span></li>
+                <li class="hr-item" data-state="todo"><span>22:00 medication given</span><span class="hr-item-state">To do</span></li>
+                <li class="hr-item" data-state="todo"><span>Fluid chart up to date</span><span class="hr-item-state">To do</span></li>
+                <li class="hr-item" data-state="todo"><span>Pain score recorded</span><span class="hr-item-state">To do</span></li>
+                <li class="hr-item" data-state="todo"><span>Family informed</span><span class="hr-item-state">To do</span></li>
+              </ol>
+              <div class="hr-bell" hidden>
+                <p class="hr-kicker">Call bell</p>
+                <p class="hr-big">Bed 4</p>
+                <p class="hr-note">You put the tablet down and go.</p>
+              </div>
+              <button class="hr-try" type="button">Confirm next check</button>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.6</p>
+              <h3 class="moment-title">The nurse</h3>
+              <p class="moment-time">Friday, 06:50 · ten minutes to handover</p>
+              <div class="moment-story">
+                <p>Jo has six patients to hand over and ten minutes to do it. A call bell goes off halfway through bed 12. When she comes back, the screen has timed out and the form is empty.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Assume every task will be interrupted. Save each step as it is made, and bring people back to the exact place they left.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Ward Handover · Clinical tools · 7 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Nursing handover for a 420-bed hospital</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>1 designer, 1 clinical lead, 4 engineers</dd></div>
+                    <div><dt>Method</dt><dd>6 night shifts shadowed, 41 handovers observed</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The form assumed ten quiet minutes. Nobody on a ward has ten quiet minutes.</h4>
+                      <p>Handover was a single long form that saved only at the end and timed out after three minutes. Nurses were interrupted partway through most handovers, came back to an empty screen, and went back to paper.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>We counted an interruption roughly every six minutes. The paper sheet survived because it stayed exactly as it was left. The software lost to a piece of paper on the one thing that mattered.</p>
+                      <blockquote class="hr-case-quote">“I’ll do it properly on paper and badly on the computer, because paper waits for me.”<cite>Staff nurse, night shift 3</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Each check saves the moment it is confirmed, and the screen reopens where you stopped.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A longer timeout. It hid the problem for five more minutes and raised a privacy concern.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Voice entry. Wards are loud, and patients are listening.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>Handover as a short list of checks per patient, each saved separately. After an interruption the nurse returns to the exact check, with a marker that says so. Paper sheets were withdrawn by the wards themselves.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>−62%</b>handover items left blank</li>
+                        <li><b>9 min</b>average handover per nurse, down from 14</li>
+                        <li><b>0</b>forms lost to a timeout since launch</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d shadow night shifts before day shifts. The hardest conditions were where the real design brief was.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The sender: a warning before, or a way back after -->
+          <article class="hr-slide" data-case="sender" data-name="The sender" data-kind="human" role="group" aria-roledescription="slide" aria-label="The sender">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Send money · London to Lagos</p>
+              <p class="hr-q">Send £200 to Mum</p>
+              <div class="hr-seg" role="group" aria-label="How the app protects you">
+                <button class="hr-mode" type="button" data-guard="confirm" aria-pressed="true">Ask “Are you sure?”</button>
+                <button class="hr-mode" type="button" data-guard="undo" aria-pressed="false">Offer an undo</button>
+              </div>
+              <div class="hr-next-step">
+                <p class="hr-kicker">To</p>
+                <p class="hr-result-h">Folake Adeyemi</p>
+                <p class="hr-note">Account ending 4471. Arrives in minutes.</p>
+              </div>
+              <button class="hr-try" type="button">Send £200</button>
+              <p class="hr-count-down" hidden>Sending in <b data-undo>10 sec</b></p>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.7</p>
+              <h3 class="moment-title">The sender</h3>
+              <p class="moment-time">Saturday, 19:05 · first transfer abroad</p>
+              <div class="moment-story">
+                <p>Amara is sending £200 to her mother in Lagos for the first time. Her thumb hovers over Send. The app asks “Are you sure?”, which is the one question she can’t answer.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Replace the warning with a way back. A ten-second undo does what a confirmation box only pretends to do.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Sendwell · Fintech · 5 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>First-transfer journey for Sendwell, international payments</dd></div>
+                    <div><dt>My role</dt><dd>Product designer</dd></div>
+                    <div><dt>Team</dt><dd>1 designer, 1 researcher, 5 engineers, compliance</dd></div>
+                    <div><dt>Method</dt><dd>18 interviews with first-time senders, funnel analysis of 40,000 transfers</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>We asked “Are you sure?” at the moment people were least able to answer.</h4>
+                      <p>A first transfer abroad feels irreversible, and the app agreed. The confirmation screen repeated the warning and offered no new information. Nearly four in ten first-time senders stopped there.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>People were not unsure about the amount. They were afraid of a mistake they would only discover afterwards. Several had sent a small test payment first, paying the fee twice for peace of mind.</p>
+                      <blockquote class="hr-case-quote">“It asked if I was sure. If I was sure I wouldn’t be reading it three times.”<cite>First-time sender, interview 12</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>A ten-second undo after sending, while the money has not yet left the account.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A second confirmation with the details repeated. More to read, same fear.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Typing the recipient’s name to confirm. Accurate, and exhausting on a phone.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>One review screen, then send. A clear countdown offers a way back, and the recipient’s name is checked against the receiving bank before the button is enabled.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>78%</b>of first transfers completed, up from 61%</li>
+                        <li><b>−44%</b>support contacts about a wrong recipient</li>
+                        <li><b>2.1%</b>of transfers undone, almost all for a mistyped amount</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d involve compliance at the sketch stage. Their concern was valid, and the hold period that answered it was their idea.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The field worker: record visits with no signal, and watch them send themselves -->
+          <article class="hr-slide" data-case="fieldWorker" data-name="The field worker" data-kind="human" role="group" aria-roledescription="slide" aria-label="The field worker">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">Village round · Tuesday</p>
+              <p class="hr-q">Record each visit as you walk</p>
+              <div class="hr-seg" role="group" aria-label="Phone signal">
+                <button class="hr-mode" type="button" data-signal="false" aria-pressed="true">No signal</button>
+                <button class="hr-mode" type="button" data-signal="true" aria-pressed="false">Signal</button>
+              </div>
+              <button class="hr-try" type="button">Record a visit</button>
+              <ul class="hr-queue" role="list"></ul>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.8</p>
+              <h3 class="moment-title">The field worker</h3>
+              <p class="moment-time">Tuesday, 11:30 · no signal since the main road</p>
+              <div class="moment-story">
+                <p>Asha visits nine households a day on foot. The app needs a connection to save, and the nearest one is an hour away. So she writes everything on paper and types it all in again at night.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Save to the phone first, and say so in plain words. Sending becomes the app’s job, not hers.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Fieldnote · Public health · 8 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Fieldnote, visit records for community health workers</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 researcher, 4 engineers, district health office</dd></div>
+                    <div><dt>Method</dt><dd>Three weeks walking rounds in 5 districts, 26 health workers</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The app needed a connection to save, in places that had none.</h4>
+                      <p>Health workers recorded visits on paper during the day and typed them in at night, where there was signal. Records arrived late, some never arrived, and every visit was written twice.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Nobody distrusted the app. They distrusted the spinner. With no way to tell whether a record was safe, the sensible choice was to keep paper as the real record and treat the phone as a chore.</p>
+                      <blockquote class="hr-case-quote">“If it spins, I don’t know if it has my work or not. Paper never spins.”<cite>Health worker, district 3</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Save to the phone first, and say where each record is in plain words.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A sync button. It made the health worker responsible for the network.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A banner that said “offline”. True, and no help in deciding what to do next.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>Every record saves on the phone at once and sends itself when a signal appears. Each visit carries one of two labels, saved on this phone or sent to the clinic, and nothing else needs managing.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>0.4%</b>of records lost to sync errors, down from 9%</li>
+                        <li><b>88%</b>of visits reported the same day, up from 34%</li>
+                        <li><b>1×</b>each visit written once, not twice</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d test on the phones the workers actually carry. Our first build was fast on our devices and slow on theirs.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The hiring lead: an AI agent recommends a panel, and shows why -->
+          <article class="hr-slide" data-case="panel" data-name="The hiring lead" data-kind="ai" role="group" aria-roledescription="slide" aria-label="The hiring lead">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">AI agent · Panel for a senior backend engineer</p>
+              <p class="hr-q">Choose what the agent should weigh</p>
+              <div class="hr-seg" role="group" aria-label="What the agent weighs">
+                <button class="hr-mode" type="button" data-factor="skills" aria-pressed="true">Skills match</button>
+                <button class="hr-mode" type="button" data-factor="avail" aria-pressed="true">Availability</button>
+                <button class="hr-mode" type="button" data-factor="load" aria-pressed="false">Interview load</button>
+                <button class="hr-mode" type="button" data-factor="persp" aria-pressed="false">Different perspective</button>
+              </div>
+              <ol class="hr-checks" role="list" data-panel></ol>
+              <p class="hr-hint">The agent starts with skills and availability only. Switch on interview load and watch the panel change.</p>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.9 · AI</p>
+              <h3 class="moment-title">The hiring lead</h3>
+              <p class="moment-time">Monday, 09:15 · 12 roles open, 3 panels short</p>
+              <div class="moment-story">
+                <p>Nadia needs a three-person panel for a backend role by Thursday. She knows who is good: the same five people she always asks, who are also the most exhausted. An AI agent offers to choose for her. She won’t trust a list she can’t question.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>The agent recommends and the recruiter decides. Every suggestion shows its reasons, every factor can be switched off, and spreading the load is on by default.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Panelwise · AI · HR tech · 6 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Panelwise, an AI agent that recommends interview panels, for a hiring platform running 2,400 interviews a quarter</dd></div>
+                    <div><dt>My role</dt><dd>Lead product designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 researcher, 1 data scientist, 5 engineers, the people team</dd></div>
+                    <div><dt>Method</dt><dd>16 interviews with recruiters and hiring managers, an audit of 9,000 past panels, 3 rounds of Wizard-of-Oz tests</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>Panels were put together from memory, and memory picks the same people.</h4>
+                      <p>Recruiters spent around 40 minutes per role finding interviewers who had the right skills, were free, and had not been asked too often. One in eight interviewers carried a third of all interviews. Panels were rescheduled often, and candidates noticed.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Recruiters did not want the AI to choose for them. They wanted it to do the searching and show its working. In Wizard-of-Oz tests, unexplained suggestions were overridden 70% of the time. The same suggestions with reasons attached were accepted three times as often.</p>
+                      <blockquote class="hr-case-quote">“If it can’t tell me why Priya, I’ll pick Priya myself, and at least I’ll know why.”<cite>Recruiter, interview 5</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Ranked suggestions with the top reasons in plain words, and factors the recruiter can switch on and off.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Interview load on by default, so the same experts are not booked every week.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Booking the top panel automatically. Fast, but nobody owned the choice, and interviewers declined more invites.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A single match score with no breakdown. People trusted it until it was wrong once, then stopped trusting it altogether.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>The agent suggests a panel with reasons, availability already checked, and a warning when someone is overloaded. The recruiter changes the factors, swaps anyone and books. Every override is logged and used to improve the next suggestion. Names and personal characteristics are never used for ranking. Perspective comes from team, function and each interviewer’s own stated focus.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>6 min</b>to put a panel together, down from 40</li>
+                        <li><b>−52%</b>interview load on the 20 busiest interviewers</li>
+                        <li><b>84%</b>of suggested panels booked, with or without edits</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d treat the override log as a product feature from day one. Recruiters’ edits were the best training signal we had, and we started collecting them late.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The late-night searcher: AI symptom navigation, danger signs first -->
+          <article class="hr-slide" data-case="symptomNavigator" data-name="The late-night searcher" data-kind="ai" role="group" aria-roledescription="slide" aria-label="The late-night searcher">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">AI symptom navigator · Sunday, 23:40</p>
+              <p class="hr-kicker" data-step>Question 1 of 3</p>
+              <p class="hr-q" data-question>Is Yusuf showing any of these?</p>
+              <div class="hr-chips" data-answers></div>
+              <ol class="hr-checks" role="list" data-trail></ol>
+              <div class="hr-result" aria-live="polite"></div>
+              <button class="hr-try" type="button" hidden>Start again</button>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.10 · AI</p>
+              <h3 class="moment-title">The late-night searcher</h3>
+              <p class="moment-time">Sunday, 23:40 · 38.9°C and rising</p>
+              <div class="moment-story">
+                <p>Leila’s son has a fever and won’t settle. The out-of-hours line has a 45-minute wait. A search engine has already offered her meningitis, sepsis and a teething gel. She doesn’t need a diagnosis. She needs to know where to go, and how fast.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>The AI chooses a level of care, never a diagnosis. Fixed rules check for danger signs first, and when the model is unsure, it moves you up a level and tells you why.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Waypoint · AI · Healthcare · 10 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Waypoint, AI symptom navigation for a regional health service’s urgent care line</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 content designer, 3 clinicians, 1 ML engineer, 6 engineers, a clinical safety officer</dd></div>
+                    <div><dt>Method</dt><dd>24 interviews, 300 call recordings reviewed with nurses, safety testing against 1,200 clinical scenarios</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>People searched their symptoms at night, and the internet answered with the worst case.</h4>
+                      <p>The out-of-hours line had waits of up to 45 minutes. People either went to A&E with minor problems, or waited at home with serious ones because they did not want to make a fuss.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>People were not asking for a diagnosis. They wanted to know where to go and how fast. Nurses always asked about danger signs first, never about likely causes, and that order became the backbone of the design.</p>
+                      <blockquote class="hr-case-quote">“I don’t need to know what it is. I need to know if I should be worried tonight.”<cite>Parent, interview 9</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Answers framed as a level of care and a time, such as “speak to a nurse within an hour”, never as a diagnosis.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Danger signs asked first and handled by fixed clinical rules that the model cannot override.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>When the model’s confidence is low, it moves the person up one level of care and says so.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Free-text chat. It felt friendly, but people described symptoms vaguely and the model filled the gaps with guesses.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A list of possible conditions with percentages. People read it as a diagnosis, and it made them more anxious.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>A short guided set of questions, danger signs first. Every outcome shows the level of care, why, what to watch for, and one tap to reach a person. Each answer says whether it came from a safety rule or the model. Clinicians review a sample of conversations every week.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>4 min</b>median time to advice, against up to 45 minutes on hold</li>
+                        <li><b>−23%</b>non-urgent A&E visits in the pilot area</li>
+                        <li><b>0</b>emergencies missed in safety testing across 1,200 scenarios</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d test with people who speak English as a second language much earlier. Our plain language was plainer to us than it was to them.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The researcher: an AI research copilot, where every theme shows its evidence -->
+          <article class="hr-slide" data-case="researcher" data-name="The researcher" data-kind="ai" role="group" aria-roledescription="slide" aria-label="The researcher">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">AI research copilot · Study 14, 12 interviews</p>
+              <p class="hr-q">Pick a theme to see what it stands on</p>
+              <div class="hr-doses" data-themes>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>Fees feel hidden until checkout</span><span class="hr-dose-who">9 of 12</span></button>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>Text reminders are trusted more than the app</span><span class="hr-dose-who">6 of 12</span></button>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>People want to pay in instalments</span><span class="hr-dose-who">4 of 12</span></button>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>Users want a dark mode</span><span class="hr-dose-who">Weak · 1 of 12</span></button>
+              </div>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.11 · AI</p>
+              <h3 class="moment-title">The researcher</h3>
+              <p class="moment-time">Thursday, 17:30 · readout at 10 tomorrow</p>
+              <div class="moment-story">
+                <p>Kemi has twelve interview transcripts and a readout in the morning. An AI tool offers her eight themes in thirty seconds. They read well. She has no idea which of them she could defend when the product lead asks, “Who said that?”</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>No theme without its evidence. Every finding links to the people who said it, and thin evidence is marked, not hidden.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Synthesis · AI · Research operations · 6 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>An AI research copilot for a 40-person UX team in a product company</dd></div>
+                    <div><dt>My role</dt><dd>Lead product designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 2 researchers, 1 ML engineer, 4 engineers</dd></div>
+                    <div><dt>Method</dt><dd>12 researcher interviews, 8 synthesis sessions observed, tested against 3 past studies with known findings</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>Synthesis took longer than the research, and the findings rarely left the room.</h4>
+                      <p>Researchers spent two to three days tagging transcripts for every study. Past studies were buried in folders, so product teams commissioned research that already existed.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Researchers were not afraid of AI writing themes. They were afraid of themes they could not defend in front of a sceptical product manager. Every finding needed a quote, and a person behind the quote.</p>
+                      <blockquote class="hr-case-quote">“A theme without a quote is just my opinion with better formatting.”<cite>Senior researcher, interview 3</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Every theme links to the exact quotes and participants that support it, and shows how many.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Themes with thin evidence are marked, never hidden and never promoted.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A one-click executive summary. It read well, flattened nuance, and got quoted out of context.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Auto-tagging that rewrote researchers’ own tags. They lost ownership of their codebook.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>The copilot drafts themes from transcripts, links each one to its evidence, and flags themes with a single source. Researchers merge, rename or reject every theme before anything is shared. A study library answers “what do we already know?” using past research only, with every answer traced to a study.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>1 day</b>to synthesise a study, down from 3</li>
+                        <li><b>2.4×</b>more past studies reused by product teams</li>
+                        <li><b>0</b>themes shared without a linked quote</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d bring product managers into testing earlier. They were the real audience for the evidence links, and they asked for things researchers never would.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The engineer: an FSM copilot that ranks likely causes for this machine, one step at a time -->
+          <article class="hr-slide" data-case="engineer" data-name="The engineer" data-kind="ai" role="group" aria-roledescription="slide" aria-label="The engineer">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">FSM copilot · Job 4471 · Roof plant room</p>
+              <p class="hr-big">Fault E-47</p>
+              <p class="hr-q">Likely causes for this chiller</p>
+              <ol class="hr-checks" role="list" data-causes></ol>
+              <div class="hr-chips" data-acts>
+                <button class="hr-chip" type="button" data-act="fixed">Fixed it</button>
+                <button class="hr-chip" type="button" data-act="no">Didn’t fix it</button>
+              </div>
+              <button class="hr-try" type="button" hidden>Start the job again</button>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.12 · AI</p>
+              <h3 class="moment-title">The engineer</h3>
+              <p class="moment-time">Wednesday, 14:10 · on a roof, gloves on</p>
+              <div class="moment-story">
+                <p>Ollie is two years into the job, standing in front of a chiller showing a fault code he has never seen. The manual is 400 pages long. The engineer who knew this machine retired last spring.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Suggest causes for this machine, not machines in general. One step at a time, with the reason shown, and every “didn’t fix it” improves the next suggestion.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">FieldMate · AI · Field service management · 9 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>FieldMate, an AI copilot in a field service app for 1,800 HVAC and lift engineers</dd></div>
+                    <div><dt>My role</dt><dd>Lead UX designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 researcher, 2 data scientists, 7 engineers, field supervisors</dd></div>
+                    <div><dt>Method</dt><dd>14 ride-alongs, 600 job reports analysed, testing on site with gloves and plant-room noise</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>Engineers fixed faults from memory, and that memory retired with the senior engineers.</h4>
+                      <p>The first-time fix rate had stalled. Junior engineers phoned senior colleagues from the roof, and the manuals were 400-page PDFs on a phone screen.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>Engineers did not want a chatbot. They had gloves on, a noisy plant room and one free hand. They wanted the next most likely cause for this specific machine, and to know why the copilot thought so.</p>
+                      <blockquote class="hr-case-quote">“Don’t tell me what a chiller is. Tell me what this one did last time.”<cite>Senior engineer, ride-along 6</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Likely causes ranked from this asset’s history and similar fixes across the fleet, each with its reason.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>One step at a time, large targets, and steps read aloud.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>“Didn’t fix it” moves to the next cause, and is recorded so the next suggestion is better.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Free-text chat. Nobody types with gloves on.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Ordering parts automatically from the top suggestion. A wrong part costs a second visit.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>The copilot opens with the fault code and the asset’s history, ranks likely causes, and guides the engineer one step at a time. When the job is done, it drafts the report from what actually happened, for the engineer to check and sign.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>81%</b>first-time fix rate, up from 68%</li>
+                        <li><b>−45%</b>calls to senior engineers for help</li>
+                        <li><b>12 min</b>less paperwork per job</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d make the veteran engineers authors, not only testers. Their notes became the best training data, and once they were credited, the copilot felt like theirs.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </article>
+
+          <!-- The new joiner: an enterprise knowledge assistant that cites, flags conflicts and respects access -->
+          <article class="hr-slide" data-case="knowledge" data-name="The new joiner" data-kind="ai" role="group" aria-roledescription="slide" aria-label="The new joiner">
+            <div class="hr-stage hr-unfold">
+              <p class="hr-kicker">AI knowledge assistant · Company sources only</p>
+              <p class="hr-q">Ask the assistant something</p>
+              <div class="hr-doses" data-asks>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>How much parental leave do I get?</span><span class="hr-dose-who">Ask</span></button>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>Can I expense a desk chair for home?</span><span class="hr-dose-who">Ask</span></button>
+                <button class="hr-dose" type="button" data-state="0" aria-pressed="false"><span>What are the salary bands for my team?</span><span class="hr-dose-who">Ask</span></button>
+              </div>
+              <div class="hr-result" aria-live="polite"></div>
+            </div>
+            <div class="hr-text hr-unfold">
+              <p class="exhibit-no">Exhibit 2.13 · AI</p>
+              <h3 class="moment-title">The new joiner</h3>
+              <p class="moment-time">Second week · four tabs, four answers</p>
+              <div class="moment-story">
+                <p>Luis started two weeks ago. He has a simple question about parental leave and finds four pages that answer it differently. He doesn’t know which one is current, and he doesn’t want to ask his manager something he feels he should already know.</p>
+              </div>
+              <div class="moment-decision">
+                <p class="decision-label">The decision</p>
+                <p>Every answer shows where it came from and how old it is. When sources disagree, the assistant says so and finds the person who can settle it.</p>
+              </div>
+            </div>
+            <div class="hr-more hr-unfold">
+              <details class="hr-case">
+                <summary><span class="hr-case-cue">Read the full case study</span><span class="hr-case-sub">Compass · AI · Enterprise knowledge · 8 months</span></summary>
+                <div class="hr-case-body">
+                  <dl class="hr-case-meta">
+                    <div><dt>Project</dt><dd>Compass, an AI assistant across policies, wikis and tickets for a 12,000-person company</dd></div>
+                    <div><dt>My role</dt><dd>Senior product designer</dd></div>
+                    <div><dt>Team</dt><dd>2 designers, 1 content strategist, 3 ML engineers, 6 engineers, IT security, legal</dd></div>
+                    <div><dt>Method</dt><dd>20 interviews, 1,400 helpdesk tickets analysed, a six-week pilot with 600 employees</dd></div>
+                  </dl>
+                  <div class="hr-case-grid">
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">01 · The problem</p>
+                      <h4>The answer existed. It was in four places, and three of them were out of date.</h4>
+                      <p>Employees spent hours a week searching the intranet. HR and IT helpdesks answered the same questions again and again, and the old search confidently returned pages nobody had touched in years.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">02 · What the research said</p>
+                      <p>People trusted a colleague over a document, because a colleague would say “I’m not sure, check with Dev”. Trust came from knowing where an answer came from, how old it was, and who owned it.</p>
+                      <blockquote class="hr-case-quote">“I don’t want the answer. I want the answer I won’t get in trouble for.”<cite>Operations analyst, interview 11</cite></blockquote>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">03 · What we tried</p>
+                      <ul class="hr-tried" role="list">
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Every answer cites its sources, with the owner and the date each was last updated.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>When sources disagree, both are shown and the owner who can settle it is named.</span></li>
+                        <li><span class="hr-tag" data-tag="kept">Kept</span><span>Answers follow existing permissions. If you can’t see a document, neither can the assistant, and it tells you who can help.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>A confident single answer with its sources tucked behind a link.</span></li>
+                        <li><span class="hr-tag" data-tag="dropped">Dropped</span><span>Answering from the model’s general knowledge when no company source was found.</span></li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">04 · What shipped</p>
+                      <p>An assistant in the company chat tool and the intranet that answers only from company sources, with citations inline. Old sources are flagged. Conflicts are sent to the document owners, so the fix happens in the source, not in the answer.</p>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">05 · What changed</p>
+                      <ul class="hr-figs" role="list">
+                        <li><b>−38%</b>repeat HR and IT tickets</li>
+                        <li><b>212</b>conflicting policy pages found and fixed in the first quarter</li>
+                        <li><b>11 min</b>saved per question, measured in the pilot</li>
+                      </ul>
+                    </section>
+                    <section class="hr-chap">
+                      <p class="hr-chap-label">06 · What I’d do differently</p>
+                      <p>I’d design for document owners as a second user from the start. The assistant was only ever as good as the pages behind it.</p>
+                    </section>
+                  </div>
+                </div>
+              </details>
             </div>
           </article>
 
@@ -695,7 +1647,7 @@
           My work is finished when humans succeed.
         </p>
 
-        <div class="guestbook" data-reveal>
+        <div class="guestbook" id="contact" data-reveal>
           <p class="guestbook-label">The guestbook</p>
           <!-- Replace with your real contact details -->
           <a class="guestbook-mail" href="mailto:hello@example.com">hello@example.com</a>
@@ -707,7 +1659,10 @@
         </div>
 
         <p class="visit-summary" data-reveal aria-live="off"></p>
-        <a class="back-to-entrance" href="#entrance">Return to the entrance</a>
+        <p class="reflection-links">
+          <a class="back-to-entrance to-cases" href="#case-studies" data-open-index>Browse all case studies</a>
+          <a class="back-to-entrance" href="#entrance">Return to the entrance</a>
+        </p>
       </div>
       <footer class="colophon">
         <p>© 2026 Girish Dunga. Exhibition designed and built by hand. No visitors were tracked.</p>
@@ -715,12 +1670,19 @@
     </section>
   </main>
 
-  <!-- Project story dialog -->
+  <!-- Case study reader: one place to read every case study, with an index, previous and next, and a link per case -->
   <dialog class="exhibit-dialog" id="exhibit-dialog" aria-labelledby="dlg-title">
+    <div class="dlg-bar">
+      <button class="dlg-btn dlg-index" type="button" aria-label="All case studies" hidden><span aria-hidden="true">&larr;</span> All<span class="dlg-long"> case studies</span></button>
+      <p class="dlg-pos" aria-live="polite"></p>
+      <div class="dlg-steps">
+        <button class="dlg-btn dlg-prev" type="button" aria-label="Previous case study">&larr;<span class="dlg-long"> Previous</span></button>
+        <button class="dlg-btn dlg-next" type="button" aria-label="Next case study"><span class="dlg-long">Next </span>&rarr;</button>
+      </div>
+      <button class="dlg-btn dlg-close" type="button" aria-label="Close case studies"><span class="dlg-long">Close </span><span aria-hidden="true">&times;</span></button>
+      <span class="dlg-progress" aria-hidden="true"></span>
+    </div>
     <div class="dlg-inner">
-      <button class="dlg-close" type="button" aria-label="Close this story and return to the wall">
-        <span aria-hidden="true">Return to the wall</span>
-      </button>
       <div class="dlg-content"></div>
     </div>
   </dialog>

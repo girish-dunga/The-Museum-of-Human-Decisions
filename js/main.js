@@ -91,6 +91,16 @@
     if (room === currentRoom) return;
     currentRoom = room;
     refreshChrome();
+    // The header says which room you are in
+    const here = $('.bar-here');
+    if (here) {
+      $('.bar-here-no', here).textContent = room.dataset.roomNum;
+      $('.bar-here-of', here).textContent = `/ ${String(rooms.length).padStart(2, '0')}`;
+      $('.bar-here-name', here).textContent = room.dataset.roomName;
+      here.classList.remove('is-changing');
+      void here.offsetWidth;   // restart the roll-in
+      here.classList.add('is-changing');
+    }
     const at = rooms.indexOf(room);
     $$('[data-room-link]').forEach((a, j) => {
       if (j === at) a.setAttribute('aria-current', 'location');
@@ -115,6 +125,8 @@
     const last = i === tops.length - 1;
     const frac = last ? 0 : clamp((y - tops[i]) / (tops[i + 1] - tops[i]));
     floorplan.style.setProperty('--p', ((i + frac) / (tops.length - 1)).toFixed(4));
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.setProperty('--read', scrollable > 0 ? clamp(window.scrollY / scrollable).toFixed(4) : 0);
   };
   const queueRoute = () => { if (!routeQueued) { routeQueued = true; requestAnimationFrame(updateRoute); } };
   window.addEventListener('scroll', queueRoute, { passive: true });
@@ -127,6 +139,34 @@
     const bg = getComputedStyle(currentRoom).backgroundColor;
     bar.style.setProperty('--bar-bg', bg);
     floorplan.style.setProperty('--fp-bg', bg);
+  }
+
+  // The header: it tucks itself away once you start reading, and the rooms menu
+  // gives phones and tablets the same route the floor plan gives wide screens
+  function initChrome() {
+    const compact = () => bar.classList.toggle('is-compact', window.scrollY > 40);
+    window.addEventListener('scroll', compact, { passive: true });
+    compact();
+
+    const toggle = $('.rooms-toggle');
+    const list = $('#rooms-list');
+    if (!toggle || !list) return;
+    const set = (open, { focus = false } = {}) => {
+      list.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        const here = rooms.indexOf(currentRoom);
+        $$('a', list).forEach((a, j) => { if (j === here) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); });
+        if (focus) $('a', list).focus();
+      }
+    };
+    toggle.addEventListener('click', () => set(list.hidden, { focus: false }));
+    toggle.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown') { e.preventDefault(); set(true, { focus: true }); } });
+    $$('a', list).forEach((a) => a.addEventListener('click', () => set(false)));
+    document.addEventListener('click', (e) => { if (!list.hidden && !e.target.closest('.rooms-menu')) set(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !list.hidden) { set(false); toggle.focus(); }
+    });
   }
 
   /* ------------------------------------------------------------------------
@@ -261,15 +301,12 @@
   function initArrival() {
     if (!motion) return;
 
-    // Arrival
     gsap.set('.statement-inner', { yPercent: 110 });
     gsap.set('.statement', { visibility: 'visible' });
-    const intro = gsap.timeline({ delay: 0.35 });
-    intro
-      .to('.statement-inner', { yPercent: 0, duration: 1.8, ease: 'expo.out', stagger: 0.16 })
-      .to('#entrance [data-reveal]', { opacity: 1, y: 0, duration: 1.4, ease: 'expo.out', stagger: 0.12 }, 0.5)
-      .from('.admission', { opacity: 0, duration: 1.5 }, 1.2);
-
+    gsap.timeline({ delay: 0.15 })
+      .to('.statement-inner', { yPercent: 0, duration: 1.4, ease: 'expo.out', stagger: 0.12 })
+      .to('#entrance [data-reveal]', { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: 0.08 }, 0.35)
+      .from('.admission', { opacity: 0, duration: 1.2 }, 0.9);
   }
 
   /* ------------------------------------------------------------------------
@@ -362,11 +399,11 @@
       ],
     },
   };
-  const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+  const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
-  function renderStory(p) {
-    const meta = p.meta.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-    const chapters = p.chapters.map((c, i) => {
+  // A wall project's chapters, as HTML for the reader
+  function projectChapters(p) {
+    return p.chapters.map((c) => {
       let body = '';
       if (c.title) body += `<h3>${c.title}</h3>`;
       if (c.body) body += c.body.map((t) => `<p>${t}</p>`).join('');
@@ -378,23 +415,261 @@
       if (c.outcomes) {
         body += `<ul class="outcomes" role="list">${c.outcomes.map(([fig, t]) => `<li><b>${fig}</b>${t}</li>`).join('')}</ul>`;
       }
-      return `<section class="chapter"><p class="chapter-label"><b aria-hidden="true">${NUMERALS[i]}</b>${c.label}</p><div class="chapter-body">${body}</div></section>`;
-    }).join('');
+      return { label: c.label, html: body };
+    });
+  }
+
+  // Every case study, from the wall or from a moment, reads the same way:
+  // header, a jump list of chapters, the chapters, then the way on to the next one
+  function renderStory(c, next) {
+    const meta = c.meta.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+    const jump = c.chapters.map((ch, i) =>
+      `<li><a href="#dlg-ch-${i}" data-jump="${i}"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</a></li>`).join('');
+    const chapters = c.chapters.map((ch, i) =>
+      `<section class="chapter" id="dlg-ch-${i}"><p class="chapter-label"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</p><div class="chapter-body">${ch.html}</div></section>`).join('');
+    const tryIt = c.slide ? `<button class="story-try" type="button" data-try>Try the interactive exhibit <span aria-hidden="true">&rarr;</span></button>` : '';
+    const onward = next
+      ? `<a class="story-next" href="#case-${next.id}" data-case-id="${next.id}"><span class="story-next-k">Next case study</span><span class="story-next-t">${next.title}</span><span class="story-next-s">${next.kind}</span></a>`
+      : `<a class="story-next" href="#case-studies" data-case-index><span class="story-next-k">You have reached the end</span><span class="story-next-t">Back to all case studies</span></a>`;
     return `
       <header class="story-head">
-        <p class="story-kicker">${p.kicker}</p>
-        <h2 class="story-title" id="dlg-title">${p.title}</h2>
-        <p class="story-lede">${p.lede}</p>
+        <p class="story-kicker">${c.kicker}</p>
+        <h2 class="story-title" id="dlg-title" tabindex="-1">${c.title}</h2>
+        <p class="story-lede">${c.lede}</p>
         <dl class="story-meta">${meta}</dl>
+        ${tryIt}
       </header>
-      ${chapters}`;
+      <nav class="story-jump" aria-label="Chapters in this case study"><p class="story-jump-k">In this case study</p><ol role="list">${jump}</ol></nav>
+      ${chapters}
+      <footer class="story-foot">${onward}</footer>`;
+  }
+
+  function renderIndex(cases) {
+    const groups = [
+      ['featured', 'Featured investigations', 'The four longest write-ups, from the Evidence Wall.'],
+      ['human', 'Human moments', 'Shorter case studies, each paired with an interactive exhibit in the Human Room.'],
+      ['ai', 'AI moments', 'Designing AI that people can question, correct and trust.'],
+    ];
+    const card = (c) => `
+      <li><a class="cs-card" href="#case-${c.id}" data-case-id="${c.id}">
+        <span class="cs-kind">${c.kind}</span>
+        <span class="cs-title">${c.title}</span>
+        ${c.subtitle ? `<span class="cs-sub">${c.subtitle}</span>` : ''}
+        <span class="cs-sum">${c.summary}</span>
+        <span class="cs-cue">Read the case study</span>
+      </a></li>`;
+    return `
+      <header class="story-head story-head--index">
+        <p class="story-kicker">The collection</p>
+        <h2 class="story-title" id="dlg-title" tabindex="-1">Case studies</h2>
+        <p class="story-lede">${cases.length} projects, each written up the same way: the problem, what research showed, the decisions, the results and what I’d do differently.</p>
+      </header>
+      ${groups.map(([g, name, note]) => {
+        const list = cases.filter((c) => c.group === g);
+        if (!list.length) return '';
+        return `<section class="cs-group" aria-labelledby="cs-${g}">
+          <div class="cs-group-head"><h3 id="cs-${g}">${name} <span>${list.length}</span></h3><p>${note}</p></div>
+          <ul class="cs-grid" role="list">${list.map(card).join('')}</ul>
+        </section>`;
+      }).join('')}`;
+  }
+
+  /* ------------------------------------------------------------------------
+     Case study reader — one dialog for every case study. It has an index,
+     previous and next, a link of its own for each case (#case-…), and the
+     browser's Back button closes it.
+     ------------------------------------------------------------------------ */
+  const caseReader = { open() {}, openIndex() {} };
+
+  function initCaseReader(humanRoom) {
+    const dialog = $('#exhibit-dialog');
+    if (!dialog) return;
+    const content = $('.dlg-content', dialog);
+    const indexBtn = $('.dlg-index', dialog);
+    const prevBtn = $('.dlg-prev', dialog);
+    const nextBtn = $('.dlg-next', dialog);
+    const pos = $('.dlg-pos', dialog);
+
+    // The collection: the wall's four investigations, then every moment in the Human Room
+    const cases = Object.entries(PROJECTS).map(([id, p]) => {
+      const caption = $(`.artifact[data-project="${id}"] .caption-kind`);
+      return {
+        id, group: 'featured', tone: p.tone, title: p.title,
+        kind: caption ? caption.textContent : p.kicker,
+        summary: p.lede, kicker: p.kicker, lede: p.lede, meta: p.meta, chapters: projectChapters(p),
+      };
+    });
+    (humanRoom ? humanRoom.studies : []).forEach(({ slide, body, sub }) => {
+      const [project, ...rest] = sub.split(' · ');
+      const exhibit = $('.exhibit-no', slide).textContent;
+      const chapters = $$('.hr-chap', body).map((chap) => {
+        const label = $('.hr-chap-label', chap).textContent.replace(/^\d+\s*·\s*/, '');
+        const html = Array.from(chap.children).filter((el) => !el.matches('.hr-chap-label')).map((el) => {
+          const node = el.cloneNode(true);
+          if (node.matches('.hr-figs')) node.className = 'outcomes';
+          return node.outerHTML;
+        }).join('');
+        return { label, html };
+      });
+      const problem = $('.hr-chap h4', body);
+      cases.push({
+        id: slide.dataset.case.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`),
+        group: slide.dataset.kind === 'ai' ? 'ai' : 'human', tone: 'moment', slide,
+        title: project, subtitle: $('.moment-title', slide).textContent,
+        kind: rest.join(' · '),
+        summary: problem ? problem.textContent : '',
+        kicker: `${exhibit} · ${$('.moment-title', slide).textContent}`,
+        lede: $('.moment-decision p:not(.decision-label)', slide).innerHTML,
+        meta: $$('.hr-case-meta > div', body).map((d) => [$('dt', d).textContent, $('dd', d).textContent]),
+        chapters,
+      });
+    });
+    // Reading order follows the index: featured, then human, then AI
+    const order = ['featured', 'human', 'ai'];
+    cases.sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group));
+    const byId = new Map(cases.map((c) => [c.id, c]));
+
+    let current = null;     // the case on screen, or null for the index
+    let pushed = false;     // did opening the reader add a history entry that closing should undo?
+    let opener = null;
+
+    const setHash = (hash, push) => {
+      const url = hash ? `#${hash}` : location.pathname + location.search;
+      if (push) history.pushState({ reader: true }, '', url);
+      else history.replaceState(history.state, '', url);
+    };
+
+    const show = (c) => {
+      current = c;
+      dialog.dataset.tone = c ? c.tone : 'index';
+      if (c) {
+        const i = cases.indexOf(c);
+        content.innerHTML = renderStory(c, cases[i + 1]);
+        pos.innerHTML = `<span class="dlg-long">Case study </span>${i + 1} of ${cases.length}`;
+        prevBtn.disabled = i === 0;
+        nextBtn.disabled = i === cases.length - 1;
+        prevBtn.setAttribute('aria-label', i > 0 ? `Previous case study: ${cases[i - 1].title}` : 'Previous case study');
+        nextBtn.setAttribute('aria-label', cases[i + 1] ? `Next case study: ${cases[i + 1].title}` : 'Next case study');
+        visit.files.add(c.id);
+      } else {
+        content.innerHTML = renderIndex(cases);
+        pos.textContent = `${cases.length} case studies`;
+      }
+      indexBtn.hidden = !c;
+      prevBtn.hidden = nextBtn.hidden = !c;
+      if (!dialog.open) {
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', '');
+      }
+      dialog.scrollTop = 0;
+      onScroll();
+      $('#dlg-title', content).focus({ preventScroll: true });
+      if (motion) {
+        gsap.from($$('.story-head > *, .story-jump, .cs-group', content), {
+          y: 24, opacity: 0, duration: 0.9, ease: 'expo.out', stagger: 0.05, clearProps: 'all',
+        });
+      }
+    };
+
+    // From the page, opening adds one history entry; moving between cases inside the reader replaces it
+    const open = (id, { from } = {}) => {
+      const c = id ? byId.get(id) : null;
+      if (id && !c) return;
+      const wasOpen = dialog.open;
+      if (!wasOpen) { opener = from || document.activeElement; pushed = true; }
+      setHash(c ? `case-${c.id}` : 'case-studies', !wasOpen);
+      show(c);
+    };
+    caseReader.open = (id, opts) => open(id, opts);
+    caseReader.openIndex = (opts) => open(null, opts);
+
+    const close = () => { if (dialog.open) dialog.close(); };
+    dialog.addEventListener('close', () => {
+      current = null;
+      if (pushed) { pushed = false; history.back(); }
+      else if (/^#case-/.test(location.hash)) setHash('', false);
+      // After the browser's own dialog focus handling and any Back navigation have settled
+      const back = opener;
+      opener = null;
+      if (back && document.contains(back)) setTimeout(() => back.focus({ preventScroll: true }), 0);
+    });
+
+    // Back and Forward walk in and out of the reader
+    const route = () => {
+      const h = location.hash;
+      if (h === '#case-studies' || h.startsWith('#case-')) {
+        const c = h === '#case-studies' ? null : byId.get(h.slice(6));
+        if (h !== '#case-studies' && !c) return;
+        if (!dialog.open) pushed = history.state && history.state.reader;
+        if (c !== current || !dialog.open) show(c);
+      } else if (dialog.open) {
+        pushed = false;
+        close();
+      }
+    };
+    window.addEventListener('popstate', route);
+    window.addEventListener('hashchange', route);
+
+    $('.dlg-close', dialog).addEventListener('click', close);
+    indexBtn.addEventListener('click', () => open(null));
+    const step = (d) => {
+      if (!current) return;
+      const c = cases[cases.indexOf(current) + d];
+      if (c) open(c.id);
+    };
+    prevBtn.addEventListener('click', () => step(-1));
+    nextBtn.addEventListener('click', () => step(1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.target.matches('input, textarea, select')) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+    });
+
+    // Links inside the reader: cards, chapter jumps, next case, and the way back to the live exhibit
+    content.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;   // new tabs keep working
+      const link = e.target.closest('[data-case-id], [data-case-index], [data-jump], [data-try]');
+      if (!link) return;
+      e.preventDefault();
+      if (link.dataset.caseId) open(link.dataset.caseId);
+      else if ('caseIndex' in link.dataset) open(null);
+      else if (link.dataset.jump) {
+        const target = $(`#dlg-ch-${link.dataset.jump}`, content);
+        const barH = $('.dlg-bar', dialog).offsetHeight;
+        const top = target.getBoundingClientRect().top - dialog.getBoundingClientRect().top + dialog.scrollTop;
+        dialog.scrollTo({ top: top - barH - 16, behavior: reduce ? 'auto' : 'smooth' });
+      } else if ('try' in link.dataset && current && current.slide) {
+        const slide = current.slide;
+        pushed = false; opener = null;
+        setHash('human-room', false);
+        close();
+        humanRoom.show(slide);
+      }
+    });
+
+    // Reading progress along the top bar
+    function onScroll() {
+      const max = dialog.scrollHeight - dialog.clientHeight;
+      dialog.style.setProperty('--read', max > 0 ? (dialog.scrollTop / max).toFixed(4) : 0);
+    }
+    dialog.addEventListener('scroll', onScroll, { passive: true });
+
+    // Every "case studies" link on the page opens the index
+    $$('[data-open-index]').forEach((a) => a.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      open(null, { from: a });
+    }));
+
+    // Arriving on a link to a case study opens it straight away
+    if (location.hash === '#case-studies' || location.hash.startsWith('#case-')) {
+      pushed = false;
+      route();
+    }
   }
 
   function initEvidenceWall() {
     const wall = $('.wall');
-    const dialog = $('#exhibit-dialog');
-    const content = $('.dlg-content', dialog);
-    let opener = null;
 
     if (finePointer && !reduce) {
       // Objects lean toward curiosity
@@ -436,28 +711,9 @@
     window.addEventListener('resize', drawThreads);
     if (document.fonts) document.fonts.ready.then(drawThreads);
 
-    // Opening an object opens its story
+    // Opening an object opens its story in the case study reader
     $$('.artifact').forEach((a) => {
-      a.addEventListener('click', () => {
-        const p = PROJECTS[a.dataset.project];
-        if (!p) return;
-        opener = a;
-        visit.files.add(a.dataset.project);
-        dialog.dataset.tone = p.tone;
-        content.innerHTML = renderStory(p);
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else dialog.setAttribute('open', '');
-        dialog.scrollTop = 0;
-        if (motion) {
-          gsap.from($$('.story-head > *, .chapter', content), {
-            y: 30, opacity: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08, delay: 0.15, clearProps: 'all',
-          });
-        }
-      });
-    });
-    $('.dlg-close', dialog).addEventListener('click', () => dialog.close());
-    dialog.addEventListener('close', () => {
-      if (opener) opener.focus({ preventScroll: true });
+      a.addEventListener('click', () => caseReader.open(a.dataset.project, { from: a }));
     });
 
     initIntelligenceMap();
@@ -1143,7 +1399,6 @@
     if (!root) return;
     const track = $('.hr-track', root);
     const slides = $$('.hr-slide', track);
-    const dots = $$('.hr-dot', root);
     const count = $('.hr-count', root);
     const prev = $('.hr-prev', root);
     const next = $('.hr-next', root);
@@ -1244,23 +1499,484 @@
       return { live() {}, idle() {} };
     }
 
-    const cases = [patient, parent, commuter, stress];
-    const hooks = slides.map((slide, i) => cases[i](slide));
+    // 05 · The reader: the text grows to the size she reads at; one layout clips, the other reflows
+    function reader(slide) {
+      const range = $('.dig-range', slide);
+      const out = $('output', slide);
+      const modes = $$('.hr-mode', slide);
+      const screen = $('.hr-screen', slide);
+      const result = $('.hr-result', slide);
+      let layout = 'fixed';
+      const render = () => {
+        const pct = Number(range.value);
+        out.textContent = `${pct}%`;
+        range.setAttribute('aria-valuetext', `${pct} percent`);
+        screen.style.setProperty('--scale', pct / 100);
+        screen.dataset.layout = layout;
+        modes.forEach((m) => m.setAttribute('aria-pressed', String(m.dataset.layout === layout)));
+        if (pct === 100) {
+          result.innerHTML = '<p class="hr-result-h">At 100% both layouts look the same.</p><p class="hr-note">That is why nobody noticed. Move the slider to the size Margaret uses.</p>';
+        } else if (layout === 'fluid') {
+          result.innerHTML = `<p class="hr-result-h">At ${pct}% everything is still on screen.</p><p class="hr-note">Rows stack instead of shrinking. Nothing is cut off.</p>`;
+        } else if (pct < 150) {
+          result.innerHTML = `<p class="hr-result-h">At ${pct}% the old layout is running out of room.</p><p class="hr-note">One more step and the amounts leave the screen.</p>`;
+        } else {
+          result.innerHTML = `<p class="hr-result-h">At ${pct}% the old layout cuts the amounts off.</p><p class="hr-note">The numbers are still there. Margaret just cannot see them.</p>`;
+        }
+      };
+      range.addEventListener('input', render);
+      modes.forEach((m) => m.addEventListener('click', () => { layout = m.dataset.layout; render(); }));
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    // 06 · The nurse: a call bell interrupts the third check, and the handover resumes where it stopped
+    function nurse(slide) {
+      const list = $('.hr-checks', slide);
+      const items = $$('.hr-item', list);
+      const bell = $('.hr-bell', slide);
+      const btn = $('.hr-try', slide);
+      const result = $('.hr-result', slide);
+      const labels = { done: 'Done', here: 'You stopped here', todo: 'To do' };
+      const breakAt = 2;
+      let done = 0, away = false, wasAway = false;
+      const render = () => {
+        items.forEach((li, i) => {
+          const state = i < done ? 'done' : (wasAway && done === breakAt && i === breakAt ? 'here' : 'todo');
+          li.dataset.state = state;
+          $('.hr-item-state', li).textContent = labels[state];
+        });
+        list.hidden = away;
+        bell.hidden = !away;
+        btn.textContent = away ? 'Return to the handover' : done === items.length ? 'Start again' : 'Confirm next check';
+        if (away) {
+          result.innerHTML = '<p class="hr-result-h">You were called away mid-task.</p><p class="hr-note">The old form timed out after three minutes and emptied itself.</p>';
+        } else if (done === items.length) {
+          result.innerHTML = '<p class="hr-result-h">Handover complete.</p><p class="hr-note">Five checks, one interruption, nothing entered twice.</p>';
+        } else if (wasAway && done === breakAt) {
+          result.innerHTML = `<p class="hr-result-h">Resumed at check ${breakAt + 1} of ${items.length}.</p><p class="hr-note">The two you finished are still finished.</p>`;
+        } else {
+          result.innerHTML = `<p class="hr-result-h">${done} of ${items.length} checks confirmed.</p><p class="hr-note">Each one is saved the moment you confirm it.</p>`;
+        }
+      };
+      btn.addEventListener('click', () => {
+        if (away) away = false;
+        else if (done === items.length) { done = 0; wasAway = false; }
+        else if (done === breakAt && !wasAway) away = wasAway = true;
+        else done++;
+        render();
+      });
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    // 07 · The sender: a warning before the action, or ten seconds to take it back afterwards
+    function sender(slide) {
+      const modes = $$('.hr-mode', slide);
+      const btn = $('.hr-try', slide);
+      const clock = $('.hr-count-down', slide);
+      const left = $('[data-undo]', slide);
+      const result = $('.hr-result', slide);
+      const buttons = { ready: 'Send £200', asking: 'Yes, send it', pending: 'Undo', sent: 'Start again', undone: 'Start again' };
+      let guard = 'confirm', stage = 'ready', secs = 10, tick = 0;
+      const stop = () => { clearInterval(tick); tick = 0; };
+      const render = () => {
+        modes.forEach((m) => m.setAttribute('aria-pressed', String(m.dataset.guard === guard)));
+        clock.hidden = stage !== 'pending';
+        left.textContent = `${secs} sec`;
+        btn.textContent = buttons[stage];
+        if (stage === 'ready') {
+          result.innerHTML = '<p class="hr-note">Nothing has been sent yet.</p>';
+        } else if (stage === 'asking') {
+          result.innerHTML = '<p class="hr-result-h">Are you sure?</p><p class="hr-note">This cannot be undone. Amara has no new information, only more doubt.</p>';
+        } else if (stage === 'pending') {
+          result.innerHTML = '<p class="hr-result-h">On its way to Folake.</p><p class="hr-note">You can still take it back. Nothing has left your account yet.</p>';
+        } else if (stage === 'undone') {
+          result.innerHTML = '<p class="hr-result-h">Stopped. Nothing left your account.</p><p class="hr-note">A way back does what a warning only pretends to do.</p>';
+        } else if (guard === 'confirm') {
+          result.innerHTML = '<p class="hr-result-h">Sent. It cannot be recalled.</p><p class="hr-note">The question did not make the transfer safer. It only made it slower.</p>';
+        } else {
+          result.innerHTML = '<p class="hr-result-h">Sent to Folake Adeyemi.</p><p class="hr-note">The undo window has closed. Ten seconds was enough to notice a mistake.</p>';
+        }
+      };
+      // The countdown sits outside the live region, so it is not read out every second
+      const run = () => {
+        if (tick) return;
+        tick = setInterval(() => {
+          secs--;
+          if (secs > 0) { left.textContent = `${secs} sec`; return; }
+          stop(); stage = 'sent'; render();
+        }, 1000);
+      };
+      btn.addEventListener('click', () => {
+        if (stage === 'ready' && guard === 'confirm') stage = 'asking';
+        else if (stage === 'ready') { stage = 'pending'; secs = 10; run(); }
+        else if (stage === 'asking') stage = 'sent';
+        else if (stage === 'pending') { stop(); stage = 'undone'; }
+        else stage = 'ready';
+        render();
+      });
+      modes.forEach((m) => m.addEventListener('click', () => { stop(); guard = m.dataset.guard; stage = 'ready'; render(); }));
+      render();
+      return {
+        live() { if (stage === 'pending') run(); },
+        idle: stop,
+      };
+    }
+
+    // 08 · The field worker: visits are saved on the phone, and send themselves when the signal returns
+    function fieldWorker(slide) {
+      const modes = $$('.hr-mode', slide);
+      const btn = $('.hr-try', slide);
+      const queue = $('.hr-queue', slide);
+      const result = $('.hr-result', slide);
+      const homes = ['Household 14 · weight check', 'Household 15 · vaccination', 'Household 17 · follow-up', 'Household 21 · new baby'];
+      const visitsWord = (n) => (n === 1 ? '1 visit' : `${n} visits`);
+      let online = false, visits = [];   // one entry per visit: true once it has reached the clinic
+      const render = () => {
+        modes.forEach((m) => m.setAttribute('aria-pressed', String(m.dataset.signal === String(online))));
+        queue.innerHTML = visits.map((sent, i) => `<li class="hr-item" data-state="${sent ? 'done' : 'todo'}"><span>${homes[i]}</span><span class="hr-item-state">${sent ? 'Sent to the clinic' : 'Saved on this phone'}</span></li>`).join('');
+        btn.textContent = visits.length === homes.length ? 'Start the round again' : 'Record a visit';
+        const waiting = visits.filter((sent) => !sent).length;
+        if (!visits.length) {
+          result.innerHTML = `<p class="hr-note">${online ? 'There is signal here. Record a visit and it goes straight to the clinic.' : 'No signal here. Record a visit anyway.'}</p>`;
+        } else if (waiting) {
+          result.innerHTML = `<p class="hr-result-h">${visitsWord(waiting)} saved on this phone.</p><p class="hr-note">${waiting === 1 ? 'It will send itself' : 'They will send themselves'} when the signal returns. Asha does not have to remember.</p>`;
+        } else {
+          result.innerHTML = `<p class="hr-result-h">${visits.length === 1 ? 'Your visit has' : `All ${visits.length} visits have`} reached the clinic.</p><p class="hr-note">Nothing was written twice, and nobody pressed sync.</p>`;
+        }
+      };
+      btn.addEventListener('click', () => {
+        if (visits.length === homes.length) visits = []; else visits.push(online);
+        render();
+      });
+      modes.forEach((m) => m.addEventListener('click', () => {
+        online = m.dataset.signal === 'true';
+        if (online) visits = visits.map(() => true);
+        render();
+      }));
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    // 09 · The hiring lead: an AI agent ranks interviewers by the factors the recruiter switches on, and says why
+    function panel(slide) {
+      const modes = $$('.hr-mode', slide);
+      const list = $('[data-panel]', slide);
+      const result = $('.hr-result', slide);
+      const reasons = { skills: 'strong skills match', avail: 'free this week', load: 'light interview load', persp: 'adds a different perspective' };
+      const people = [
+        { name: 'Priya N.', role: 'Staff engineer', skills: 0.96, avail: 0.7, load: 0.15, persp: 0.4, panels: 9 },
+        { name: 'Tom R.', role: 'Principal engineer', skills: 0.92, avail: 0.75, load: 0.2, persp: 0.3, panels: 8 },
+        { name: 'Mei L.', role: 'Senior engineer', skills: 0.84, avail: 0.8, load: 0.9, persp: 0.7, panels: 2 },
+        { name: 'Daniel O.', role: 'Engineering manager', skills: 0.7, avail: 0.9, load: 0.8, persp: 0.65, panels: 3 },
+        { name: 'Sara K.', role: 'Product designer', skills: 0.5, avail: 0.85, load: 0.95, persp: 0.95, panels: 1 },
+      ];
+      const on = new Set(['skills', 'avail']);
+      const render = () => {
+        modes.forEach((m) => m.setAttribute('aria-pressed', String(on.has(m.dataset.factor))));
+        if (!on.size) {
+          list.innerHTML = '';
+          result.innerHTML = '<p class="hr-result-h">The agent has nothing to weigh.</p><p class="hr-note">Switch on at least one factor. It will not guess what matters to you.</p>';
+          return;
+        }
+        const factors = [...on];
+        const ranked = people
+          .map((p) => ({ ...p, score: factors.reduce((s, f) => s + p[f], 0) / factors.length }))
+          .sort((a, b) => b.score - a.score);
+        list.innerHTML = ranked.map((p, i) => {
+          const why = factors.filter((f) => p[f] >= 0.75).sort((a, b) => p[b] - p[a]).slice(0, 2).map((f) => reasons[f]);
+          const tired = !on.has('load') && i < 3 && p.panels >= 8 ? ` · ${p.panels} panels this month` : '';
+          return `<li class="hr-item" data-state="${i < 3 ? 'done' : 'todo'}"><span><b>${p.name}</b> · ${p.role}<span class="hr-why">${why.length ? `Why: ${why.join(', ')}` : 'No strong reason on these factors'}${tired}</span></span><span class="hr-item-state">${i < 3 ? 'Suggested · ' : ''}${Math.round(p.score * 100)}%</span></li>`;
+        }).join('');
+        const overloaded = ranked.slice(0, 3).filter((p) => p.panels >= 8);
+        if (overloaded.length) {
+          result.innerHTML = `<p class="hr-result-h">${overloaded.map((p) => p.name).join(' and ')} ${overloaded.length > 1 ? 'are' : 'is'} suggested again.</p><p class="hr-note">Skilled and free, and already on ${overloaded.map((p) => p.panels).join(' and ')} panels this month. Without load, the agent repeats the habit it was meant to fix.</p>`;
+        } else {
+          result.innerHTML = '<p class="hr-result-h">A panel that spreads the work.</p><p class="hr-note">Every name comes with its reasons. Nadia can still swap anyone before she books.</p>';
+        }
+      };
+      modes.forEach((m) => m.addEventListener('click', () => {
+        if (on.has(m.dataset.factor)) on.delete(m.dataset.factor); else on.add(m.dataset.factor);
+        render();
+      }));
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    // 10 · The late-night searcher: danger signs are checked by fixed rules first, then the model picks a level of care
+    function symptomNavigator(slide) {
+      const step = $('[data-step]', slide);
+      const question = $('[data-question]', slide);
+      const answers = $('[data-answers]', slide);
+      const trail = $('[data-trail]', slide);
+      const result = $('.hr-result', slide);
+      const restart = $('.hr-try', slide);
+      const QUESTIONS = [
+        { key: 'danger', short: 'Danger signs', q: 'Is Yusuf showing any of these?', options: ['None of these', 'A rash that doesn’t fade under a glass', 'Very hard to wake'] },
+        { key: 'age', short: 'Age', q: 'How old is Yusuf?', options: ['Under 3 months', '3 months to 5 years', 'Over 5 years'] },
+        { key: 'temp', short: 'Temperature', q: 'What is his temperature?', options: ['Under 38°C', '38 to 39°C', 'Over 39°C'] },
+      ];
+      let picked = [];
+      const advise = () => {
+        const [danger, age, temp] = picked;
+        if (danger > 0) {
+          return { level: 'Call 999 now.', why: danger === 1 ? 'A rash that doesn’t fade under a glass can be a sign of sepsis or meningitis.' : 'Being very hard to wake is a danger sign at any temperature.', source: 'From a fixed clinical safety rule. The model was not asked.' };
+        }
+        if (age === 0 && temp > 0) {
+          return { level: 'Speak to a nurse within 1 hour.', why: 'Any fever in a baby under 3 months needs a clinician to check.', source: 'From a fixed clinical safety rule. The model was not asked.' };
+        }
+        if (temp === 2) {
+          return { level: 'Speak to a nurse tonight, within 4 hours.', why: 'A high temperature with no danger signs. Most settle, but a nurse should check.', source: 'From the model. Its confidence was 64%, below our threshold, so it moved you up one level.' };
+        }
+        return { level: 'Care for him at home tonight.', why: 'No danger signs, and a temperature most children manage at home. Check again in 4 hours. If he becomes hard to wake, or a rash appears, call 999.', source: 'From the model, with 91% confidence.' };
+      };
+      const render = () => {
+        trail.innerHTML = picked.map((a, i) => `<li class="hr-item" data-state="done"><span>${QUESTIONS[i].short}</span><span class="hr-item-state">${QUESTIONS[i].options[a]}</span></li>`).join('');
+        const finished = picked.length === QUESTIONS.length || picked[0] > 0;
+        restart.hidden = !finished;
+        if (finished) {
+          const a = advise();
+          step.textContent = picked[0] > 0 ? 'Stopped after 1 question' : `Answered ${picked.length} of ${QUESTIONS.length}`;
+          question.textContent = 'Here is where to go';
+          answers.innerHTML = '';
+          result.innerHTML = `<p class="hr-kicker">Level of care</p><p class="hr-result-h">${a.level}</p><p class="hr-note">${a.why}</p><p class="hr-note">${a.source}</p><p class="hr-note">Or speak to a nurse now. One tap, at any point.</p>`;
+          return;
+        }
+        const Q = QUESTIONS[picked.length];
+        step.textContent = `Question ${picked.length + 1} of ${QUESTIONS.length}`;
+        question.textContent = Q.q;
+        answers.innerHTML = Q.options.map((o, i) => `<button class="hr-chip" type="button" data-answer="${i}">${o}</button>`).join('');
+        result.innerHTML = picked.length
+          ? '<p class="hr-note">No diagnosis, only where to go and how fast.</p>'
+          : '<p class="hr-note">Danger signs come first. If any are present, no more questions are asked.</p>';
+      };
+      answers.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-answer]');
+        if (!btn) return;
+        picked.push(Number(btn.dataset.answer));
+        render();
+        const first = $('.hr-chip', answers) || restart;
+        if (!first.hidden) first.focus({ preventScroll: true });   // keep keyboard focus in the conversation
+      });
+      restart.addEventListener('click', () => { picked = []; render(); });
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    // A list of row buttons where exactly one can be chosen; returns a setter that marks the chosen row
+    const pickOne = (buttons, onPick) => {
+      const mark = (k) => buttons.forEach((b, j) => {
+        b.dataset.state = j === k ? '1' : '0';
+        b.setAttribute('aria-pressed', String(j === k));
+      });
+      buttons.forEach((b, k) => b.addEventListener('click', () => { mark(k); onPick(k); }));
+      return mark;
+    };
+
+    // 11 · The researcher: each AI theme opens onto the quotes and people behind it
+    function researcher(slide) {
+      const result = $('.hr-result', slide);
+      const themes = [
+        { name: 'Fees feel hidden until checkout', count: 9, quotes: [['I only saw the booking fee on the last screen. It felt like a trick.', 'P03'], ['I’d rather pay more up front than be surprised.', 'P08']] },
+        { name: 'Text reminders are trusted more than the app', count: 6, quotes: [['The text I believe. The app, I have to go and look for.', 'P05'], ['I screenshot the text in case the app logs me out.', 'P11']] },
+        { name: 'People want to pay in instalments', count: 4, quotes: [['Splitting it over two months would make it possible this month.', 'P02']] },
+        { name: 'Users want a dark mode', count: 1, quotes: [['It’s a bit bright at night, I suppose.', 'P09, in passing']] },
+      ];
+      pickOne($$('[data-themes] .hr-dose', slide), (k) => {
+        const t = themes[k];
+        const weak = t.count < 3;
+        result.innerHTML = `<p class="hr-kicker">${weak ? 'Weak evidence' : 'Evidence'} · ${t.count} of 12 participants</p><p class="hr-result-h">${t.name}</p>`
+          + t.quotes.map(([q, who]) => `<p class="hr-note">“${q}” · ${who}</p>`).join('')
+          + `<p class="hr-note">${weak ? 'One person said this once. The copilot keeps it, and marks it so nobody presents it as a finding.' : 'Every quote opens the transcript at the moment it was said.'}</p>`;
+      });
+      result.innerHTML = '<p class="hr-note">The copilot drafted four themes. None of them is a finding until you have seen its evidence.</p>';
+      return { live() {}, idle() {} };
+    }
+
+    // 12 · The new joiner: answers cite their sources, admit conflicts and respect access
+    function knowledge(slide) {
+      const result = $('.hr-result', slide);
+      const answers = [
+        '<p class="hr-kicker">Answer · 1 source</p><p class="hr-result-h">26 weeks at full pay, for any parent.</p><p class="hr-note">Source: Parental Leave Policy. Owned by the People team, updated March 2026.</p><p class="hr-note">Applies to employees in the UK. Open the source to read the exact wording.</p>',
+        '<p class="hr-kicker">Sources disagree</p><p class="hr-result-h">Two pages give different answers.</p><p class="hr-note">Home Working Policy, updated 2026: up to £250 for a chair.</p><p class="hr-note">IT Equipment page, updated 2023: chairs are not covered.</p><p class="hr-note">The assistant won’t choose for you. It has asked the owner, Dev in Finance, to settle it, and will let you know.</p>',
+        '<p class="hr-kicker">No access</p><p class="hr-result-h">You can’t see that, so neither can I.</p><p class="hr-note">Salary bands are shared with managers and the People team. The assistant only reads what you can read.</p><p class="hr-note">Hana, your People partner, can talk you through your own band.</p>',
+      ];
+      pickOne($$('[data-asks] .hr-dose', slide), (k) => { result.innerHTML = answers[k]; });
+      result.innerHTML = '<p class="hr-note">Answers come only from company sources, and every one says which.</p>';
+      return { live() {}, idle() {} };
+    }
+
+    // 13 · The engineer: ranked causes for this machine; each “didn’t fix it” moves to the next
+    function engineer(slide) {
+      const list = $('[data-causes]', slide);
+      const acts = $('[data-acts]', slide);
+      const restart = $('.hr-try', slide);
+      const result = $('.hr-result', slide);
+      const causes = [
+        { name: 'Low refrigerant pressure', why: 'This unit logged E-47 in May. A leak repair fixed it then.' },
+        { name: 'Blocked condenser coil', why: 'Fixed 41% of E-47 faults on this model across the fleet.' },
+        { name: 'Failed pressure sensor', why: 'The sensor is six years old, past its usual life.' },
+      ];
+      let at = 0, fixed = false;
+      const render = () => {
+        const over = fixed || at === causes.length;
+        list.innerHTML = causes.map((c, i) => {
+          const state = i < at ? 'Ruled out' : i === at ? (fixed ? 'Fixed' : 'Check this now') : 'Next';
+          return `<li class="hr-item" data-state="${i === at && !fixed ? 'here' : i < at || (fixed && i === at) ? 'done' : 'todo'}"><span><b>${i + 1}. ${c.name}</b><span class="hr-why">${c.why}</span></span><span class="hr-item-state">${state}</span></li>`;
+        }).join('');
+        acts.hidden = over;
+        restart.hidden = !over;
+        if (fixed) {
+          const ruled = causes.slice(0, at).map((c) => c.name.toLowerCase());
+          result.innerHTML = `<p class="hr-kicker">Job report drafted</p><p class="hr-result-h">E-47 fixed: ${causes[at].name.toLowerCase()}.</p><p class="hr-note">${ruled.length ? `Ruled out first: ${ruled.join(', ')}. ` : ''}Written from what happened on the job. Check it and sign. There is nothing to type.</p>`;
+        } else if (over) {
+          result.innerHTML = '<p class="hr-result-h">The copilot has run out of likely causes.</p><p class="hr-note">It says so instead of guessing. A specialist is booked, and everything you ruled out goes with the job.</p>';
+        } else {
+          result.innerHTML = `<p class="hr-note">Step ${at + 1} of ${causes.length}. ${at ? 'What you ruled out is saved, and it improves the next suggestion for everyone.' : 'Ranked for this chiller, from its own history and similar fixes across the fleet.'}</p>`;
+        }
+      };
+      acts.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-act]');
+        if (!btn) return;
+        if (btn.dataset.act === 'fixed') fixed = true; else at++;
+        render();
+        if (!restart.hidden) restart.focus({ preventScroll: true });
+      });
+      restart.addEventListener('click', () => { at = 0; fixed = false; render(); });
+      render();
+      return { live() {}, idle() {} };
+    }
+
+    const cases = { patient, parent, commuter, stress, reader, nurse, sender, fieldWorker, panel, symptomNavigator, researcher, knowledge, engineer };
+    const hooks = slides.map((slide) => cases[slide.dataset.case](slide));
+
+    // The full case study under each moment opens in the case study reader, where it has room to be read.
+    // Without JavaScript it stays a fold-out beneath the moment.
+    const studies = slides.map((slide) => {
+      const study = $('.hr-case', slide);
+      if (!study) return null;
+      const body = $('.hr-case-body', study);
+      const sub = $('.hr-case-sub', study).textContent;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'hr-case-open';
+      btn.innerHTML = $('summary', study).innerHTML;
+      btn.addEventListener('click', () => caseReader.open(slide.dataset.case.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`), { from: btn }));
+      // It sits with the exhibit, straight after the decision it explains
+      const decision = $('.moment-decision', slide);
+      const more = study.closest('.hr-more');
+      if (decision) {
+        decision.after(btn);
+        if (more) more.remove(); else study.remove();
+      } else {
+        study.replaceWith(btn);
+      }
+      return { slide, body, sub };
+    }).filter(Boolean);
     slides.forEach((slide) => $$('.hr-unfold > *', slide).forEach((el, i) => el.style.setProperty('--i', i)));
 
-    let index = -1;
+    // The index: every moment by number and name, grouped as human and AI
+    const dots = slides.map((slide, i) => {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'hr-dot';
+      d.dataset.kind = slide.dataset.kind;
+      d.innerHTML = `<span class="hr-dot-no">${String(i + 1).padStart(2, '0')}</span><span class="hr-dot-name">${slide.dataset.name}</span>`;
+      $(`.hr-group[data-group="${slide.dataset.kind}"] .hr-dots`, root).appendChild(d);
+      return d;
+    });
+
+    // Human or AI: one row at a time. The toggle follows the carousel, and choosing a kind walks to its first moment.
+    const tabs = $$('.hr-tab', root);
+    const groups = $$('.hr-group', root);
+    let kind = 'human';
+    tabs.forEach((t) => { $('[data-n]', t).textContent = slides.filter((s) => s.dataset.kind === t.dataset.tab).length; });
+
+    // Each row says how much of it is out of sight, and offers to show it
+    const railState = (group) => {
+      const row = $('.hr-dots', group);
+      const r = row.getBoundingClientRect();
+      const items = $$('.hr-dot', row).map((d) => d.getBoundingClientRect());
+      const after = items.filter((b) => b.right > r.right + 2).length;
+      const before = items.filter((b) => b.left < r.left - 2).length;
+      const more = $('.hr-scroll--more', group), back = $('.hr-scroll--back', group);
+      more.hidden = !after;
+      back.hidden = !before;
+      $('[data-more]', more).textContent = `${after} more`;
+      more.setAttribute('aria-label', `Show ${after} more ${group.dataset.group === 'ai' ? 'AI' : 'human'} moments`);
+      $('.hr-rail', group).classList.toggle('has-more', !!after);
+      $('.hr-rail', group).classList.toggle('has-back', !!before);
+    };
+    const refreshRails = () => groups.forEach((g) => { if (!g.hidden) railState(g); });
+    groups.forEach((g) => {
+      const row = $('.hr-dots', g);
+      row.addEventListener('scroll', () => railState(g), { passive: true });
+      $('.hr-scroll--more', g).addEventListener('click', () => row.scrollBy({ left: row.clientWidth * 0.75, behavior: reduce ? 'auto' : 'smooth' }));
+      $('.hr-scroll--back', g).addEventListener('click', () => row.scrollBy({ left: -row.clientWidth * 0.75, behavior: reduce ? 'auto' : 'smooth' }));
+    });
+    window.addEventListener('resize', refreshRails);
+    if (document.fonts) document.fonts.ready.then(refreshRails);
+
+    const setKind = (k) => {
+      if (k === kind) return;
+      kind = k;
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === k;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      $('.hr-switch', root).dataset.kind = k;
+      groups.forEach((g) => { g.hidden = g.dataset.group !== k; });
+      refreshRails();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => {
+        if (slides[index] && slides[index].dataset.kind === t.dataset.tab) return setKind(t.dataset.tab);
+        go(slides.findIndex((s) => s.dataset.kind === t.dataset.tab));
+      });
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        const other = tabs[(i + 1) % tabs.length];
+        other.focus();
+        other.click();
+      });
+    });
+
+    // The track is as tall as the moment on screen, and follows it as it grows (results, an opened case study)
+    const fit = () => { if (slides[index]) track.style.height = `${slides[index].offsetHeight}px`; };
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(fit);
+      slides.forEach((s) => ro.observe(s));
+    }
+
+    let index = -1, centre = 0;
     const go = (i, { scroll = true } = {}) => {
       i = Math.max(0, Math.min(slides.length - 1, i));
       if (i !== index) {
         index = i;
         slides.forEach((s, j) => {
-          s.classList.toggle('is-live', j === index);
-          if (j === index) hooks[j].live(); else hooks[j].idle();
+          const live = j === index;
+          s.classList.toggle('is-live', live);
+          if (live) hooks[j].live(); else hooks[j].idle();
         });
         dots.forEach((d, j) => d.setAttribute('aria-current', String(j === index)));
+        dots[index].dataset.seen = '';
+        setKind(slides[index].dataset.kind);
+        root.style.setProperty('--hr-progress', slides.length > 1 ? index / (slides.length - 1) : 1);
+        // Each row scrolls sideways, so bring the current name into view
+        clearTimeout(centre);
+        centre = setTimeout(() => {
+          const d = dots[index], row = d.parentElement;
+          if (row.scrollWidth <= row.clientWidth) return;
+          const left = row.scrollLeft + d.getBoundingClientRect().left - row.getBoundingClientRect().left - (row.clientWidth - d.offsetWidth) / 2;
+          row.scrollTo({ left, behavior: reduce ? 'auto' : 'smooth' });
+        }, reduce ? 0 : 280);
         count.textContent = `${index + 1} / ${slides.length}`;
         prev.disabled = index === 0;
         next.disabled = index === slides.length - 1;
+        fit();
       }
       if (scroll) track.scrollTo({ left: index * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
     };
@@ -1275,20 +1991,42 @@
       });
     }, { passive: true });
     track.addEventListener('keydown', (e) => {
+      if (e.target.matches('input')) return;   // arrow keys belong to the slider while it has focus
       if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
     });
-    dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+    dots.forEach((d, j) => d.addEventListener('click', () => go(j)));
     prev.addEventListener('click', () => go(index - 1));
     next.addEventListener('click', () => go(index + 1));
     window.addEventListener('resize', () => { track.scrollLeft = index * track.clientWidth; });
 
     go(0, { scroll: false });
+    refreshRails();
+
+    return {
+      studies,
+      // Walk to a moment from elsewhere, such as "Try the interactive exhibit" in the reader
+      show(slide) {
+        const room = $('#human-room');
+        room.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+        track.scrollLeft = 0;
+        index = -1;
+        go(slides.indexOf(slide), { scroll: false });
+        track.scrollLeft = index * track.clientWidth;
+        const stage = $('.hr-stage', slide);
+        if (stage) {
+          if (!stage.hasAttribute('tabindex')) stage.setAttribute('tabindex', '-1');
+          stage.focus({ preventScroll: true });
+        }
+      },
+    };
   }
 
+  initChrome();
   initEntrance();
   initArrival();
-  initHumanRoom();
+  const humanRoom = initHumanRoom();
+  initCaseReader(humanRoom);
   initParallaxFallback();
   initEvidenceWall();
   initInvisibleWork();
