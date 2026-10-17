@@ -261,7 +261,7 @@ html {
   line-height: .8; letter-spacing: -.04em; color: var(--ink); opacity: .09;
 }
 .room-title {
-  font-family: var(--font-display); font-weight: 300; font-size: clamp(40px, 6vw, 84px);
+  font-family: var(--font-display); font-weight: 100; font-size: clamp(32px, 4.8vw, 66px);
   line-height: 1; letter-spacing: -.02em; margin: 8px 0 14px;
 }
 .room-intro { max-width: 46ch; color: var(--muted); font-size: clamp(17px, 1.2vw + 8px, 20px); }
@@ -286,7 +286,7 @@ html {
 
 .statement {
   font-family: var(--font-display); font-weight: 100;
-  font-size: clamp(22px, 5.4vw, 80px); line-height: 1.08; letter-spacing: -.03em;
+  font-size: clamp(20px, 4.4vw, 64px); line-height: 1.08; letter-spacing: -.03em;
   margin: 28px 0 36px;
 }
 .statement-line { display: block; overflow: hidden; padding-bottom: .08em; white-space: nowrap; }
@@ -506,7 +506,7 @@ html {
 .hr-text { display: grid; }
 .hr-text .exhibit-no { font: 500 11.5px var(--font-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
 .hr-text .moment-title {
-  font-family: var(--font-display); font-weight: 300; font-size: clamp(32px, 3.4vw, 50px); line-height: 1.05;
+  font-family: var(--font-display); font-weight: 300; font-size: clamp(26px, 2.7vw, 40px); line-height: 1.05;
   margin: 10px 0 6px; letter-spacing: -.015em; color: var(--ink);
 }
 .hr-text .moment-time { font: 400 12.5px var(--font-mono); color: var(--muted); letter-spacing: .04em; margin-bottom: 24px; }
@@ -771,7 +771,7 @@ html.js .hr-slide:not(.is-live) .hr-unfold > * { opacity: 0; }
 .chapter-label { font: 500 11.5px var(--font-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--dlg-accent); }
 .chapter-label b { display: block; font: 300 44px/1 var(--font-display); letter-spacing: 0; margin-bottom: 10px; color: var(--dlg-ink, var(--charcoal)); opacity: .35; }
 .chapter-body { display: grid; gap: 18px; max-width: 62ch; font-size: clamp(17px, 1vw + 9px, 19px); }
-.chapter-body h3 { font-family: var(--font-display); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.15; }
+.chapter-body h3 { font-family: var(--font-display); font-size: clamp(22px, 2vw, 30px); line-height: 1.15; }
 .story-quote { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: clamp(26px, 3vw, 42px); line-height: 1.25; padding-left: 24px; border-left: 2px solid var(--dlg-accent); }
 .story-quote cite { display: block; margin-top: 12px; font: 400 12px var(--font-mono); font-style: normal; letter-spacing: .1em; color: var(--dlg-muted, #636363); }
 .tradeoffs { list-style: none; display: grid; gap: 14px; }
@@ -858,7 +858,7 @@ html:not(.js) .core, html:not(.js) .well-footer { display: none; }
 /* shared pieces used inside each layer */
 .stratum-head { display: grid; gap: 8px; margin-bottom: 20px; }
 .stratum-no { font: 500 11px var(--font-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
-.stratum h3 { font: 300 clamp(32px, 4vw, 52px)/1.05 var(--font-display); letter-spacing: -.015em; color: var(--ink); }
+.stratum h3 { font: 300 clamp(26px, 3.2vw, 42px)/1.05 var(--font-display); letter-spacing: -.015em; color: var(--ink); }
 .stratum-lede { max-width: 56ch; font-size: 17px; color: var(--muted); }
 .stratum-body { display: grid; gap: 18px; margin-top: 22px; }
 .stratum-aside { font: italic 400 19px/1.4 var(--font-display); color: var(--muted); }
@@ -1085,8 +1085,8 @@ html:not(.js) .core, html:not(.js) .well-footer { display: none; }
 }
 .reflection-inner { max-width: 1100px; margin: 0 auto; width: 100%; text-align: center; display: grid; justify-items: center; gap: 0; }
 .reflection-statement {
-  font-family: var(--font-display); font-weight: 100; font-size: clamp(40px, 6.6vw, 104px);
-  line-height: 1.02; letter-spacing: -.03em; margin: 20px 0 28px; max-width: 16ch;
+  font-family: var(--font-display); font-weight: 100; font-size: clamp(32px, 5.2vw, 84px);
+  line-height: 1.02; letter-spacing: -.03em; margin: 20px 0 28px; max-width: 18ch;
 }
 .reflection-coda { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: clamp(20px, 1.8vw + 8px, 28px); line-height: 1.45; color: var(--muted); }
 
@@ -1446,3 +1446,40 @@ html:has(.exhibit-dialog[open]) { overflow: hidden; }
 .dlg-content { min-width: 0; overflow-wrap: break-word; }
 /* inside the exhibit's text column, under the decision */
 .hr-text .hr-case-open { margin-top: 32px; }
+
+/* ---- Curator nameplate: the name framed like a gallery label, lit by a passing spotlight ---- */
+.curator-name {
+  position: relative; display: inline-block; white-space: nowrap;
+  margin: 0 .15em; padding: .1em .55em .12em;
+  font-family: var(--font-display); font-style: normal; font-weight: 600;
+  font-size: .82em; letter-spacing: .22em; text-transform: uppercase; line-height: 1.4;
+  color: var(--ink);
+}
+/* red corner brackets, like the frame marks on a hanging plan */
+.curator-name::before, .curator-name::after {
+  content: ""; position: absolute; width: .55em; height: .55em;
+  border: 0 solid #ff3939; pointer-events: none;
+  transition: top .35s var(--ease-out), border-color .25s ease, width .35s var(--ease-out), height .35s var(--ease-out), right .35s var(--ease-out), border-radius .35s var(--ease-out), background-color .25s ease;
+}
+.curator-name::before { top: 0; left: 0; border-top-width: 2px; border-left-width: 2px; }
+.curator-name::after { top: calc(100% - .55em); right: 0; background-color: transparent; border-bottom-width: 2px; border-right-width: 2px; }
+/* on hover the frame lifts away, leaving only the red "you are here" dot */
+.curator-name:hover::before { border-color: transparent; }
+.curator-name:hover::after {
+  top: .1em; right: .22em; width: .42em; height: .42em;
+  border-width: 0; border-radius: 50%; background-color: #ff3939;
+}
+/* the letters: ink, with a band of light that crosses them */
+.curator-name-text {
+  background: linear-gradient(100deg, var(--ink) 0 40%, #ffffff 48%, #ff3939 52%, var(--ink) 60% 100%) no-repeat;
+  background-size: 300% 100%; background-position: 100% 0;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .curator-name::before, .curator-name::after { opacity: 0; animation: curator-frame .7s var(--ease-out) 1.5s forwards; }
+  .curator-name-text { animation: curator-light 1.8s ease-in-out 1.9s; }
+  .curator-name:hover .curator-name-text { animation: curator-light 1.2s ease-in-out; }
+}
+@keyframes curator-frame { from { opacity: 0; transform: scale(1.6); } to { opacity: 1; transform: scale(1); } }
+@keyframes curator-light { from { background-position: 100% 0; } to { background-position: 0 0; } }
