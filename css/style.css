@@ -2290,3 +2290,128 @@ html:has(.exhibit-dialog[open]) { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .wall-threads path, .wall-note, .wall-item, .ev-tag, .wall::before { transition: none; }
 }
+
+/* ==========================================================================
+   Customer journey, as a sketch: the loop and the line
+   ========================================================================== */
+.jr {
+  --jr-ink: var(--dlg-ink, #F2F2F2); --jr-muted: var(--dlg-muted, #A6A6A6); --jr-line: color-mix(in srgb, currentColor 14%, transparent);
+  display: grid; gap: 16px; padding: clamp(14px, 2.2vw, 24px);
+  border: 1px solid var(--jr-line); border-radius: var(--radius-panel);
+  background:
+    radial-gradient(color-mix(in srgb, currentColor 7%, transparent) 1px, transparent 1.4px) 0 0 / 20px 20px,
+    color-mix(in srgb, currentColor 3%, transparent);
+}
+.jr-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.jr-modes { display: inline-flex; padding: 3px; border-radius: var(--radius-pill); border: 1px solid var(--jr-line); }
+.jr-mode {
+  min-height: 38px; padding: 6px 16px; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--jr-muted);
+  font: 400 14px/1 var(--font-body); cursor: pointer; transition: background .25s ease, color .25s ease;
+}
+.jr-mode b { font-weight: 600; margin-right: 4px; color: var(--jr-ink); }
+.jr-mode[aria-pressed="true"] { background: var(--jr-ink); color: var(--dlg-bg, #121212); }
+.jr-mode[aria-pressed="true"] b { color: inherit; }
+.jr-attempt { margin-left: auto; font: 500 11px/1.4 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: #ff6b6b; }
+.jr[data-mode="after"] .jr-attempt { color: var(--jr-muted); }
+.jr-play {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--jr-line);
+  background: transparent; color: var(--jr-ink); font-size: 12px; cursor: pointer;
+}
+.jr-play:hover { border-color: var(--jr-ink); }
+
+.jr-main { display: grid; gap: 16px; align-items: start; }
+@media (min-width: 980px) { .jr-main { grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); } }
+.jr-svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* the drawing: every line looks pencilled */
+.jr-svg path, .jr-svg rect, .jr-svg circle { fill: none; stroke: var(--jr-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.jr-ink-stroke { fill: none; stroke: var(--jr-ink); stroke-width: 1.4; }
+.jr-track { stroke-width: 2.4 !important; }
+.jr-track--ghost { opacity: .3; stroke-width: 1 !important; }
+.jr-scene--before .jr-track:not(.jr-track--ghost) { stroke-dasharray: 10 7; animation: jr-flow 1.2s linear infinite; }
+.jr[data-mode="after"] .jr-scene--after .jr-track:not(.jr-track--ghost) { stroke: #ff3939 !important; }
+@keyframes jr-flow { to { stroke-dashoffset: -17; } }
+.jr-scene { transition: opacity .6s ease; }
+.jr[data-mode="before"] .jr-scene--after, .jr[data-mode="after"] .jr-scene--before { opacity: 0; pointer-events: none; }
+.jr[data-mode="after"] .jr-scene--before { opacity: .06; }
+.jr-clinic path, .jr-clinic rect { stroke-width: 1.4; }
+.jr-crowd circle, .jr-crowd path { stroke-width: 2; opacity: .55; }
+.jr-again { stroke-dasharray: 4 5; opacity: .7; }
+.jr-tx { font: 500 13px var(--font-body); fill: var(--jr-ink); stroke: none !important; text-anchor: middle; }
+.jr-tx--s { font-size: 11px; fill: var(--jr-muted); }
+.jr-tx--l { text-anchor: start; }
+.jr-tx--red { font: 500 11px var(--font-mono); letter-spacing: .06em; fill: #ff6b6b; }
+.jr-tx--on { fill: #FFFFFF; font-weight: 700; }
+.jr-svg .jr-pick { fill: #ff3939; stroke: #ff3939; }
+.jr-phone-big rect:first-child { stroke-width: 2; }
+
+/* stops */
+.jr-svg .jr-stop circle { fill: var(--dlg-bg, #121212); stroke-width: 1.8; transition: r .3s ease; }
+.jr-svg .jr-stop.is-pain circle { stroke: #ff3939; }
+.jr-svg .jr-stop.is-here circle { fill: var(--jr-ink); r: 15; }
+.jr-svg .jr-stop.is-here.is-pain circle { fill: #ff3939; }
+.jr-stop-n { font: 700 12px var(--font-body); }
+.jr-stop.is-here .jr-stop-n { fill: var(--dlg-bg, #121212); }
+.jr-stop.is-here.is-pain .jr-stop-n { fill: #FFFFFF; }
+
+/* Ravi */
+.jr-svg .jr-head, .jr-svg .jr-coat { fill: var(--dlg-bg, #121212); }
+.jr-svg .jr-coat { stroke-width: 1.8; }
+.jr-svg .jr-hair { stroke-width: 3; }
+.jr-svg .jr-eye { fill: var(--jr-ink); stroke: none; }
+.jr-svg .jr-handset { fill: var(--jr-ink); }
+.jr[data-mode="after"] .jr-handset { display: none; }
+.jr-svg .jr-mouth, .jr-svg .jr-brow { stroke-width: 1.4; }
+.jr-leg { transform-box: fill-box; }
+.jr-leg--l { transform-origin: 100% 0; } .jr-leg--r { transform-origin: 0 0; }
+.jr.is-walking .jr-leg--l { animation: jr-step .42s ease-in-out infinite alternate; }
+.jr.is-walking .jr-leg--r { animation: jr-step .42s ease-in-out infinite alternate-reverse; }
+.jr.is-walking .jr-ravi-in { animation: jr-bob .21s ease-in-out infinite alternate; }
+@keyframes jr-step { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+@keyframes jr-bob { to { transform: translateY(-1.5px); } }
+.jr-svg .jr-bubble path, .jr-svg .jr-bubble circle { fill: var(--dlg-bg, #121212); stroke-width: 1.4; }
+.jr-bubble-t { font: 700 12px var(--font-body); }
+.jr.is-walking .jr-bubble { opacity: 0; }
+.jr-bubble { transition: opacity .3s ease; }
+
+/* the stop card */
+.jr-card {
+  display: grid; gap: 10px; padding: 18px 18px 20px; border-radius: var(--radius-card);
+  background: var(--dlg-bg, #121212); border: 1px solid var(--jr-line);
+}
+.jr-card.is-in { animation: jr-card .5s var(--ease-out); }
+@keyframes jr-card { from { opacity: .2; transform: translateY(8px); } }
+.jr-card-k { display: flex; justify-content: space-between; gap: 8px; font: 500 11px/1.4 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--jr-muted); }
+.jr-card-n { color: #ff3939; }
+.jr-card-h { margin: 0; font: 300 clamp(24px, 2.2vw, 30px)/1.1 var(--font-display); letter-spacing: -.01em; color: var(--jr-ink); }
+.jr-fields { display: grid; gap: 10px; margin: 0; }
+.jr-f { display: grid; gap: 3px; padding-top: 10px; border-top: 1px solid var(--jr-line); }
+.jr-f dt { font: 500 10px/1.4 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--jr-muted); }
+.jr-f dd { margin: 0; font-size: 15px; line-height: 1.5; color: var(--jr-ink); }
+.jr-f--think dd { position: relative; padding: 8px 12px; border-radius: 14px 14px 14px 4px; background: color-mix(in srgb, currentColor 6%, transparent); font: italic 300 17px/1.4 var(--font-display); }
+.jr-f--pain dt { color: #ff6b6b; }
+.jr-f--opp dd { font-weight: 600; }
+.jr[data-mode="after"] .jr-f--pain dt { color: var(--jr-muted); }
+.jr[data-mode="after"] .jr-f--opp dd { color: #ff6b6b; }
+
+/* stop list and the turn to the redesign */
+.jr-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.jr-stoplist { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+.jr-stoplist button {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--jr-line); background: transparent; color: var(--jr-ink); font: 500 13px/1 var(--font-body); cursor: pointer;
+}
+.jr-stoplist button b { font: 500 10.5px var(--font-mono); color: var(--jr-muted); }
+.jr-stoplist button:hover { border-color: var(--jr-muted); }
+.jr-stoplist button[aria-current="true"] { border-color: var(--jr-ink); background: color-mix(in srgb, currentColor 8%, transparent); }
+.jr-end { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 14px; color: #ff6b6b; }
+.jr-end[hidden] { display: none; }
+.jr-go-after {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 18px; border: 0; border-radius: var(--radius-pill);
+  background: #ff3939; color: #FFFFFF; font: 600 14px/1 var(--font-body); cursor: pointer;
+}
+.jr-go-after:hover { opacity: .88; }
+@media (prefers-reduced-motion: reduce) {
+  .jr-scene--before .jr-track, .jr-card.is-in, .jr .jr-leg, .jr .jr-ravi-in { animation: none !important; }
+  .jr-scene { transition: none; }
+}

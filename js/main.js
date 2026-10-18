@@ -495,6 +495,230 @@
   }
 
   /* ------------------------------------------------------------------------
+     Customer journey, drawn as a sketch: Ravi walks the old loop, then the new line.
+     Lives inside the case study reader; started whenever its chapter is rendered.
+     ------------------------------------------------------------------------ */
+  const JOURNEY = {
+    before: {
+      labels: ['Doing', 'Thinking', 'Pain point', 'Design opportunity'],
+      stops: [
+        { at: 40, short: 'Calls at 07:00', time: '07:00', mood: 0, bubble: '?',
+          do: 'Calls the clinic before work, along with more than 300 other people.',
+          think: 'Can anyone see me this week?',
+          pain: 'The phone line is the only door, and it is open for 40 minutes a day.',
+          opp: 'Let people see availability without calling.' },
+        { at: 320, short: 'On hold', time: 'On hold', mood: -1, bubble: '…', pain: true,
+          do: 'Waits. The hold music is the only thing that answers.',
+          think: 'Is there even a slot?',
+          pain: 'Nobody can see whether an appointment exists before committing to the queue.',
+          opp: 'Replace waiting with seeing.' },
+        { at: 517, short: 'Tries online', time: 'Online', mood: -1, bubble: '?',
+          do: 'Tries the website instead. It asks him to log in first.',
+          think: 'I don’t want an app. I just want a time.',
+          pain: 'Login, then details, then reason, and only then availability.',
+          opp: 'Availability before identity.' },
+        { at: 754, short: 'Gives up', time: 'Online', mood: -2, bubble: '×', pain: true,
+          do: 'Leaves before he ever sees a time slot.',
+          think: 'I’ll just call again.',
+          pain: 'In the old online flow, 40% left before they saw a single slot.',
+          opp: 'Show real slots first. Ask for details only once a time is chosen.' },
+        { at: 954, short: 'Back to the phone', time: 'Next morning', mood: -2, bubble: '…', pain: true,
+          do: 'Back in the morning queue, and many people like him phoned anyway.',
+          think: '“I book at 7am because that’s when I’m brave enough to call.” Participant 07, age 68',
+          pain: 'Older patients, carers and shift workers are hit hardest. They have no other way in.',
+          opp: 'Keep the phone line for the people who need it most.' },
+      ],
+    },
+    after: {
+      labels: ['What happens', 'Feeling', 'What changed', 'Result'],
+      stops: [
+        { at: 0.06, short: 'Sees real slots', time: 'Any time', mood: 1, bubble: '!',
+          do: 'Opens CareLine and sees this week’s real appointments, before any login.',
+          think: 'There’s a time on Tuesday.',
+          pain: 'Availability comes first. Nothing else is asked for yet.',
+          opp: 'Tap 1 of 3.' },
+        { at: 0.5, short: 'Picks 11:40', time: 'Tap 2', mood: 1, bubble: '11:40',
+          do: 'Picks 11:40 with Dr. Rao, then describes his symptoms in his own words.',
+          think: 'That was easy.',
+          pain: 'Details are asked for only once a time is chosen.',
+          opp: 'Tap 2 of 3.' },
+        { at: 0.97, short: 'Booked', time: 'Tap 3', mood: 2, bubble: '✓',
+          do: 'Booked. One reminder will arrive the evening before.',
+          think: 'Done, before work.',
+          pain: 'Three taps to book from the home screen, down from 11.',
+          opp: '−41% calls to the morning queue within three months. 1,000 patients a day booking without calling, by month six.' },
+      ],
+    },
+  };
+  const MOUTHS = {
+    '-2': 'M-4 -54C-2 -57 2 -57 4 -54', '-1': 'M-3.5 -55C-1 -56.5 1 -56.5 3.5 -55',
+    0: 'M-3.5 -55.5L3.5 -55.5', 1: 'M-4 -56C-1.5 -53.5 1.5 -53.5 4 -56', 2: 'M-4.5 -56.5C-2 -52 2 -52 4.5 -56.5',
+  };
+
+  function initJourney(root) {
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = '1';
+    const svg = $('.jr-svg', root);
+    const ravi = $('.jr-ravi', svg);
+    const flip = $('.jr-ravi-flip', svg);
+    const mouth = $('.jr-mouth', svg);
+    const brow = $('.jr-brow', svg);
+    const bubbleT = $('.jr-bubble-t', svg);
+    const stopsG = $('.jr-stops', svg);
+    const card = $('.jr-card', root);
+    const list = $('.jr-stoplist', root);
+    const attempt = $('.jr-attempt', root);
+    const play = $('.jr-play', root);
+    const end = $('.jr-end', root);
+    if (reduce) $$('.jr-boil', svg).forEach((a) => a.remove());
+
+    let mode = 'before';
+    let path, total, stops;
+    let L = 0, idx = 0, next = 0, phase = 'pause', timer = 0, lap = 1;
+    let playing = !reduce, inView = false, last = 0;
+
+    const stopL = (s) => (mode === 'before' ? s.at : s.at * total);
+
+    function setPlaying(on) {
+      playing = on;
+      play.setAttribute('aria-label', on ? 'Pause' : 'Play');
+      play.innerHTML = on ? '<span aria-hidden="true">&#10074;&#10074;</span>' : '<span aria-hidden="true">&#9654;</span>';
+      root.classList.toggle('is-playing', on);
+    }
+
+    function placeRavi(walking) {
+      const p = path.getPointAtLength(((L % total) + total) % total);
+      const q = path.getPointAtLength(Math.min(total, ((L % total) + total) % total + 2));
+      ravi.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(1.35)`);
+      if (Math.abs(q.x - p.x) > 0.05) flip.setAttribute('transform', q.x < p.x ? 'scale(-1 1)' : '');
+      root.classList.toggle('is-walking', walking);
+    }
+
+    function showStop(i) {
+      const data = JOURNEY[mode];
+      const s = stops[i];
+      $('.jr-card-n', card).textContent = String(i + 1).padStart(2, '0');
+      $('.jr-card-time', card).textContent = s.time;
+      $('.jr-card-h', card).textContent = s.short;
+      $$('.jr-f', card).forEach((f, k) => {
+        $('dt', f).textContent = k === 1 && s.think.startsWith('“') ? 'Heard in research' : data.labels[k];
+        $('dd', f).textContent = [s.do, s.think, s.pain, s.opp][k];
+      });
+      card.classList.toggle('is-quote', s.think.startsWith('“'));
+      card.classList.remove('is-in'); void card.offsetWidth; card.classList.add('is-in');
+      mouth.setAttribute('d', MOUTHS[s.mood]);
+      brow.setAttribute('d', s.mood < 0 ? 'M-5 -66L-1.5 -64M1.5 -64L5 -66' : 'M-5 -65L-1.5 -65.5M1.5 -65.5L5 -65');
+      bubbleT.textContent = s.bubble;
+      root.style.setProperty('--mood', s.mood);
+      $$('.jr-stop', stopsG).forEach((g, k) => g.classList.toggle('is-here', k === i));
+      $$('button', list).forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
+    }
+
+    function arrive(i) {
+      idx = i;
+      phase = 'pause';
+      // the first time round is told slowly; the repeats go faster, because they were all the same
+      timer = mode === 'before' && lap > 1 ? 0.7 : 2.8;
+      L = stopL(stops[i]);
+      showStop(i);
+      placeRavi(false);
+      if (mode === 'before' && i === stops.length - 1 && lap >= 4) {
+        attempt.textContent = 'Attempt 4 · 07:42';
+        end.hidden = false;
+        setPlaying(false);
+      }
+      if (mode === 'after' && i === stops.length - 1) setPlaying(false);
+    }
+
+    function buildStops() {
+      stopsG.innerHTML = '';
+      stops.forEach((s, i) => {
+        const p = path.getPointAtLength(stopL(s));
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', `jr-stop${s.pain === true ? ' is-pain' : ''}`);
+        g.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+        g.innerHTML = `<circle r="13"/><text class="jr-tx jr-stop-n" y="4.5">${i + 1}</text>`;
+        stopsG.appendChild(g);
+      });
+      list.innerHTML = stops.map((s, i) =>
+        `<li><button type="button" data-i="${i}" aria-current="false"><b>${String(i + 1).padStart(2, '0')}</b>${s.short}</button></li>`).join('');
+    }
+
+    function setMode(m) {
+      mode = m;
+      root.dataset.mode = m;
+      $$('.jr-mode', root).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+      path = $(`[data-path="${m}"]`, svg);
+      total = path.getTotalLength();
+      stops = JOURNEY[m].stops;
+      lap = 1;
+      end.hidden = true;
+      attempt.textContent = m === 'before' ? 'Attempt 1' : 'One journey';
+      buildStops();
+      arrive(0);
+      setPlaying(!reduce);
+    }
+
+    function step(dt) {
+      if (!playing) return;
+      if (phase === 'pause') {
+        timer -= dt;
+        if (timer > 0) return;
+        next = idx + 1;
+        if (next >= stops.length) {
+          if (mode === 'after') { setPlaying(false); return; }
+          next = 0;
+        }
+        phase = 'walk';
+        if (reduce) {               // no walking: jump calmly from stop to stop
+          if (next === 0) { lap += 1; attempt.textContent = `Attempt ${lap}`; }
+          arrive(next);
+          return;
+        }
+      }
+      if (phase === 'walk') {
+        const speed = (mode === 'before' && lap > 1 ? 330 : 150) * (mode === 'after' ? 1.1 : 1);
+        let target = stopL(stops[next]);
+        if (mode === 'before' && next === 0) target = total + stopL(stops[0]);
+        L += speed * dt;
+        if (L >= target) {
+          if (mode === 'before' && next === 0) {
+            lap += 1;
+            attempt.textContent = `Attempt ${lap}`;
+          }
+          arrive(next);
+        } else placeRavi(true);
+      }
+    }
+
+    function tick(now) {
+      if (!root.isConnected) return;          // the reader moved on: stop quietly
+      const dt = Math.min(0.05, (now - last) / 1000 || 0);
+      last = now;
+      if (inView) step(dt);
+      requestAnimationFrame(tick);
+    }
+
+    $$('.jr-mode', root).forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+    $('.jr-go-after', root).addEventListener('click', () => { setMode('after'); $('.jr-mode[data-mode="after"]', root).focus(); });
+    play.addEventListener('click', () => {
+      if (!playing && ((mode === 'after' && idx === stops.length - 1) || !end.hidden)) { setMode(mode); return; }
+      setPlaying(!playing);
+    });
+    list.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      arrive(Number(b.dataset.i));
+      timer = 4;
+    });
+
+    const io = new IntersectionObserver(([e]) => { inView = e.isIntersecting; }, { threshold: 0.35 });
+    io.observe(root);
+    setMode('before');
+    requestAnimationFrame((t) => { last = t; tick(t); });
+  }
+
+  /* ------------------------------------------------------------------------
      Exhibit presentation — a short, self-running walkthrough of one moment,
      shown over the case study instead of leaving it
      ------------------------------------------------------------------------ */
@@ -720,6 +944,7 @@
       if (c) {
         const i = cases.indexOf(c);
         content.innerHTML = renderStory(c, cases[i + 1]);
+        $$('[data-journey]', content).forEach(initJourney);
         pos.innerHTML = `<span class="dlg-long">Case study </span>${i + 1} of ${cases.length}`;
         prevBtn.disabled = i === 0;
         nextBtn.disabled = i === cases.length - 1;
