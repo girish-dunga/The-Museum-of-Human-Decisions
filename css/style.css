@@ -65,6 +65,10 @@ ul, ol { margin: 0; padding: 0; }
   outline: 2px solid var(--focus, var(--clay-deep));
   outline-offset: 4px;
 }
+/* Rooms and headings receive focus only as a landing point after in-page navigation, so screen readers
+   start reading there. They aren't controls, so they draw no ring (Safari otherwise outlines the whole room). */
+[tabindex="-1"]:not(a, button, input, select, textarea, [role="tab"]):focus,
+[tabindex="-1"]:not(a, button, input, select, textarea, [role="tab"]):focus-visible { outline: none; }
 html { --focus: #F2F2F2; }
 
 .skip-link {
