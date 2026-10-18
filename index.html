@@ -1197,19 +1197,32 @@
           <h2 id="evidence-title" class="room-title" data-reveal>Evidence Wall</h2>
           <p class="room-intro" data-reveal>
             Four investigations, kept as the objects they left behind. Each one started with a
-            person, not a brief. Pick any object up to read its full story.
+            person, not a brief. Follow the red threads to see what connects them, or pick any object up to read its full story.
           </p>
         </div>
       </header>
 
+      <div class="wall-bar">
+        <p class="wall-bar-k"><span class="wall-live" aria-hidden="true"></span>Case board · 4 investigations · 4 connections</p>
+        <div class="wall-lenses" role="group" aria-label="Highlight the evidence by theme">
+          <button class="wall-lens" type="button" data-lens="all" aria-pressed="true">All evidence</button>
+          <button class="wall-lens" type="button" data-lens="access" aria-pressed="false">Access</button>
+          <button class="wall-lens" type="button" data-lens="clarity" aria-pressed="false">Clarity</button>
+          <button class="wall-lens" type="button" data-lens="trust" aria-pressed="false">Trust</button>
+        </div>
+        <p class="wall-lens-note" aria-live="polite">Hover an object to see what it connects to.</p>
+      </div>
+
       <div class="wall">
         <svg class="wall-threads" aria-hidden="true"></svg>
+        <div class="wall-notes" aria-hidden="true"></div>
 
         <ul class="wall-list" role="list">
           <!-- Healthcare: medical file -->
-          <li class="wall-item wall-item--file">
+          <li class="wall-item wall-item--file" data-tags="access clarity">
             <button class="artifact artifact--file" type="button" data-project="careline" aria-haspopup="dialog">
               <span class="pin" aria-hidden="true"></span>
+              <span class="ev-tag" aria-hidden="true"><b>Exhibit A</b><span class="ev-v">−41%</span><span class="ev-u">morning calls</span></span>
               <span class="obj obj-file" aria-hidden="true">
                 <span class="file-tab">HC-0117</span>
                 <span class="file-body">
@@ -1224,15 +1237,17 @@
               <span class="caption">
                 <span class="caption-kind">Healthcare · 2025</span>
                 <span class="caption-title">CareLine</span>
+                <span class="caption-tags"><i>Access</i><i>Clarity</i></span>
                 <span class="caption-cue">Open the file</span>
               </span>
             </button>
           </li>
 
           <!-- Fintech: transaction slips -->
-          <li class="wall-item wall-item--slips">
+          <li class="wall-item wall-item--slips" data-tags="clarity trust">
             <button class="artifact artifact--slips" type="button" data-project="ledger" aria-haspopup="dialog">
               <span class="pin" aria-hidden="true"></span>
+              <span class="ev-tag" aria-hidden="true"><b>Exhibit B</b><span class="ev-v">−52%</span><span class="ev-u">mystery-charge tickets</span></span>
               <span class="obj obj-slips" aria-hidden="true">
                 <span class="slip slip--a">
                   <span class="slip-head">LEDGER · STATEMENT</span>
@@ -1252,15 +1267,17 @@
               <span class="caption">
                 <span class="caption-kind">Fintech · 2024</span>
                 <span class="caption-title">Ledger</span>
+                <span class="caption-tags"><i>Clarity</i><i>Trust</i></span>
                 <span class="caption-cue">Read the slips</span>
               </span>
             </button>
           </li>
 
           <!-- Design system: blueprint -->
-          <li class="wall-item wall-item--blueprint">
+          <li class="wall-item wall-item--blueprint" data-tags="access">
             <button class="artifact artifact--blueprint" type="button" data-project="foundation" aria-haspopup="dialog">
               <span class="pin" aria-hidden="true"></span>
+              <span class="ev-tag" aria-hidden="true"><b>Exhibit C</b><span class="ev-v">230 → 64</span><span class="ev-u">components</span></span>
               <span class="obj obj-blueprint" aria-hidden="true">
                 <svg viewBox="0 0 320 200" class="bp-drawing">
                   <rect x="24" y="36" width="120" height="40" rx="6"/>
@@ -1284,15 +1301,17 @@
               <span class="caption">
                 <span class="caption-kind">Design system · 2023 – now</span>
                 <span class="caption-title">Foundation</span>
+                <span class="caption-tags"><i>Access</i></span>
                 <span class="caption-cue">Unroll the plans</span>
               </span>
             </button>
           </li>
 
           <!-- AI: intelligence map -->
-          <li class="wall-item wall-item--map">
+          <li class="wall-item wall-item--map" data-tags="trust">
             <button class="artifact artifact--map" type="button" data-project="atlas" aria-haspopup="dialog">
               <span class="pin" aria-hidden="true"></span>
+              <span class="ev-tag" aria-hidden="true"><b>Exhibit D</b><span class="ev-v">11,400 h</span><span class="ev-u">returned to clinicians</span></span>
               <span class="obj obj-map" aria-hidden="true">
                 <canvas class="map-canvas"></canvas>
                 <span class="map-legend">fig. 4 &nbsp;— where the model is unsure</span>
@@ -1300,6 +1319,7 @@
               <span class="caption">
                 <span class="caption-kind">AI · 2025</span>
                 <span class="caption-title">Atlas</span>
+                <span class="caption-tags"><i>Trust</i></span>
                 <span class="caption-cue">Trace the map</span>
               </span>
             </button>
@@ -1316,37 +1336,32 @@
           <p class="placard-line" data-reveal>Room 04</p>
           <h2 id="invisible-title" class="room-title" data-reveal>The Invisible Work</h2>
           <p class="room-intro" data-reveal>
-            Every finished screen sits on layers nobody sees. This is a core sample taken through one of them.
-            Dig down, one layer at a time, and open each of them.
+            Every finished screen sits on layers nobody sees. Dig down, one layer at a time, and open each of them.
           </p>
         </div>
       </header>
 
       <div class="dig" data-dig>
-        <aside class="core" aria-label="Core sample. Choose a layer to read.">
-          <p class="core-label">Core sample</p>
-          <div class="bands" role="group" aria-label="Layers">
-            <span class="drill" aria-hidden="true"></span>
-          <button class="band" type="button" aria-current="true"><span class="band-no">00</span><span class="band-name">Surface</span><span class="band-state">Reading</span></button>
-          <button class="band" type="button" aria-current="false"><span class="band-no">01</span><span class="band-name">Research</span><span class="band-state">Unopened</span></button>
-          <button class="band" type="button" aria-current="false"><span class="band-no">02</span><span class="band-name">Decisions</span><span class="band-state">Unopened</span></button>
-          <button class="band" type="button" aria-current="false"><span class="band-no">03</span><span class="band-name">Negotiation</span><span class="band-state">Unopened</span></button>
-          <button class="band" type="button" aria-current="false"><span class="band-no">04</span><span class="band-name">Failures</span><span class="band-state">Unopened</span></button>
-          <button class="band" type="button" aria-current="false"><span class="band-no">05</span><span class="band-name">Iterations</span><span class="band-state">Unopened</span></button>
+        <aside class="core" aria-label="The finished screen, and the layers under it">
+          <div class="polish">
+            <p class="polish-h">Booking confirmed</p>
+            <p class="polish-p">Tuesday 11:40 with Dr. Rao. Northfield Clinic, Room 3. We’ll remind you the evening before.</p>
           </div>
-          <p class="dig-progress" aria-live="polite">1 of 6 levels opened</p>
+          <p class="polish-foot">Looks simple. It took 22 interviews, 9 versions and 4 arguments.</p>
+          <div class="bands" role="group" aria-label="Layers">
+            <button class="band" type="button" aria-current="true"><span class="band-no">01</span><span class="band-name">Research</span><span class="band-state">Open</span></button>
+            <button class="band" type="button" aria-current="false"><span class="band-no">02</span><span class="band-name">Decisions</span><span class="band-state">Unopened</span></button>
+            <button class="band" type="button" aria-current="false"><span class="band-no">03</span><span class="band-name">Negotiation</span><span class="band-state">Unopened</span></button>
+            <button class="band" type="button" aria-current="false"><span class="band-no">04</span><span class="band-name">Failures</span><span class="band-state">Unopened</span></button>
+            <button class="band" type="button" aria-current="false"><span class="band-no">05</span><span class="band-name">Iterations</span><span class="band-state">Unopened</span></button>
+          </div>
+          <div class="dig-progress-row">
+            <p class="dig-progress" aria-live="polite">1 of 5 layers opened</p>
+            <span class="dig-meter" aria-hidden="true"><span class="dig-meter-fill"></span></span>
+          </div>
         </aside>
 
         <div class="well" data-well>
-          <div class="well-surface" tabindex="-1">
-            <div class="polish">
-            <p class="polish-kicker">Booking confirmed</p>
-            <p class="polish-h">Tuesday 11:40<br>with Dr. Rao</p>
-            <p class="polish-p">Northfield Clinic, Room 3. We’ll remind you the evening before.</p>
-            <span class="polish-btn">Add to calendar</span>
-            <p class="polish-foot">Looks simple. It took 22 interviews, 9 versions and 4 arguments.</p>
-          </div>
-          </div>
           <div class="strata">
             <section class="stratum" data-layer="1" aria-labelledby="l1-title">
                         <header class="stratum-head">
@@ -1484,10 +1499,6 @@
                         </div>
                       </section>
           </div>
-          <div class="well-footer">
-            <p class="well-depth" aria-live="polite">Layer 00 of 05 · Surface</p>
-            <button class="well-deeper" type="button">Go deeper: 01 Research</button>
-          </div>
         </div>
       </div>
     </section>
@@ -1541,7 +1552,7 @@
                 </g>
               </g>
             </svg>
-            <div class="specimen"><div class="specimen-screen"></div></div>
+            <div class="specimens"></div>
           </div>
 
           <div class="lab-results" aria-live="polite">
@@ -1569,69 +1580,111 @@
           <p class="placard-line" data-reveal>Room 06</p>
           <h2 id="impact-title" class="room-title" data-reveal>The Impact Gallery</h2>
           <p class="room-intro" data-reveal>
-            Each installation answers one question about what changed. Drag between before and after launch, and watch the difference take shape.
+            Each installation answers one question about what changed. Drag across the artwork, or step between before and after launch, and watch the difference take shape.
           </p>
         </div>
       </header>
 
+      <ol class="impact-index" role="list" aria-label="The three installations">
+          <li><a class="ii" href="#install-lights"><span class="ii-no">6.1</span><span class="ii-v">1,000</span><span class="ii-l">patients a day book online</span></a></li>
+          <li><a class="ii" href="#install-maze"><span class="ii-no">6.2</span><span class="ii-v">38% → 12%</span><span class="ii-l">gave up at checkout</span></a></li>
+          <li><a class="ii" href="#install-paths"><span class="ii-no">6.3</span><span class="ii-v">11,400 h</span><span class="ii-l">returned to clinicians a year</span></a></li>
+      </ol>
+
       <div class="installations">
-        <figure class="installation" data-install="lights">
-          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+        <figure class="installation" data-install="lights" id="install-lights">
+          <div class="install-stage">
+            <canvas class="px" aria-hidden="true"></canvas>
+            <div class="stage-hud" aria-hidden="true">
+              <span class="hud-no">6.1</span>
+              <span class="hud-state"><i></i><b>After launch</b></span>
+            </div>
+            <p class="stage-hint" aria-hidden="true"><span class="stage-hint-arrows">&larr; &rarr;</span> Drag across to rewind</p>
+          </div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.1 &nbsp;·&nbsp; 1,000 lights</p>
             <p class="install-q">How many patients now book without a phone call?</p>
-            <p class="install-figure"><span class="count" data-to="1000">1,000</span><span class="install-unit">a day</span></p>
-            <dl class="install-compare">
-              <div><dt>Before launch</dt><dd>None. Every appointment started with a phone call at 7am.</dd></div>
-              <div><dt>After launch</dt><dd>A thousand patients a day book online, six months after launch.</dd></div>
-            </dl>
+            <div class="install-result">
+              <p class="install-figure"><span class="count" data-to="1000">1,000</span><span class="install-unit">a day</span></p>
+              <p class="install-delta"><b>+1,000</b> bookings a day with no phone call</p>
+            </div>
+            <div class="install-compare" role="group" aria-label="Show the installation">
+              <button class="ic" type="button" data-p="0" aria-pressed="false"><span class="ic-k">Before launch</span><span class="ic-v">None. Every appointment started with a phone call at 7am.</span></button>
+              <button class="ic" type="button" data-p="1" aria-pressed="true"><span class="ic-k">After launch</span><span class="ic-v">A thousand patients a day book online, six months after launch.</span></button>
+            </div>
             <div class="install-scrub">
               <span aria-hidden="true">Before</span>
               <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
               <span aria-hidden="true">After</span>
             </div>
-            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
-            <p class="install-key"><span class="key-dot" aria-hidden="true"></span>One light is one patient, every day.</p>
+            <div class="install-foot">
+              <p class="install-key"><span class="key-dot" aria-hidden="true"></span>One light is one patient, every day.</p>
+              <button class="install-replay" type="button"><span aria-hidden="true">&#8635;</span> Replay the change</button>
+            </div>
           </figcaption>
         </figure>
 
-        <figure class="installation" data-install="maze">
-          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+        <figure class="installation" data-install="maze" id="install-maze">
+          <div class="install-stage">
+            <canvas class="px" aria-hidden="true"></canvas>
+            <div class="stage-hud" aria-hidden="true">
+              <span class="hud-no">6.2</span>
+              <span class="hud-state"><i></i><b>After launch</b></span>
+            </div>
+            <p class="stage-hint" aria-hidden="true"><span class="stage-hint-arrows">&larr; &rarr;</span> Drag across to rewind</p>
+          </div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.2 &nbsp;·&nbsp; The shrinking maze</p>
             <p class="install-q">How many people gave up at checkout?</p>
-            <p class="install-figure"><span class="count" data-from="38" data-to="12">12</span>%<span class="install-unit">gave up</span></p>
-            <dl class="install-compare">
-              <div><dt>Before launch</dt><dd>38 in every 100 people abandoned the payment.</dd></div>
-              <div><dt>After launch</dt><dd>12 in every 100. The dead ends were removed from the journey.</dd></div>
-            </dl>
+            <div class="install-result">
+              <p class="install-figure"><span class="count" data-from="38" data-to="12">12</span>%<span class="install-unit">gave up</span></p>
+              <p class="install-delta"><b>−26 pts</b> fewer people abandoning payment</p>
+            </div>
+            <div class="install-compare" role="group" aria-label="Show the installation">
+              <button class="ic" type="button" data-p="0" aria-pressed="false"><span class="ic-k">Before launch</span><span class="ic-v">38 in every 100 people abandoned the payment.</span></button>
+              <button class="ic" type="button" data-p="1" aria-pressed="true"><span class="ic-k">After launch</span><span class="ic-v">12 in every 100. The dead ends were removed from the journey.</span></button>
+            </div>
             <div class="install-scrub">
               <span aria-hidden="true">Before</span>
               <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
               <span aria-hidden="true">After</span>
             </div>
-            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
-            <p class="install-key"><span class="key-line" aria-hidden="true"></span>The red line is the route people take. Dead ends vanish as the journey is simplified.</p>
+            <div class="install-foot">
+              <p class="install-key"><span class="key-line" aria-hidden="true"></span>The red line is the route people take. Dead ends vanish as the journey is simplified.</p>
+              <button class="install-replay" type="button"><span aria-hidden="true">&#8635;</span> Replay the change</button>
+            </div>
           </figcaption>
         </figure>
 
-        <figure class="installation" data-install="paths">
-          <div class="install-stage"><canvas class="px" aria-hidden="true"></canvas></div>
+        <figure class="installation" data-install="paths" id="install-paths">
+          <div class="install-stage">
+            <canvas class="px" aria-hidden="true"></canvas>
+            <div class="stage-hud" aria-hidden="true">
+              <span class="hud-no">6.3</span>
+              <span class="hud-state"><i></i><b>After launch</b></span>
+            </div>
+            <p class="stage-hint" aria-hidden="true"><span class="stage-hint-arrows">&larr; &rarr;</span> Drag across to rewind</p>
+          </div>
           <figcaption class="install-card">
             <p class="install-no">Installation 6.3 &nbsp;·&nbsp; Flowing pathways</p>
             <p class="install-q">How much time did clinicians get back?</p>
-            <p class="install-figure"><span class="count" data-to="11400">11,400</span><span class="install-unit">hours a year</span></p>
-            <dl class="install-compare">
-              <div><dt>Before launch</dt><dd>Up to two hours a day spent drafting routine replies.</dd></div>
-              <div><dt>After launch</dt><dd>11,400 hours a year returned across the pilot practices.</dd></div>
-            </dl>
+            <div class="install-result">
+              <p class="install-figure"><span class="count" data-to="11400">11,400</span><span class="install-unit">hours a year</span></p>
+              <p class="install-delta"><b>+11,400 h</b> returned to clinicians every year</p>
+            </div>
+            <div class="install-compare" role="group" aria-label="Show the installation">
+              <button class="ic" type="button" data-p="0" aria-pressed="false"><span class="ic-k">Before launch</span><span class="ic-v">Up to two hours a day spent drafting routine replies.</span></button>
+              <button class="ic" type="button" data-p="1" aria-pressed="true"><span class="ic-k">After launch</span><span class="ic-v">11,400 hours a year returned across the pilot practices.</span></button>
+            </div>
             <div class="install-scrub">
               <span aria-hidden="true">Before</span>
               <input class="install-range" type="range" min="0" max="100" step="1" value="100" aria-label="Move between before and after launch">
               <span aria-hidden="true">After</span>
             </div>
-            <p class="install-now" aria-hidden="true">Now showing: after launch</p>
-            <p class="install-key"><span class="key-dot" aria-hidden="true"></span>Each moving dot is a reply on its way to a patient. Watch the routes straighten.</p>
+            <div class="install-foot">
+              <p class="install-key"><span class="key-dot" aria-hidden="true"></span>Each moving dot is a reply on its way to a patient. Watch the routes straighten.</p>
+              <button class="install-replay" type="button"><span aria-hidden="true">&#8635;</span> Replay the change</button>
+            </div>
           </figcaption>
         </figure>
       </div>
@@ -1652,7 +1705,7 @@
           <!-- Replace with your real contact details -->
           <a class="guestbook-mail" href="mailto:hello@example.com">hello@example.com</a>
           <ul class="guestbook-links" role="list">
-            <li><a href="https://www.linkedin.com/" rel="https://www.linkedin.com/in/girishdunga">LinkedIn</a></li>
+            <li><a href="https://www.linkedin.com/" rel="https://www.linkedin.com/in/girishdunga" target="_blank">LinkedIn</a></li>
             <li><a href="#" rel="noopener">Résumé (PDF)</a></li>
             <li><a href="https://read.cv/" rel="noopener">Read.cv</a></li>
           </ul>
@@ -1670,6 +1723,686 @@
     </section>
   </main>
 
+  <!-- Case study screens: a few key moments per project, shown in the reader. Not complete flows. -->
+  <template id="shots-careline">
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-care">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <p class="m-eyebrow">Northfield Clinic</p>
+          <p class="m-h1">Book an appointment</p>
+          <p class="m-sub">Pick a time first. We’ll ask who you are after.</p>
+          <div class="m-dates">
+            <span><small>Mon</small>12</span><span class="is-on"><small>Tue</small>13</span><span><small>Wed</small>14</span><span><small>Thu</small>15</span><span><small>Fri</small>16</span>
+          </div>
+          <p class="m-label">Morning · 5 free</p>
+          <div class="m-slots"><span>08:20</span><span>09:00</span><span>09:40</span><span class="is-off">10:20</span><span class="is-on">11:40</span><span>12:00</span></div>
+          <p class="m-label">Afternoon · 2 free</p>
+          <div class="m-slots"><span>14:10</span><span>15:30</span><span class="is-off">16:00</span></div>
+          <div class="m-dock"><span class="m-btn">Continue with 11:40</span></div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Availability before identity. Real slots show before any login.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-care">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <div class="m-steps"><i class="on"></i><i class="on"></i><i></i></div>
+          <p class="m-h1">What’s it about?</p>
+          <p class="m-sub">In your own words. A receptionist reads this, not a computer.</p>
+          <div class="m-input m-input--area">Sore throat for over a week, and it’s getting worse at night<span class="m-caret"></span></div>
+          <p class="m-label">People often mention</p>
+          <div class="m-chips"><span>Fever</span><span class="is-on">Trouble swallowing</span><span>Cough</span><span>Ear pain</span></div>
+          <div class="m-note"><span class="m-note-i">i</span>If you have trouble breathing, call 999 now.</div>
+          <div class="m-dock"><span class="m-btn">Continue</span></div>
+        </div>
+      </div>
+      <figcaption><b>02</b> Plain-language reasons, mapped to triage for staff behind the scenes.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-care">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body m-body--center">
+          <span class="m-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+          <p class="m-h1">Booking confirmed</p>
+          <div class="m-card">
+            <p class="m-card-k">Tuesday 13 May</p>
+            <p class="m-card-h">11:40 with Dr. Rao</p>
+            <p class="m-card-p">Northfield Clinic, Room 3</p>
+            <div class="m-row"><span>Remind me the evening before</span><span class="m-toggle is-on"></span></div>
+          </div>
+          <div class="m-dock m-dock--stack"><span class="m-btn">Add to calendar</span><span class="m-btn m-btn--ghost">Change or cancel</span></div>
+        </div>
+      </div>
+      <figcaption><b>03</b> One calm confirmation and one reminder, never a stream of nudges.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-ledger">
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-ledger">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <div class="m-top"><span class="m-avatar">HR</span><span class="m-top-t">Hartley Roasters</span></div>
+          <p class="m-label">Available to spend</p>
+          <p class="m-balance">£4,218<small>.40</small></p>
+          <p class="m-hold"><span class="m-dot"></span>£312.00 held for 2 payments · <u>See why</u></p>
+          <div class="m-bars"><i style="--h:40%"></i><i style="--h:62%"></i><i style="--h:48%"></i><i style="--h:80%"></i><i style="--h:55%"></i><i style="--h:70%"></i><i class="is-on" style="--h:92%"></i></div>
+          <p class="m-label">Today</p>
+          <ul class="m-tx">
+            <li><span class="m-logo" style="--c:#2F6B4F">G</span><span><b>Greenway Dairy</b><small>Milk delivery, weekly</small></span><em>−£86.40</em></li>
+            <li><span class="m-logo" style="--c:#3B4CCA">C</span><span><b>Costco</b><small>Membership, renews yearly</small></span><em>−£55.00</em></li>
+            <li><span class="m-logo" style="--c:#8A6D1E">S</span><span><b>Square payouts</b><small>Card sales, Monday</small></span><em class="is-in">+£1,904.10</em></li>
+          </ul>
+        </div>
+      </div>
+      <figcaption><b>01</b> The balance you can actually spend, with holds explained up front.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-ledger">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <p class="m-back">&larr; Today</p>
+          <div class="m-merchant"><span class="m-logo m-logo--lg" style="--c:#3B4CCA">C</span><div><p class="m-h1">Costco membership</p><p class="m-sub">Annual renewal, same as last May</p></div></div>
+          <p class="m-amount">−£55.00</p>
+          <div class="m-card">
+            <div class="m-kv"><span>Paid with</span><b>Business debit ··4410</b></div>
+            <div class="m-kv"><span>When</span><b>Today, 06:12</b></div>
+            <div class="m-kv"><span>What the bank sees</span><b class="m-mono">DD MBRSHP 88-21</b></div>
+          </div>
+          <div class="m-ask">
+            <p>Is this <b>Business supplies</b>?</p>
+            <div class="m-ask-b"><span class="m-btn m-btn--sm">Yes</span><span class="m-btn m-btn--sm m-btn--ghost">Choose another</span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>02</b> Every line explained in plain words, with the raw descriptor one glance away.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-ledger">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body m-body--center">
+          <span class="m-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+          <p class="m-label">Payment sent</p>
+          <p class="m-balance m-balance--sm">£1,240<small>.00</small></p>
+          <p class="m-sub">to Hartley Roasters supplier, Bean &amp; Co.</p>
+          <ol class="m-track">
+            <li class="is-done"><b>Sent</b><small>Just now</small></li>
+            <li class="is-now"><b>With their bank</b><small>Usually under 2 hours</small></li>
+            <li><b>Arrives</b><small>Today by 14:00</small></li>
+          </ol>
+          <div class="m-dock m-dock--stack"><span class="m-btn">Share receipt</span><span class="m-btn m-btn--ghost">Done</span></div>
+        </div>
+      </div>
+      <figcaption><b>03</b> A payment confirmation that says where the money is, not just that it left.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-foundation">
+    <figure class="shot shot--desktop">
+      <div aria-hidden="true" class="device device--desktop m-found">
+        <div class="m-chrome"><i></i><i></i><i></i><span>foundation.design / components / button</span></div>
+        <div class="m-docs">
+          <aside class="m-side">
+            <p class="m-side-logo"><span></span>Foundation</p>
+            <p class="m-side-k">Foundations</p>
+            <span>Colour</span><span>Type</span><span>Spacing</span><span>Motion</span>
+            <p class="m-side-k">Components</p>
+            <span class="is-on">Button</span><span>Input</span><span>Select</span><span>Dialog</span><span>Toast</span>
+          </aside>
+          <div class="m-main">
+            <p class="m-crumb">Components / Actions</p>
+            <p class="m-h1">Button</p>
+            <p class="m-sub">One primary action per view. Everything else steps back.</p>
+            <div class="m-demo">
+              <span class="m-b m-b--primary">Save changes</span>
+              <span class="m-b m-b--secondary">Preview</span>
+              <span class="m-b m-b--ghost">Cancel</span>
+              <span class="m-b m-b--danger">Delete</span>
+            </div>
+            <div class="m-states">
+              <div><span class="m-b m-b--primary">Default</span><small>default</small></div>
+              <div><span class="m-b m-b--primary is-hover">Hover</span><small>hover</small></div>
+              <div><span class="m-b m-b--primary is-focus">Focus</span><small>focus · 3:1 ring</small></div>
+              <div><span class="m-b m-b--primary is-off">Disabled</span><small>disabled</small></div>
+            </div>
+            <div class="m-why"><b>Why we did it this way</b>Four button styles became one, with three emphasis levels. Focus rings meet contrast on every surface without per-team overrides.</div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Documentation that leads with decisions, then components and their states.</figcaption>
+    </figure>
+    <figure class="shot shot--card">
+      <div aria-hidden="true" class="device device--card m-found">
+        <p class="m-label">Colour tokens · brand</p>
+        <div class="m-ramp"><i style="--c:#EEF0FF"></i><i style="--c:#D9DDFF"></i><i style="--c:#B4BBFE"></i><i style="--c:#8189F7"></i><i style="--c:#4F46E5"></i><i style="--c:#3D35B8"></i><i style="--c:#2A247F"></i></div>
+        <p class="m-label">Neutral</p>
+        <div class="m-ramp"><i style="--c:#FAFAF9"></i><i style="--c:#E7E5E4"></i><i style="--c:#C4C0BD"></i><i style="--c:#8F8A86"></i><i style="--c:#57534E"></i><i style="--c:#33302D"></i><i style="--c:#1C1917"></i></div>
+        <div class="m-tokens">
+          <p><span class="m-sw" style="--c:#4F46E5"></span><code>action.primary</code><small>brand.500</small></p>
+          <p><span class="m-sw" style="--c:#1C1917"></span><code>text.default</code><small>neutral.900</small></p>
+          <p><span class="m-sw" style="--c:#C4342D"></span><code>feedback.danger</code><small>red.600</small></p>
+        </div>
+        <p class="m-label">Type scale</p>
+        <div class="m-type"><span style="--s:30px">Display</span><span style="--s:22px">Heading</span><span style="--s:15px">Body text</span><span style="--s:12px">Caption</span></div>
+      </div>
+      <figcaption><b>02</b> Tokens before components: one ramp per colour, named by purpose.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-atlas">
+    <figure class="shot shot--desktop">
+      <div aria-hidden="true" class="device device--desktop m-atlas">
+        <div class="m-chrome"><i></i><i></i><i></i><span>atlas · Northfield Surgery · Messages</span></div>
+        <div class="m-app">
+          <aside class="m-inbox">
+            <p class="m-inbox-k">To review <b>12</b></p>
+            <div class="m-msg is-on"><b>Margaret Ellis</b><span>Can I take ibuprofen with my new…</span><em class="m-flag">Clinical</em></div>
+            <div class="m-msg"><b>Tom Okafor</b><span>Repeat prescription for inhaler</span><em class="m-flag m-flag--ok">Routine</em></div>
+            <div class="m-msg"><b>Priya Nair</b><span>Are my blood results back yet?</span><em class="m-flag m-flag--ok">Routine</em></div>
+            <div class="m-msg"><b>Sam Doyle</b><span>Need a fit note extended</span><em class="m-flag m-flag--ok">Admin</em></div>
+          </aside>
+          <div class="m-draft">
+            <div class="m-draft-head"><div><p class="m-h1">Margaret Ellis, 71</p><p class="m-sub">Started lisinopril 10 mg on 3 May</p></div><span class="m-conf"><i></i>Review 1 sentence</span></div>
+            <p class="m-q">“Can I take ibuprofen with my new prescription? My knee is bad again.”</p>
+            <div class="m-reply">
+              <p class="m-reply-k">Draft reply</p>
+              <p>Hello Margaret, thank you for checking with us first. <mark>Ibuprofen can reduce how well lisinopril works and may affect your kidneys, so please avoid it for now.</mark> Paracetamol is a safer choice for your knee.</p>
+              <p>I’ve asked Dr. Rao to call you this week about longer-term pain relief.</p>
+            </div>
+            <div class="m-sources"><span>Source</span><em>Medication list · 3 May</em><em>eGFR result · 28 Apr</em></div>
+            <div class="m-actions"><span class="m-b m-b--primary">Approve and send</span><span class="m-b m-b--secondary">Edit</span><span class="m-b m-b--ghost">Hand to clinician</span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Uncertainty made visible: the one sentence to check is highlighted, with its sources.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-atlas">
+        <div class="m-status"><b>9:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <p class="m-back">&larr; Northfield Surgery</p>
+          <div class="m-bubble m-bubble--me">Can I take ibuprofen with my new prescription? My knee is bad again.</div>
+          <p class="m-time m-time--me">Yesterday, 18:02</p>
+          <div class="m-bubble">Hello Margaret, thank you for checking with us first. Ibuprofen can reduce how well lisinopril works, so please avoid it for now. Paracetamol is a safer choice.</div>
+          <p class="m-time">Reviewed by Dr. Rao · 52 min</p>
+          <div class="m-bubble m-bubble--sys">Dr. Rao will call you this week about pain relief.</div>
+        </div>
+      </div>
+      <figcaption><b>02</b> What the patient sees: a human sign-off on every clinical reply.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-panel">
+    <figure class="shot shot--desktop">
+      <div aria-hidden="true" class="device device--desktop m-panel">
+        <div class="m-chrome"><i></i><i></i><i></i><span>panelwise · Senior backend engineer · Panel</span></div>
+        <div class="m-pw">
+          <aside class="m-pw-side">
+            <p class="m-side-k">What the agent weighs</p>
+            <p class="m-factor"><span>Skills match</span><span class="m-toggle is-on"></span></p>
+            <p class="m-factor"><span>Availability</span><span class="m-toggle is-on"></span></p>
+            <p class="m-factor"><span>Interview load</span><span class="m-toggle is-on"></span></p>
+            <p class="m-factor"><span>Different perspective</span><span class="m-toggle"></span></p>
+            <p class="m-pw-note">Names and personal characteristics are never used for ranking.</p>
+          </aside>
+          <div class="m-pw-main">
+            <div class="m-draft-head"><div><p class="m-h1">Suggested panel</p><p class="m-sub">Thursday 14:00 – 15:30 · all three are free</p></div><span class="m-b m-b--primary">Book panel</span></div>
+            <div class="m-person">
+              <span class="m-ava" style="--c:#7A4E9A">MO</span>
+              <div><b>Marco Oyelaran</b><small>Staff engineer, Payments</small></div>
+              <div class="m-why-chips"><em>Go and Postgres</em><em>Free Thu 14:00</em><em>2 interviews this month</em></div>
+              <span class="m-swap">Swap</span>
+            </div>
+            <div class="m-person">
+              <span class="m-ava" style="--c:#2F7D6D">AK</span>
+              <div><b>Aisha Karimi</b><small>Senior engineer, Platform</small></div>
+              <div class="m-why-chips"><em>Distributed systems</em><em>Free Thu 14:00</em><em>1 interview this month</em></div>
+              <span class="m-swap">Swap</span>
+            </div>
+            <div class="m-person m-person--warn">
+              <span class="m-ava" style="--c:#B5562F">PS</span>
+              <div><b>Priya Shah</b><small>Principal engineer, Core</small></div>
+              <div class="m-why-chips"><em>Best skills match</em><em class="is-warn">9 interviews this month</em></div>
+              <span class="m-swap">Swap</span>
+            </div>
+            <p class="m-pw-alert"><b>Priya is carrying a heavy load.</b> Swap her for Leon Brandt, who matches 4 of 5 skills and has had no interviews this month?</p>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>01</b> The agent recommends and the recruiter decides: every factor can be switched off, every pick shows why.</figcaption>
+    </figure>
+    <figure class="shot shot--card">
+      <div aria-hidden="true" class="device device--card m-panel">
+        <p class="m-label">Why Marco?</p>
+        <p class="m-h1">Strong match, and free</p>
+        <div class="m-score"><span>Skills match</span><i style="--w:88%"></i><b>High</b></div>
+        <div class="m-score"><span>Availability</span><i style="--w:100%"></i><b>Free</b></div>
+        <div class="m-score"><span>Interview load</span><i style="--w:24%"></i><b>Light</b></div>
+        <div class="m-score is-off"><span>Different perspective</span><i style="--w:0%"></i><b>Off</b></div>
+        <p class="m-sub">Based on 14 past panels for backend roles. You overrode the agent on 3 of them, and it has learned from each.</p>
+        <span class="m-b m-b--secondary">Not Marco this time</span>
+      </div>
+      <figcaption><b>02</b> Reasons in plain words, never a single match score with no breakdown.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-symptom-navigator">
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-way">
+        <div class="m-status"><b>23:41</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <div class="m-steps"><i class="on"></i><i></i><i></i></div>
+          <p class="m-eyebrow">Danger signs first · Question 1 of 3</p>
+          <p class="m-h1">Is Yusuf showing any of these?</p>
+          <div class="m-checks">
+            <span><i></i>A rash that doesn’t fade when you press a glass on it</span>
+            <span><i></i>Stiff neck, or dislikes bright lights</span>
+            <span><i></i>Very drowsy or hard to wake</span>
+            <span><i></i>Breathing fast, or grunting</span>
+            <span class="is-on"><i></i>None of these</span>
+          </div>
+          <p class="m-rule"><span>Safety rule</span>These questions are fixed by clinicians. The AI can’t change them.</p>
+          <div class="m-dock"><span class="m-btn">Next</span></div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Danger signs come first, handled by fixed clinical rules the model cannot override.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-way">
+        <div class="m-status"><b>23:44</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <p class="m-eyebrow">Our advice for Yusuf</p>
+          <div class="m-level">
+            <span class="m-level-k">Speak to a nurse</span>
+            <span class="m-level-t">within 1 hour</span>
+          </div>
+          <div class="m-card">
+            <p class="m-card-k">Why</p>
+            <p class="m-card-p">A fever of 38.9°C in a child under 5 that isn’t settling.</p>
+            <p class="m-model"><span>AI · unsure</span>We weren’t certain, so we moved you up one level of care.</p>
+          </div>
+          <div class="m-card">
+            <p class="m-card-k">Call 999 if</p>
+            <p class="m-card-p">He becomes floppy, a rash appears that doesn’t fade, or his breathing changes.</p>
+          </div>
+          <div class="m-dock"><span class="m-btn">Call a nurse now · about 4 min</span></div>
+        </div>
+      </div>
+      <figcaption><b>02</b> A level of care and a time, never a diagnosis, with the reason and the source shown.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-researcher">
+    <figure class="shot shot--desktop">
+      <div aria-hidden="true" class="device device--desktop m-syn">
+        <div class="m-chrome"><i></i><i></i><i></i><span>synthesis · Study 14 · Checkout and fees · 12 interviews</span></div>
+        <div class="m-app m-app--syn">
+          <aside class="m-inbox">
+            <p class="m-inbox-k">Draft themes <b>4</b></p>
+            <div class="m-theme is-on"><b>Fees feel hidden until checkout</b><span class="m-ev"><i style="--w:75%"></i>9 of 12</span></div>
+            <div class="m-theme"><b>Text reminders are trusted more than the app</b><span class="m-ev"><i style="--w:50%"></i>6 of 12</span></div>
+            <div class="m-theme"><b>People want to pay in instalments</b><span class="m-ev"><i style="--w:33%"></i>4 of 12</span></div>
+            <div class="m-theme is-weak"><b>Users want a dark mode</b><span class="m-ev"><i style="--w:8%"></i>Thin evidence · 1 of 12</span></div>
+          </aside>
+          <div class="m-draft">
+            <div class="m-draft-head"><div><p class="m-sub">Theme · drafted by the copilot, not yet reviewed</p><p class="m-h1">Fees feel hidden until checkout</p></div><span class="m-badge">9 of 12 participants</span></div>
+            <div class="m-quote"><span class="m-pid">P03</span><p>“I only saw the delivery fee on the last screen. That’s when I closed it.”</p><small>Interview 3 · 14:22</small></div>
+            <div class="m-quote"><span class="m-pid">P07</span><p>“It felt like the price kept growing the further I went.”</p><small>Interview 7 · 08:51</small></div>
+            <div class="m-quote"><span class="m-pid">P11</span><p>“I’d rather see the total up front, even if it’s higher.”</p><small>Interview 11 · 22:10</small></div>
+            <p class="m-more">+ 6 more quotes from P01, P02, P05, P08, P09, P12</p>
+            <div class="m-actions"><span class="m-b m-b--primary">Accept theme</span><span class="m-b m-b--secondary">Rename</span><span class="m-b m-b--secondary">Merge</span><span class="m-b m-b--ghost">Reject</span></div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>01</b> No theme without its evidence: every finding links to the people who said it.</figcaption>
+    </figure>
+    <figure class="shot shot--card">
+      <div aria-hidden="true" class="device device--card m-syn">
+        <p class="m-label">Study library</p>
+        <p class="m-ask-q">What do we already know about delivery fees?</p>
+        <p class="m-ans">Three past studies found that showing the delivery fee late causes drop-off. <sup>1</sup> <sup>2</sup> Customers accepted higher fees when the total was shown up front. <sup>3</sup></p>
+        <div class="m-cites">
+          <p><sup>1</sup>Study 9 · Basket redesign · Mar 2025</p>
+          <p><sup>2</sup>Study 11 · Mobile checkout · Jul 2025</p>
+          <p><sup>3</sup>Study 14 · Checkout and fees · this study</p>
+        </div>
+        <p class="m-sub">Answers come from past research only. Nothing from the open web.</p>
+      </div>
+      <figcaption><b>02</b> “What do we already know?”, answered from past studies, each one cited.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-engineer">
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-field">
+        <div class="m-status"><b>14:12</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <div class="m-job"><span>Job 4471 · Roof plant room</span><span class="m-speak">&#9654; Read aloud</span></div>
+          <p class="m-code">E-47</p>
+          <p class="m-sub">Chiller CH-2 · Carrier 30XA · installed 2016</p>
+          <div class="m-cause">
+            <p class="m-eyebrow">Likely cause 1 of 3</p>
+            <p class="m-h1">Condenser fan contactor K3</p>
+            <p class="m-reason">Failed twice on this unit, in March and November 2024. Same fault code both times.</p>
+          </div>
+          <div class="m-stepbox"><b>Step 1</b>Isolate the unit, then check K3 for pitted or burnt contacts.</div>
+          <div class="m-dock m-dock--two"><span class="m-btn">Fixed it</span><span class="m-btn m-btn--ghost">Didn’t fix it</span></div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Causes ranked for this machine, not machines in general, with large targets for gloved hands.</figcaption>
+    </figure>
+    <figure class="shot shot--phone">
+      <div aria-hidden="true" class="device device--phone m-field">
+        <div class="m-status"><b>15:03</b><span class="m-status-i"><i></i><i></i><i></i></span></div>
+        <div class="m-body">
+          <p class="m-eyebrow">Job report · drafted from what happened</p>
+          <p class="m-h1">Check and sign</p>
+          <ol class="m-track">
+            <li class="is-done"><b>14:12 · Fault E-47 on arrival</b><small>Condenser fan not starting</small></li>
+            <li class="is-done"><b>14:20 · Checked contactor K3</b><small>Contacts pitted. Did not fix on its own.</small></li>
+            <li class="is-done"><b>14:41 · Replaced fan capacitor C2</b><small>Fault cleared. Unit running at 7.2°C.</small></li>
+          </ol>
+          <div class="m-card"><div class="m-kv"><span>Parts used</span><b>1 × capacitor 35µF</b></div><div class="m-kv"><span>Time on site</span><b>51 min</b></div></div>
+          <div class="m-dock"><span class="m-btn">Sign and submit</span></div>
+        </div>
+      </div>
+      <figcaption><b>02</b> The report writes itself from the job, for the engineer to check and sign.</figcaption>
+    </figure>
+  </template>
+
+  <template id="shots-knowledge">
+    <figure class="shot shot--desktop">
+      <div aria-hidden="true" class="device device--desktop m-comp">
+        <div class="m-chrome"><i></i><i></i><i></i><span>compass · Company sources only</span></div>
+        <div class="m-chat">
+          <div class="m-bubble m-bubble--me">How much parental leave do I get?</div>
+          <div class="m-answer">
+            <p class="m-answer-k"><span class="m-logo-c"></span>Compass</p>
+            <p>You get <b>26 weeks of paid parental leave</b> after six months with the company. <sup>1</sup> You can take it in up to three blocks in the first year. <sup>1</sup></p>
+            <div class="m-conflict">
+              <b>Two sources disagree</b>
+              <p>An older wiki page says 20 weeks. <sup>2</sup> The current policy says 26. I’ve flagged this to the page owner.</p>
+              <span class="m-b m-b--secondary">Ask Dev Shah, People team</span>
+            </div>
+            <div class="m-srcs">
+              <p class="is-ok"><sup>1</sup><span><b>Parental leave policy v4</b><small>People team · Dev Shah · updated 2 months ago</small></span><em>Current</em></p>
+              <p class="is-old"><sup>2</sup><span><b>New joiner FAQ (wiki)</b><small>No owner · updated 3 years ago</small></span><em>Out of date</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption><b>01</b> Every answer shows where it came from and how old it is, and says so when sources disagree.</figcaption>
+    </figure>
+    <figure class="shot shot--card">
+      <div aria-hidden="true" class="device device--card m-comp">
+        <div class="m-bubble m-bubble--me">What are the salary bands for my team?</div>
+        <div class="m-answer">
+          <p class="m-answer-k"><span class="m-logo-c"></span>Compass</p>
+          <p class="m-lock"><span>&#128274;</span>You can’t see that, so neither can I.</p>
+          <p class="m-sub">Salary bands are shared with managers and the People team. Hana, your People partner, can talk you through your own band.</p>
+          <span class="m-b m-b--primary">Message Hana</span>
+        </div>
+      </div>
+      <figcaption><b>02</b> Answers follow existing permissions, and point to the person who can help.</figcaption>
+    </figure>
+  </template>
+
+  <!-- Process artefacts: one per case study, shown as its own chapter in the reader -->
+  <template id="artifact-patient" data-label="Customer journey map">
+    <p class="art-intro">Ravi’s week, mapped from two weeks in waiting rooms and on reception phones. The lowest points became the design brief.</p>
+    <div class="art art--journey" role="table" aria-label="Customer journey map: booking a GP appointment by phone">
+      <div class="jm-row jm-row--stages" role="row">
+        <span class="jm-k" role="rowheader">Stage</span>
+        <span role="columnheader"><b>01</b>Feels unwell</span>
+        <span role="columnheader"><b>02</b>Calls at 7am</span>
+        <span role="columnheader"><b>03</b>On hold</span>
+        <span role="columnheader"><b>04</b>Gets through</span>
+        <span role="columnheader"><b>05</b>No slots this week</span>
+      </div>
+      <div class="jm-row" role="row">
+        <span class="jm-k" role="rowheader">Doing</span>
+        <span role="cell">Decides he needs a GP, Monday evening</span>
+        <span role="cell">Redials while getting ready for work</span>
+        <span role="cell">Waits 23 minutes with the hold music</span>
+        <span role="cell">Gives name, date of birth and reason</span>
+        <span role="cell">Told to call again tomorrow at 7</span>
+      </div>
+      <div class="jm-row" role="row">
+        <span class="jm-k" role="rowheader">Thinking</span>
+        <span role="cell" class="jm-q">“I’ll call first thing.”</span>
+        <span role="cell" class="jm-q">“I book at 7am because that’s when I’m brave enough to call.”</span>
+        <span role="cell" class="jm-q">“Is anyone even there?”</span>
+        <span role="cell" class="jm-q">“Just tell me if there’s a slot.”</span>
+        <span role="cell" class="jm-q">“I’ll leave it. It’s probably nothing.”</span>
+      </div>
+      <div class="jm-row jm-row--feel" role="row">
+        <span class="jm-k" role="rowheader">Feeling</span>
+        <span role="cell" class="jm-curve">
+          <svg viewBox="0 0 500 90" preserveAspectRatio="none" aria-hidden="true">
+            <line class="jm-mid" x1="0" y1="45" x2="500" y2="45"/>
+            <polyline class="jm-line" points="50,34 150,52 250,80 350,58 450,84"/>
+            <circle cx="50" cy="34" r="5"/><circle cx="150" cy="52" r="5"/><circle class="is-low" cx="250" cy="80" r="6"/><circle cx="350" cy="58" r="5"/><circle class="is-low" cx="450" cy="84" r="6"/>
+          </svg>
+          <span class="sr-only">Mood drops from uneasy to its lowest on hold, lifts slightly on getting through, and falls to its lowest again when there are no slots.</span>
+        </span>
+      </div>
+      <div class="jm-row jm-row--pain" role="row">
+        <span class="jm-k" role="rowheader">Pain point</span>
+        <span role="cell">Nothing shows if a slot even exists</span>
+        <span role="cell">The line is open for 40 minutes a day</span>
+        <span role="cell">No position, no estimate, no way out</span>
+        <span role="cell">Identity is asked for before any options</span>
+        <span role="cell">The effort resets to zero every morning</span>
+      </div>
+      <div class="jm-row jm-row--opp" role="row">
+        <span class="jm-k" role="rowheader">Opportunity</span>
+        <span role="cell">Show real availability, online, any time</span>
+        <span role="cell">Keep the line for those who need it most</span>
+        <span role="cell">Replace waiting with seeing</span>
+        <span role="cell">Availability before identity</span>
+        <span role="cell">Book in three taps, not tomorrow</span>
+      </div>
+    </div>
+    <p class="art-cap">Stages 03 and 05 were the lowest points for 19 of 22 people we spoke to. Both are answered by the same decision: show availability before asking who you are.</p>
+  </template>
+
+  <template id="artifact-nurse" data-label="User flow">
+    <p class="art-intro">The handover flow, redrawn around one assumption: every task will be interrupted. The red path is the one the old form didn’t have.</p>
+    <div class="art art--flow">
+      <svg class="uf" viewBox="0 0 1000 300" role="img" aria-labelledby="uf-nurse-t">
+        <title id="uf-nurse-t">User flow for ward handover. Start handover, pick a patient from the bed list, confirm the next check, which saves immediately. If more checks remain, confirm the next one. If not, the patient is done and the nurse moves to the next bed, or finishes the handover after the last bed. If interrupted while confirming a check, nothing is lost: on return the screen reopens at the exact check, marked You left here.</title>
+        <defs><marker id="uf-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="uf-head"/></marker>
+        <marker id="uf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="uf-head uf-head--r"/></marker></defs>
+        <!-- edges -->
+        <path class="uf-e" d="M150 70H186" marker-end="url(#uf-a)"/>
+        <path class="uf-e" d="M360 70H396" marker-end="url(#uf-a)"/>
+        <path class="uf-e" d="M560 70H586" marker-end="url(#uf-a)"/>
+        <path class="uf-e" d="M710 70H736" marker-end="url(#uf-a)"/>
+        <path class="uf-e" d="M650 32V20H500V41" marker-end="url(#uf-a)"/>
+        <text class="uf-l" x="575" y="14">more checks</text>
+        <text class="uf-l" x="713" y="62">no</text>
+        <path class="uf-e" d="M820 45V6H275V41" marker-end="url(#uf-a)"/>
+        <text class="uf-l" x="845" y="18">next bed</text>
+        <path class="uf-e" d="M880 95V211" marker-end="url(#uf-a)"/>
+        <text class="uf-l" x="888" y="160">after the last bed</text>
+        <path class="uf-e uf-e--r" d="M440 95V211" marker-end="url(#uf-ar)"/>
+        <text class="uf-l uf-l--r" x="448" y="160">call bell</text>
+        <path class="uf-e uf-e--r" d="M560 240H596" marker-end="url(#uf-ar)"/>
+        <path class="uf-e uf-e--r" d="M695 215V150H520V99" marker-end="url(#uf-ar)"/>
+        <text class="uf-l uf-l--r" x="580" y="142">back to the same check</text>
+        <!-- nodes -->
+        <rect class="uf-n uf-n--start" x="10" y="45" width="140" height="50" rx="25"/><text class="uf-t" x="80" y="75">Start handover</text>
+        <rect class="uf-n" x="190" y="45" width="170" height="50" rx="10"/><text class="uf-t" x="275" y="68">Pick patient</text><text class="uf-s" x="275" y="84">from the bed list</text>
+        <rect class="uf-n uf-n--key" x="400" y="45" width="160" height="50" rx="10"/><text class="uf-t" x="480" y="68">Confirm a check</text><text class="uf-s" x="480" y="84">saved the moment it’s done</text>
+        <path class="uf-n uf-n--d" d="M650 32L710 70L650 108L590 70Z"/><text class="uf-t uf-t--sm" x="650" y="68">More</text><text class="uf-t uf-t--sm" x="650" y="82">checks?</text>
+        <rect class="uf-n" x="740" y="45" width="160" height="50" rx="10"/><text class="uf-t" x="820" y="68">Patient done</text><text class="uf-s" x="820" y="84">shown as complete</text>
+        <rect class="uf-n uf-n--r" x="400" y="215" width="160" height="50" rx="10"/><text class="uf-t" x="480" y="238">Interrupted</text><text class="uf-s" x="480" y="254">screen locks, nothing lost</text>
+        <rect class="uf-n uf-n--r" x="600" y="215" width="190" height="50" rx="10"/><text class="uf-t" x="695" y="238">Returns</text><text class="uf-s" x="695" y="254">reopens at “You left here”</text>
+        <rect class="uf-n uf-n--start" x="820" y="215" width="170" height="50" rx="25"/><text class="uf-t" x="905" y="245">Handover complete</text>
+      </svg>
+      <ul class="uf-key" role="list">
+        <li><i class="k-main"></i>Main path</li>
+        <li><i class="k-red"></i>Interruption and recovery</li>
+        <li><i class="k-dia"></i>Decision</li>
+      </ul>
+    </div>
+    <p class="art-cap">We counted an interruption about every six minutes across 41 handovers. In the old flow, every one of them sent the nurse back to the start, or back to paper.</p>
+  </template>
+
+  <template id="artifact-reader" data-label="Usability testing">
+    <p class="art-intro">Eleven moderated sessions with customers aged 65 and over, each using their own phone at its own text size. Same three tasks, before and after the redesign.</p>
+    <div class="art art--ut">
+      <dl class="ut-facts">
+        <div><dt>Participants</dt><dd>11</dd></div>
+        <div><dt>Ages</dt><dd>65–89</dd></div>
+        <div><dt>Text size</dt><dd>Up to 200%</dd></div>
+        <div><dt>Format</dt><dd>Moderated, in person</dd></div>
+      </dl>
+      <div class="ut-tasks">
+        <p class="ut-h">Task success <span><i class="k-before"></i>Before <i class="k-after"></i>After</span></p>
+        <div class="ut-task"><p>Check that the pension has arrived</p><div class="ut-bars"><span class="ut-bar is-before" style="--v:36%"><b>4 of 11</b></span><span class="ut-bar is-after" style="--v:100%"><b>11 of 11</b></span></div></div>
+        <div class="ut-task"><p>Pay a regular bill</p><div class="ut-bars"><span class="ut-bar is-before" style="--v:45%"><b>5 of 11</b></span><span class="ut-bar is-after" style="--v:91%"><b>10 of 11</b></span></div></div>
+        <div class="ut-task"><p>Freeze a lost card</p><div class="ut-bars"><span class="ut-bar is-before" style="--v:18%"><b>2 of 11</b></span><span class="ut-bar is-after" style="--v:91%"><b>10 of 11</b></span></div></div>
+      </div>
+      <div class="ut-findings">
+        <p class="ut-h">What we found, by severity</p>
+        <ul role="list">
+          <li><em class="sev sev--1">Critical</em><span>Balances cut off mid-number at large text sizes</span><b>9 of 11</b></li>
+          <li><em class="sev sev--1">Critical</em><span>Card freeze screen could not be completed at 200%</span><b>9 of 11</b></li>
+          <li><em class="sev sev--2">High</em><span>Buttons overlapped, so people tapped the wrong one</span><b>6 of 11</b></li>
+          <li><em class="sev sev--3">Medium</em><span>A separate “simple mode” felt like a different, lesser app</span><b>7 of 11</b></li>
+        </ul>
+        <blockquote class="ut-quote">“I don’t want an easy version. I want this one to work.”<cite>Participant 4, age 78</cite></blockquote>
+      </div>
+    </div>
+    <p class="art-cap">The findings set the rule for the redesign: design at 200% first, then scale down. No fixed heights, and amounts that wrap rather than cut off.</p>
+  </template>
+
+  <template id="artifact-symptom-navigator" data-label="User flow">
+    <p class="art-intro">Two lanes, kept apart on purpose: fixed clinical rules that the model can never override, and the model, which only ever moves people up a level of care when unsure.</p>
+    <div class="art art--flow">
+      <svg class="uf" viewBox="0 0 1000 340" role="img" aria-labelledby="uf-way-t">
+        <title id="uf-way-t">User flow for urgent care navigation with two swimlanes. In the safety rules lane: the person says who the advice is for, then answers danger sign questions. If any danger sign is present, the rules send them straight to call 999. If none, the answers pass to the AI model lane, where the model weighs them. If the model is confident, it gives a level of care and a time. If not, it moves the person up one level and says why. Every outcome ends on the same advice screen: where to go, how fast, why, what to watch for, and one tap to a person.</title>
+        <defs><marker id="uf-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="uf-head"/></marker>
+        <marker id="uf-br" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="uf-head uf-head--r"/></marker></defs>
+        <rect class="uf-lane" x="0" y="0" width="1000" height="150" rx="12"/>
+        <rect class="uf-lane uf-lane--b" x="0" y="160" width="1000" height="180" rx="12"/>
+        <text class="uf-lane-t" x="16" y="24">Fixed safety rules</text>
+        <text class="uf-lane-t" x="16" y="184">AI model</text>
+        <!-- edges -->
+        <path class="uf-e" d="M270 85H316" marker-end="url(#uf-b)"/>
+        <path class="uf-e" d="M480 85H546" marker-end="url(#uf-b)"/>
+        <path class="uf-e uf-e--r" d="M670 85H746" marker-end="url(#uf-br)"/>
+        <text class="uf-l uf-l--r" x="690" y="76">any sign</text>
+        <path class="uf-e" d="M610 123V221" marker-end="url(#uf-b)"/>
+        <text class="uf-l" x="618" y="176">none</text>
+        <path class="uf-e" d="M680 250H710" marker-end="url(#uf-b)"/>
+        <path class="uf-e" d="M760 212V188H836" marker-end="url(#uf-b)"/>
+        <text class="uf-l" x="775" y="180">confident</text>
+        <path class="uf-e uf-e--r" d="M760 288V312H836" marker-end="url(#uf-br)"/>
+        <text class="uf-l uf-l--r" x="775" y="328">unsure</text>
+        <!-- nodes -->
+        <rect class="uf-n uf-n--start" x="110" y="60" width="160" height="50" rx="25"/><text class="uf-t" x="190" y="82">Who is it for?</text><text class="uf-s" x="190" y="98">age, temperature</text>
+        <rect class="uf-n uf-n--key" x="320" y="60" width="160" height="50" rx="10"/><text class="uf-t" x="400" y="82">Danger signs</text><text class="uf-s" x="400" y="98">asked first, always</text>
+        <path class="uf-n uf-n--d" d="M610 47L670 85L610 123L550 85Z"/><text class="uf-t uf-t--sm" x="610" y="83">Any</text><text class="uf-t uf-t--sm" x="610" y="97">sign?</text>
+        <rect class="uf-n uf-n--stop" x="750" y="60" width="230" height="50" rx="25"/><text class="uf-t" x="865" y="82">Call 999 now</text><text class="uf-s" x="865" y="98">from the rule, never the model</text>
+        <rect class="uf-n" x="540" y="225" width="140" height="50" rx="10"/><text class="uf-t" x="610" y="247">Model weighs</text><text class="uf-s" x="610" y="263">the answers</text>
+        <path class="uf-n uf-n--d" d="M760 212L806 250L760 288L714 250Z"/><text class="uf-t uf-t--sm" x="760" y="254">Sure?</text>
+        <rect class="uf-n" x="840" y="170" width="150" height="40" rx="10"/><text class="uf-t uf-t--sm" x="915" y="194">Level of care + time</text>
+        <rect class="uf-n uf-n--r" x="840" y="292" width="150" height="40" rx="10"/><text class="uf-t uf-t--sm" x="915" y="316">Up one level, says why</text>
+        <text class="uf-note" x="30" y="226">Every outcome ends on one advice screen:</text>
+        <text class="uf-note" x="30" y="248">where to go, how fast, why,</text>
+        <text class="uf-note" x="30" y="270">what to watch for, and one tap to a person.</text>
+        <text class="uf-note uf-note--m" x="30" y="300">Each answer says whether it came from a rule or the model.</text>
+      </svg>
+      <ul class="uf-key" role="list">
+        <li><i class="k-main"></i>Main path</li>
+        <li><i class="k-red"></i>Escalation, always upwards</li>
+        <li><i class="k-dia"></i>Decision</li>
+      </ul>
+    </div>
+    <p class="art-cap">The order came from nurses: they always ask about danger signs before likely causes. Tested against 1,200 clinical scenarios with no emergency missed.</p>
+  </template>
+
+  <template id="artifact-knowledge" data-label="Information architecture">
+    <p class="art-intro">What Compass is allowed to answer from, and the metadata every source must carry before it can be cited. Anything outside this map is never used.</p>
+    <div class="art art--ia">
+      <div class="ia-root"><b>Compass</b><span>Company sources only</span></div>
+      <div class="ia-cols">
+        <div class="ia-col">
+          <p class="ia-h">Policies <small>owned by teams</small></p>
+          <ul role="list">
+            <li>Leave and benefits <em>People</em></li>
+            <li>Expenses and travel <em>Finance</em></li>
+            <li>Devices and security <em>IT</em></li>
+            <li class="is-lock">Pay and salary bands <em>Managers only</em></li>
+          </ul>
+        </div>
+        <div class="ia-col">
+          <p class="ia-h">Wikis and handbooks <small>owned by authors</small></p>
+          <ul role="list">
+            <li>Team handbooks <em>Team leads</em></li>
+            <li>How-to guides <em>Authors</em></li>
+            <li class="is-stale">New joiner FAQ <em>No owner · flagged</em></li>
+          </ul>
+        </div>
+        <div class="ia-col">
+          <p class="ia-h">Helpdesk tickets <small>resolved only</small></p>
+          <ul role="list">
+            <li>HR answers <em>People ops</em></li>
+            <li>IT answers <em>Service desk</em></li>
+            <li class="is-lock">Personal cases <em>Never indexed</em></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ia-rules">
+        <div><p class="ia-h">Every source carries</p><p class="ia-tags"><span>Owner</span><span>Last updated</span><span>Audience</span><span>Status</span></p></div>
+        <div><p class="ia-h">Rules on top</p>
+          <ul role="list">
+            <li><i class="r-stale"></i>Untouched for 12 months: shown as out of date</li>
+            <li><i class="r-conf"></i>Two sources disagree: both shown, owner notified</li>
+            <li><i class="r-lock"></i>No permission: no answer, and who can help</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="art-cap">Card sorting with 20 employees settled the three top-level groups. The metadata came from the 1,400 helpdesk tickets: most repeat questions were really about which page was current.</p>
+  </template>
+
+  <template id="artifact-panel" data-label="Usability testing">
+    <p class="art-intro">Three rounds of Wizard-of-Oz testing with 16 recruiters: a researcher played the agent behind the screen, so we could test the idea before building the model.</p>
+    <div class="art art--rounds">
+      <div class="rd">
+        <p class="rd-k">Round 1</p>
+        <p class="rd-h">Ranked list, no reasons</p>
+        <div class="rd-meter"><span style="--v:30%"></span></div>
+        <p class="rd-v"><b>30%</b> of suggestions accepted</p>
+        <p class="rd-n">Recruiters overrode 7 in 10 picks, usually with the same five people as before.</p>
+        <em class="rd-tag is-drop">Dropped</em>
+      </div>
+      <div class="rd is-win">
+        <p class="rd-k">Round 2</p>
+        <p class="rd-h">Same picks, with reasons</p>
+        <div class="rd-meter"><span style="--v:90%"></span></div>
+        <p class="rd-v"><b>3×</b> more often accepted</p>
+        <p class="rd-n">Identical suggestions. The only change was a plain-language reason beside each name.</p>
+        <em class="rd-tag is-keep">Kept</em>
+      </div>
+      <div class="rd">
+        <p class="rd-k">Round 3</p>
+        <p class="rd-h">Auto-book the top panel</p>
+        <div class="rd-meter rd-meter--warn"><span style="--v:62%"></span></div>
+        <p class="rd-v"><b>Faster,</b> but nobody owned it</p>
+        <p class="rd-n">Interviewers declined more invites when no person had chosen them.</p>
+        <em class="rd-tag is-drop">Dropped</em>
+      </div>
+    </div>
+    <blockquote class="ut-quote">“If it can’t tell me why Priya, I’ll pick Priya myself, and at least I’ll know why.”<cite>Recruiter, session 5</cite></blockquote>
+    <p class="art-cap">What shipped is round 2 plus switchable factors: the agent recommends, the recruiter decides, and every override is logged to improve the next suggestion.</p>
+  </template>
+
   <!-- Case study reader: one place to read every case study, with an index, previous and next, and a link per case -->
   <dialog class="exhibit-dialog" id="exhibit-dialog" aria-labelledby="dlg-title">
     <div class="dlg-bar">
@@ -1684,6 +2417,23 @@
     </div>
     <div class="dlg-inner">
       <div class="dlg-content"></div>
+    </div>
+  </dialog>
+
+  <!-- Exhibit presentation: a short walkthrough of one moment, opened from its case study -->
+  <dialog class="present" id="present" aria-labelledby="present-title">
+    <div class="pr-bar">
+      <p class="pr-k" id="present-title"></p>
+      <p class="pr-count" aria-live="polite"></p>
+      <button class="pr-btn pr-play" type="button"></button>
+      <button class="pr-btn pr-close" type="button" aria-label="Close the presentation"><span class="pr-long">Close</span><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="pr-steps" role="group" aria-label="Slides"></div>
+    <div class="pr-stage"></div>
+    <div class="pr-nav">
+      <button class="pr-btn pr-prev" type="button"><span aria-hidden="true">&larr;</span> Previous</button>
+      <p class="pr-hint" aria-hidden="true">Use &larr; &rarr; to move, space to pause</p>
+      <button class="pr-btn pr-next" type="button">Next <span aria-hidden="true">&rarr;</span></button>
     </div>
   </dialog>
 

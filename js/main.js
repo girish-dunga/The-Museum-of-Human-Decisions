@@ -399,7 +399,7 @@
       ],
     },
   };
-  const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+  const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
   // A wall project's chapters, as HTML for the reader
   function projectChapters(p) {
@@ -423,10 +423,29 @@
   // header, a jump list of chapters, the chapters, then the way on to the next one
   function renderStory(c, next) {
     const meta = c.meta.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-    const jump = c.chapters.map((ch, i) =>
-      `<li><a href="#dlg-ch-${i}" data-jump="${i}"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</a></li>`).join('');
-    const chapters = c.chapters.map((ch, i) =>
-      `<section class="chapter" id="dlg-ch-${i}"><p class="chapter-label"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</p><div class="chapter-body">${ch.html}</div></section>`).join('');
+    const tpl = document.getElementById(`shots-${c.id}`);
+    // A process artefact (journey map, user flow, IA or usability test) joins as its own chapter, after the research
+    const art = document.getElementById(`artifact-${c.id}`);
+    let chs = c.chapters;
+    if (art) {
+      const after = chs.findIndex((ch) => /research/i.test(ch.label));
+      const at = after < 0 ? 1 : after + 1;
+      chs = [...chs.slice(0, at), { label: art.dataset.label, html: art.innerHTML, wide: true }, ...chs.slice(at)];
+    }
+    const jump = chs.map((ch, i) =>
+      `<li><a href="#dlg-ch-${i}" data-jump="${i}"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</a></li>`).join('')
+      + (tpl ? `<li><a href="#dlg-ch-shots" data-jump="shots"><b aria-hidden="true">${NUMERALS[chs.length]}</b>Screens</a></li>` : '');
+    const chapters = chs.map((ch, i) =>
+      `<section class="chapter${ch.wide ? ' chapter--wide' : ''}" id="dlg-ch-${i}"><p class="chapter-label"><b aria-hidden="true">${NUMERALS[i]}</b>${ch.label}</p><div class="chapter-body">${ch.html}</div></section>`).join('');
+    // Key screens from the project, when the page has them: a taste of the visual design, not the full flow
+    const shots = tpl ? `
+      <section class="shots" id="dlg-ch-shots" aria-labelledby="dlg-shots">
+        <div class="shots-head">
+          <p class="chapter-label" id="dlg-shots">Selected screens</p>
+          <p class="shots-note">Where the process landed: a few key screens from the visual design, not the full flow. Scroll sideways for more.</p>
+        </div>
+        <div class="shots-row" tabindex="0" role="region" aria-label="Screens from ${c.title}">${tpl.innerHTML}</div>
+      </section>` : '';
     const tryIt = c.slide ? `<button class="story-try" type="button" data-try>Try the interactive exhibit <span aria-hidden="true">&rarr;</span></button>` : '';
     const onward = next
       ? `<a class="story-next" href="#case-${next.id}" data-case-id="${next.id}"><span class="story-next-k">Next case study</span><span class="story-next-t">${next.title}</span><span class="story-next-s">${next.kind}</span></a>`
@@ -441,6 +460,7 @@
       </header>
       <nav class="story-jump" aria-label="Chapters in this case study"><p class="story-jump-k">In this case study</p><ol role="list">${jump}</ol></nav>
       ${chapters}
+      ${shots}
       <footer class="story-foot">${onward}</footer>`;
   }
 
@@ -472,6 +492,161 @@
           <ul class="cs-grid" role="list">${list.map(card).join('')}</ul>
         </section>`;
       }).join('')}`;
+  }
+
+  /* ------------------------------------------------------------------------
+     Exhibit presentation — a short, self-running walkthrough of one moment,
+     shown over the case study instead of leaving it
+     ------------------------------------------------------------------------ */
+  function initPresenter(goLive) {
+    const dlg = $('#present');
+    if (!dlg) return { open() {} };
+    const stage = $('.pr-stage', dlg);
+    const title = $('.pr-k', dlg);
+    const countEl = $('.pr-count', dlg);
+    const steps = $('.pr-steps', dlg);
+    const prev = $('.pr-prev', dlg);
+    const next = $('.pr-next', dlg);
+    const play = $('.pr-play', dlg);
+    let slides = [];
+    let at = 0;
+    let caseNow = null;
+    let returnTo = null;
+
+    const frag = (html) => { const d = document.createElement('div'); d.innerHTML = html; return d; };
+
+    // Build the slides from what the case study already says
+    function build(c) {
+      const out = [];
+      const slide = c.slide;
+      const pick = (re) => c.chapters.find((ch) => re.test(ch.label));
+      const time = $('.moment-time', slide);
+      const story = $('.moment-story', slide);
+      out.push({ name: 'The moment', html: `
+        <p class="ps-k">${$('.exhibit-no', slide).textContent}</p>
+        <h3 class="ps-title">${c.subtitle}</h3>
+        ${time ? `<p class="ps-time">${time.textContent}</p>` : ''}
+        ${story ? `<div class="ps-story">${story.innerHTML}</div>` : ''}` });
+      const prob = pick(/problem/i);
+      if (prob) {
+        const d = frag(prob.html);
+        const h = $('h4', d), p = $('p', d);
+        out.push({ name: 'The problem', html: `<p class="ps-k">The problem</p>${h ? `<p class="ps-big">${h.textContent}</p>` : ''}${p ? `<p class="ps-p">${p.textContent}</p>` : ''}` });
+      }
+      const res = pick(/research/i);
+      const q = res && $('blockquote', frag(res.html));
+      if (q) {
+        const cite = $('cite', q);
+        const who = cite ? cite.textContent : '';
+        if (cite) cite.remove();
+        out.push({ name: 'What people said', html: `<p class="ps-k">What the research said</p><blockquote class="ps-quote">${q.textContent.trim()}</blockquote><p class="ps-cite">${who}</p>` });
+      }
+      out.push({ name: 'The decision', html: `<p class="ps-k">The decision</p><p class="ps-decision">${c.lede}</p>` });
+      const tpl = document.getElementById(`shots-${c.id}`);
+      if (tpl) {
+        const figs = $$('figure', tpl.content).slice(0, 2);
+        out.push({ name: 'Key screens', html: `<p class="ps-k">Key screens</p><div class="ps-shots">${figs.map((f) =>
+          `<div class="ps-shot">${$('.device', f).outerHTML}<p>${$('figcaption', f).innerHTML}</p></div>`).join('')}</div>` });
+      }
+      const changed = pick(/changed/i);
+      if (changed) {
+        const items = $$('li', frag(changed.html));
+        if (items.length) out.push({ name: 'What changed', html: `<p class="ps-k">What changed</p><ul class="ps-outcomes" role="list">${items.map((li) => li.outerHTML).join('')}</ul>` });
+      }
+      out.push({ name: 'Your turn', html: `
+        <p class="ps-k">Your turn</p>
+        <p class="ps-big">Want to make the decision yourself?</p>
+        <p class="ps-p">The live exhibit in the Human Room lets you try the same moment and see what changes.</p>
+        <div class="ps-actions">
+          <button class="ps-live" type="button" data-live>Open the live exhibit <span aria-hidden="true">&rarr;</span></button>
+          <button class="ps-back" type="button" data-back>Back to the case study</button>
+        </div>` });
+      return out;
+    }
+
+    function setPlaying(on) {
+      dlg.classList.toggle('is-paused', !on);
+      play.setAttribute('aria-label', on ? 'Pause the presentation' : 'Play the presentation');
+      play.innerHTML = on
+        ? '<span aria-hidden="true">&#10074;&#10074;</span><span class="pr-long">Pause</span>'
+        : '<span aria-hidden="true">&#9654;</span><span class="pr-long">Play</span>';
+    }
+
+    function render(dir) {
+      const s = slides[at];
+      stage.innerHTML = `<section class="ps ps--${dir || 'in'}" aria-roledescription="slide" aria-label="${at + 1} of ${slides.length}: ${s.name}">${s.html}</section>`;
+      countEl.textContent = `${at + 1} / ${slides.length} · ${s.name}`;
+      $$('.pr-step', steps).forEach((b, i) => {
+        b.classList.toggle('is-done', i < at);
+        b.classList.toggle('is-now', i === at);
+        if (i === at) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      });
+      prev.disabled = at === 0;
+      next.disabled = at === slides.length - 1;
+      // the last slide waits for the visitor
+      if (at === slides.length - 1) setPlaying(false);
+    }
+    const go = (i) => {
+      if (i < 0 || i >= slides.length || i === at) return;
+      const dir = i > at ? 'next' : 'prev';
+      at = i;
+      render(dir);
+    };
+
+    // Each step's bar fills while its slide is shown; when it is full, the next slide follows
+    steps.addEventListener('animationend', (e) => {
+      if (e.target.closest('.pr-step.is-now')) go(at + 1);
+    });
+    steps.addEventListener('click', (e) => {
+      const b = e.target.closest('.pr-step');
+      if (b) go(Number(b.dataset.i));
+    });
+    prev.addEventListener('click', () => go(at - 1));
+    next.addEventListener('click', () => go(at + 1));
+    play.addEventListener('click', () => {
+      const paused = dlg.classList.contains('is-paused');
+      if (paused && at === slides.length - 1) { at = 0; render(); }
+      setPlaying(paused);
+    });
+    $('.pr-close', dlg).addEventListener('click', () => dlg.close());
+    stage.addEventListener('click', (e) => {
+      if (e.target.closest('[data-back]')) dlg.close();
+      if (e.target.closest('[data-live]')) {
+        const slide = caseNow.slide;
+        returnTo = null;
+        dlg.close();
+        goLive(slide);
+      }
+    });
+    dlg.addEventListener('keydown', (e) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(at + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(at - 1); }
+      if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); play.click(); }
+    });
+    // Clicking the dimmed backdrop closes it
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    dlg.addEventListener('close', () => {
+      stage.innerHTML = '';
+      if (returnTo && document.contains(returnTo)) returnTo.focus({ preventScroll: true });
+      returnTo = null;
+    });
+
+    return {
+      open(c, from) {
+        caseNow = c;
+        returnTo = from;
+        slides = build(c);
+        at = 0;
+        title.textContent = `${$('.exhibit-no', c.slide).textContent} · ${c.subtitle}`;
+        steps.innerHTML = slides.map((s, i) =>
+          `<button class="pr-step" type="button" data-i="${i}" aria-label="Slide ${i + 1}: ${s.name}"><i></i></button>`).join('');
+        setPlaying(!reduce);
+        render();
+        if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
+        play.focus();
+      },
+    };
   }
 
   /* ------------------------------------------------------------------------
@@ -562,6 +737,8 @@
         else dialog.setAttribute('open', '');
       }
       dialog.scrollTop = 0;
+      measure();
+      marked = undefined;
       onScroll();
       $('#dlg-title', content).focus({ preventScroll: true });
       if (motion) {
@@ -620,7 +797,7 @@
     prevBtn.addEventListener('click', () => step(-1));
     nextBtn.addEventListener('click', () => step(1));
     dialog.addEventListener('keydown', (e) => {
-      if (e.altKey || e.ctrlKey || e.metaKey || e.target.matches('input, textarea, select')) return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.target.matches('input, textarea, select, .shots-row')) return;
       if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
     });
@@ -635,22 +812,56 @@
       else if ('caseIndex' in link.dataset) open(null);
       else if (link.dataset.jump) {
         const target = $(`#dlg-ch-${link.dataset.jump}`, content);
-        const barH = $('.dlg-bar', dialog).offsetHeight;
         const top = target.getBoundingClientRect().top - dialog.getBoundingClientRect().top + dialog.scrollTop;
-        dialog.scrollTo({ top: top - barH - 16, behavior: reduce ? 'auto' : 'smooth' });
+        dialog.scrollTo({ top: top - pinnedHeight() - 12, behavior: reduce ? 'auto' : 'smooth' });
+        markChapter(link.dataset.jump);
       } else if ('try' in link.dataset && current && current.slide) {
-        const slide = current.slide;
-        pushed = false; opener = null;
-        setHash('human-room', false);
-        close();
-        humanRoom.show(slide);
+        presenter.open(current, link);
       }
     });
 
-    // Reading progress along the top bar
+    // The live exhibit in the Human Room, reached from the end of a presentation
+    const goLive = (slide) => {
+      pushed = false; opener = null;
+      setHash('human-room', false);
+      close();
+      humanRoom.show(slide);
+    };
+    const presenter = initPresenter(goLive);
+
+    // The chapter list stays pinned under the top bar; offsets account for both
+    const bar = $('.dlg-bar', dialog);
+    const pinnedHeight = () => {
+      const nav = $('.story-jump', content);
+      return bar.offsetHeight + (nav ? nav.offsetHeight : 0);
+    };
+    const measure = () => dialog.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
+    window.addEventListener('resize', measure);
+    let marked = null;
+    function markChapter(id) {
+      if (id === marked) return;
+      marked = id;
+      $$('.story-jump a', content).forEach((a) => {
+        const on = a.dataset.jump === id;
+        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+        if (on) {
+          const list = a.closest('ol');
+          list.scrollTo({ left: a.offsetLeft - list.offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' });
+        }
+      });
+    }
+
+    // Reading progress along the top bar, and which chapter is being read
     function onScroll() {
       const max = dialog.scrollHeight - dialog.clientHeight;
       dialog.style.setProperty('--read', max > 0 ? (dialog.scrollTop / max).toFixed(4) : 0);
+      const sections = $$('.chapter, .shots', content);
+      if (!sections.length) return;
+      const line = dialog.getBoundingClientRect().top + pinnedHeight() + 48;
+      let id = null;
+      sections.forEach((sec) => { if (sec.getBoundingClientRect().top <= line) id = sec.id.replace('dlg-ch-', ''); });
+      if (max > 0 && dialog.scrollTop >= max - 2) id = sections[sections.length - 1].id.replace('dlg-ch-', '');
+      markChapter(id);
     }
     dialog.addEventListener('scroll', onScroll, { passive: true });
 
@@ -688,25 +899,108 @@
       });
     }
 
-    // Clay threads between the pins: the investigations are connected
+    // Red threads between the pins, each named for the insight the two investigations share
     const threads = $('.wall-threads');
+    const notes = $('.wall-notes');
+    const items = $$('.wall-item', wall);
+    const LINKS = [
+      { a: 0, b: 1, label: 'Show what’s real first' },
+      { a: 0, b: 2, label: 'Accessible by default' },
+      { a: 1, b: 3, label: 'Explain the why' },
+      { a: 2, b: 3, label: 'Trust is built in' },
+    ];
     const drawThreads = () => {
       threads.innerHTML = '';
+      notes.innerHTML = '';
       if (window.innerWidth < 820) return;
       const wr = wall.getBoundingClientRect();
       const pins = $$('.pin', wall).map((p) => {
         const r = p.getBoundingClientRect();
         return { x: r.left - wr.left + r.width / 2, y: r.top - wr.top + r.height / 2 };
       });
-      const pairs = [[0, 1], [0, 2], [1, 3], [2, 3]];
-      pairs.forEach(([a, b]) => {
-        const A = pins[a], B = pins[b];
+      LINKS.forEach((l, i) => {
+        const A = pins[l.a], B = pins[l.b];
         const dist = Math.hypot(B.x - A.x, B.y - A.y);
+        const cx = (A.x + B.x) / 2, cy = Math.max(A.y, B.y) + 30 + dist * 0.12;
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M${A.x} ${A.y} Q${(A.x + B.x) / 2} ${Math.max(A.y, B.y) + 30 + dist * 0.12} ${B.x} ${B.y}`);
+        path.setAttribute('d', `M${A.x} ${A.y} Q${cx} ${cy} ${B.x} ${B.y}`);
+        path.setAttribute('pathLength', '1');
+        path.dataset.link = i;
+        path.style.setProperty('--d', `${i * 0.25}s`);
         threads.appendChild(path);
+        // the note sits on the thread's lowest point
+        const note = document.createElement('span');
+        note.className = 'wall-note';
+        note.dataset.link = i;
+        note.textContent = l.label;
+        note.style.left = `${(A.x + 2 * cx + B.x) / 4}px`;
+        note.style.top = `${(A.y + 2 * cy + B.y) / 4}px`;
+        note.style.setProperty('--d', `${0.6 + i * 0.25}s`);
+        notes.appendChild(note);
+      });
+      paint();
+    };
+
+    // Which objects and threads are lit: by the lens, and by whatever is being looked at
+    let lens = 'all';
+    let focus = null;
+    const lensNote = $('.wall-lens-note');
+    const paint = () => {
+      const lit = new Set();
+      items.forEach((it, i) => { if (lens === 'all' || it.dataset.tags.split(' ').includes(lens)) lit.add(i); });
+      const linked = new Set(focus === null ? [] : [focus]);
+      if (focus !== null) LINKS.forEach((l) => { if (l.a === focus) linked.add(l.b); if (l.b === focus) linked.add(l.a); });
+      items.forEach((it, i) => {
+        const dim = !lit.has(i) || (focus !== null && !linked.has(i));
+        it.classList.toggle('is-dim', dim);
+        it.classList.toggle('is-linked', focus !== null && linked.has(i) && i !== focus);
+      });
+      $$('[data-link]', wall).forEach((el) => {
+        const l = LINKS[el.dataset.link];
+        const on = focus !== null ? (l.a === focus || l.b === focus) : lens !== 'all' && lit.has(l.a) && lit.has(l.b);
+        const off = focus !== null ? !on : lens !== 'all' && !on;
+        el.classList.toggle('is-on', on);
+        el.classList.toggle('is-off', off);
       });
     };
+    items.forEach((it, i) => {
+      const art = $('.artifact', it);
+      const enter = () => { focus = i; paint(); };
+      const leave = () => { focus = null; paint(); };
+      art.addEventListener('pointerenter', enter);
+      art.addEventListener('pointerleave', leave);
+      art.addEventListener('focus', enter);
+      art.addEventListener('blur', leave);
+    });
+    const lensNames = { all: 'Hover an object to see what it connects to.', access: 'Access: designing for the people most often left out.', clarity: 'Clarity: plain answers before anything else is asked.', trust: 'Trust: showing the why, so people can check it.' };
+    $$('.wall-lens').forEach((btn) => btn.addEventListener('click', () => {
+      lens = btn.dataset.lens;
+      $$('.wall-lens').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      lensNote.textContent = lensNames[lens];
+      paint();
+    }));
+
+    // A soft light follows the pointer across the board
+    if (finePointer && !reduce) {
+      wall.addEventListener('pointermove', (e) => {
+        const r = wall.getBoundingClientRect();
+        wall.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        wall.style.setProperty('--my', `${e.clientY - r.top}px`);
+        wall.classList.add('is-lit');
+      });
+      wall.addEventListener('pointerleave', () => wall.classList.remove('is-lit'));
+    }
+
+    // The threads are drawn the first time the board is seen
+    if (reduce || !('IntersectionObserver' in window)) wall.classList.add('is-drawn');
+    else {
+      const io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        wall.classList.add('is-drawn');
+      }, { threshold: 0.25 });
+      io.observe(wall);
+    }
     drawThreads();
     window.addEventListener('resize', drawThreads);
     if (document.fonts) document.fonts.ready.then(drawThreads);
@@ -808,51 +1102,41 @@
   function initInvisibleWork() {
     const root = $('[data-dig]');
     if (!root) return;
-    const names = ['Surface', 'Research insights', 'Design decisions', 'Stakeholder negotiations', 'Failed experiments', 'Iterations'];
-    const short = ['Surface', '01 Research', '02 Decisions', '03 Negotiation', '04 Failures', '05 Iterations'];
     const well = $('[data-well]', root);
-    const surface = $('.well-surface', root);
     const strata = $$('.stratum', root);
     const bands = $$('.band', root);
-    const drill = $('.drill', root);
-    const deeper = $('.well-deeper', root);
-    const depthLabel = $('.well-depth', root);
     const progress = $('.dig-progress', root);
+    const meter = $('.dig-meter-fill', root);
     const opened = new Set([0]);
     let depth = 0;
     strata.forEach((s) => { $('h3', s).tabIndex = -1; });
 
-    // One layer is shown at a time, in the well. The drill marker shows where you are in the core.
+    // One layer is shown at a time, beside the finished screen it sits under.
     const show = (d, { focus = false, animate = true } = {}) => {
-      depth = Math.max(0, Math.min(5, d));
+      depth = Math.max(0, Math.min(strata.length - 1, d));
       opened.add(depth);
       bands.forEach((b, i) => {
         b.setAttribute('aria-current', String(i === depth));
         b.classList.toggle('is-opened', opened.has(i));
-        $('.band-state', b).textContent = i === depth ? 'Reading' : opened.has(i) ? 'Opened' : 'Unopened';
+        $('.band-state', b).textContent = i === depth ? 'Open' : opened.has(i) ? 'Opened' : 'Unopened';
       });
-      drill.style.transform = `translateY(${depth * 88}px)`;
-      surface.hidden = depth !== 0;
-      strata.forEach((s, i) => { s.hidden = i + 1 !== depth; });
-      deeper.textContent = depth < 5 ? `Go deeper: ${short[depth + 1]}` : 'Back to the surface';
-      depthLabel.textContent = `Layer ${String(depth).padStart(2, '0')} of 05 · ${names[depth]}`;
-      progress.textContent = `${opened.size} of 6 levels opened`;
+      strata.forEach((s, i) => { s.hidden = i !== depth; });
+      progress.textContent = `${opened.size} of ${strata.length} layers opened`;
+      meter.style.width = `${(opened.size / strata.length) * 100}%`;
       if (animate) {
         well.classList.remove('is-descending');
         void well.offsetWidth;
         well.classList.add('is-descending');
       }
       if (focus) {
-        const target = depth === 0 ? surface : $('h3', strata[depth - 1]);
-        target.focus({ preventScroll: true });
+        $('h3', strata[depth]).focus({ preventScroll: true });
         const top = well.getBoundingClientRect().top;
-        if (top < 0 || top > window.innerHeight * 0.4) {
+        if (top < 0 || top > window.innerHeight * 0.6) {
           well.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
         }
       }
     };
     bands.forEach((b, i) => b.addEventListener('click', () => show(i, { focus: true })));
-    deeper.addEventListener('click', () => show(depth < 5 ? depth + 1 : 0, { focus: true }));
     show(0, { animate: false });
 
     // 01 · Research: filter the quotes by theme
@@ -1029,7 +1313,7 @@
     const pans = $$('.scale-pan', panel);
     const labelL = $('.scale-label--l', panel);
     const labelR = $('.scale-label--r', panel);
-    const screen = $('.specimen-screen', panel);
+    const specimens = $('.specimens', panel);
     const empty = $('.lab-empty', panel);
     const outcome = $('.lab-outcome', panel);
     const meters = $('.meters', panel);
@@ -1048,17 +1332,28 @@
       pans.forEach((p) => { p.style.transform = `rotate(${-a}deg)`; });
     }
 
-    function showScreen(html) {
-      if (motion) {
-        gsap.to(screen, {
-          opacity: 0, duration: 0.2, onComplete: () => {
-            screen.innerHTML = html;
-            gsap.fromTo(screen.children, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.04, ease: 'expo.out' });
-            gsap.set(screen, { opacity: 1 });
-          },
-        });
-      } else {
-        screen.innerHTML = html;
+    // Both options stand side by side, each under its own pan of the scale
+    function showScreens(e) {
+      specimens.innerHTML = e.options.map((o, i) => `
+        <div class="specimen" data-pick="${i}">
+          <div class="specimen-frame"><div class="specimen-screen">${o.screen}</div></div>
+          <p class="specimen-cap"><span>${e.scale[o.side < 0 ? 0 : 1]}</span>${o.name}</p>
+        </div>`).join('');
+      // the phones are a shortcut for pointer users; the radio buttons stay the accessible control
+      $$('.specimen', specimens).forEach((sp) => sp.addEventListener('click', () => {
+        const input = $(`input[value="${sp.dataset.pick}"]`, row);
+        input.checked = true;
+        input.dispatchEvent(new Event('change'));
+      }));
+    }
+
+    function markChosen(i) {
+      if (i === null) delete specimens.dataset.chosen;
+      else specimens.dataset.chosen = String(i);
+      $$('.specimen', specimens).forEach((sp) => sp.classList.toggle('is-chosen', Number(sp.dataset.pick) === i));
+      if (motion && i !== null) {
+        const pick = $(`.specimen[data-pick="${i}"] .specimen-screen`, specimens);
+        gsap.fromTo(pick.children, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.04, ease: 'expo.out' });
       }
     }
 
@@ -1084,7 +1379,7 @@
       if (chosen[exp] !== i) visit.decisions += 1;
       chosen[exp] = i;
       tilt(o.side);
-      showScreen(o.screen);
+      markChosen(i);
       showOutcome(o, e);
     }
 
@@ -1103,13 +1398,16 @@
       $$('input', row).forEach((inp) => inp.addEventListener('change', () => choose(Number(inp.value))));
       if (chosen[exp] === null) {
         tilt(0);
-        screen.innerHTML = e.idle;
+        showScreens(e);
+        markChosen(null);
         empty.hidden = false;
         outcome.hidden = true;
       } else {
         const o = e.options[chosen[exp]];
         tilt(o.side);
-        screen.innerHTML = o.screen;
+        showScreens(e);
+        specimens.dataset.chosen = String(chosen[exp]);
+        $(`.specimen[data-pick="${chosen[exp]}"]`, specimens).classList.add('is-chosen');
         showOutcome(o, e);
       }
     }
@@ -1140,39 +1438,74 @@
      ------------------------------------------------------------------------ */
   function installation(name, setup) {
     const fig = $(`[data-install="${name}"]`);
+    const stage = $('.install-stage', fig);
     const canvas = $('canvas', fig);
     const ctx = canvas.getContext('2d');
     const count = $('.count', fig);
     const figure = $('.install-figure', fig);
     const range = $('.install-range', fig);
-    const now = $('.install-now', fig);
-    const sides = $$('.install-compare > div', fig);
+    const hudState = $('.hud-state b', fig);
+    const sides = $$('.ic', fig);
+    const replay = $('.install-replay', fig);
     const state = { p: motion ? 0 : 1 };
     const draw = setup(canvas, ctx, state);
     const still = () => draw(0, 0);
 
     const from = Number(count.dataset.from || 0);
     const to = Number(count.dataset.to);
-    // One position, from before launch (0) to after launch (1), drives the drawing, the number and the labels
+    // One position, from before launch (0) to after launch (1), drives the drawing, the number and every control
     const render = () => {
-      count.textContent = Math.round(lerp(from, to, state.p)).toLocaleString('en-GB');
-      range.value = Math.round(state.p * 100);
-      const label = state.p < 0.02 ? 'Before launch' : state.p > 0.98 ? 'After launch' : `Part way, ${Math.round(state.p * 100)}%`;
+      const p = state.p;
+      count.textContent = Math.round(lerp(from, to, p)).toLocaleString('en-GB');
+      range.value = Math.round(p * 100);
+      const label = p < 0.02 ? 'Before launch' : p > 0.98 ? 'After launch' : `Part way, ${Math.round(p * 100)}%`;
       range.setAttribute('aria-valuetext', label);
-      now.textContent = `Now showing: ${label.toLowerCase()}`;
-      sides[0].classList.toggle('is-on', state.p < 0.5);
-      sides[1].classList.toggle('is-on', state.p >= 0.5);
+      hudState.textContent = label;
+      fig.style.setProperty('--p', p.toFixed(3));
+      fig.dataset.at = p < 0.02 ? 'before' : p > 0.98 ? 'after' : 'between';
+      sides[0].setAttribute('aria-pressed', String(p < 0.02));
+      sides[1].setAttribute('aria-pressed', String(p > 0.98));
+      if (!motion) still();
     };
-    // The moving figure is decorative; the before and after text states the numbers
+    // The moving figure is decorative; the before and after buttons state the numbers
     figure.setAttribute('aria-hidden', 'true');
 
-    let demo = null;
-    range.addEventListener('input', () => {
-      if (demo) { demo.kill(); demo = null; }
-      state.p = Number(range.value) / 100;
-      render();
-      if (!motion) still();
+    let tween = null;
+    const stop = () => { if (tween) { tween.kill(); tween = null; } };
+    const set = (p) => { stop(); state.p = clamp(p); render(); };
+    // Glide to a state; without motion, jump straight there
+    const go = (target, duration = 1.6) => {
+      stop();
+      if (!motion) { set(target); return; }
+      tween = gsap.to(state, { p: target, duration, ease: 'power2.inOut', onUpdate: render, onComplete: () => { tween = null; } });
+    };
+    const touched = () => fig.classList.add('is-touched');
+
+    range.addEventListener('input', () => { touched(); set(Number(range.value) / 100); });
+    sides.forEach((btn) => btn.addEventListener('click', () => { touched(); go(Number(btn.dataset.p)); }));
+    replay.addEventListener('click', () => {
+      touched();
+      if (!motion) { set(1); return; }
+      stop(); state.p = 0; render(); go(1, 3.2);
     });
+
+    // Drag across the artwork itself to scrub. Vertical swipes still scroll the page on touch screens.
+    let dragging = false;
+    const fromPointer = (e) => {
+      const r = stage.getBoundingClientRect();
+      set((e.clientX - r.left) / r.width);
+    };
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      dragging = true; touched();
+      stage.setPointerCapture(e.pointerId);
+      stage.classList.add('is-dragging');
+      fromPointer(e);
+    });
+    stage.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
+    const end = () => { dragging = false; stage.classList.remove('is-dragging'); };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
     render();
 
     if (motion) {
@@ -1180,7 +1513,7 @@
       const io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) return;
         io.disconnect();
-        demo = gsap.to(state, { p: 1, duration: 4, ease: 'power2.inOut', onUpdate: render, onComplete: () => { demo = null; } });
+        if (!fig.classList.contains('is-touched')) go(1, 4);
       }, { threshold: 0.5 });
       io.observe(fig);
       loopWhileVisible(canvas, (dt, t) => draw(dt, t));
