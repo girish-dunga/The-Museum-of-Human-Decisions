@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BESS Lifecycle Platform — Girish Dunga</title>
+  <meta name="description" content="Case study: one AI-enabled platform that takes a battery storage project from first specification to a fleet run in euros, not only in megawatt-hours.">
+  <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300..800;1,300..800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #F5F5F5;
+      --bg-2: #FFFFFF;
+      --panel: #FFFFFF;
+      --panel-2: #F0F0F0;
+      --line: #E0E0E0;
+      --line-2: #C9C9C9;
+      --ink: #111111;
+      --ink-2: #545454;
+      --ink-3: #7D7D7D;
+      --accent: #E02F2F;
+      --accent-soft: #FDECEC;
+      /* data: reference categorical slots 1–4 */
+      --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+      /* status, reserved */
+      --good: #008300; --warn: #b77800; --bad: #c62f2f;
+      --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      --mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --gutter: clamp(16px, 4vw, 56px);
+      --max: 1180px;
+      --r: 10px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0E0E0E; --bg-2: #141414; --panel: #1A1A1A; --panel-2: #222222;
+        --line: #2C2C2C; --line-2: #3A3A3A;
+        --ink: #F2F2F2; --ink-2: #BDBDBD; --ink-3: #8F8F8F;
+        --accent: #FF5A5A; --accent-soft: #2A1515;
+        --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+        --good: #3fae4a; --warn: #d9a12b; --bad: #ff6b6b;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0E0E0E; --bg-2: #141414; --panel: #1A1A1A; --panel-2: #222222;
+      --line: #2C2C2C; --line-2: #3A3A3A;
+      --ink: #F2F2F2; --ink-2: #BDBDBD; --ink-3: #8F8F8F;
+      --accent: #FF5A5A; --accent-soft: #2A1515;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --good: #3fae4a; --warn: #d9a12b; --bad: #ff6b6b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: var(--font); font-size: clamp(16px, .5vw + 13px, 18px); line-height: 1.6;
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    }
+    h1, h2, h3, h4, p { margin: 0; }
+    h1, h2, h3, h4 { font-weight: 500; letter-spacing: -.01em; line-height: 1.2; }
+    ul, ol { margin: 0; padding: 0; }
+    a { color: inherit; }
+    button { font: inherit; color: inherit; }
+    svg { display: block; max-width: 100%; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* top bar */
+    .bar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+    .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px; }
+    .bar a { text-decoration: none; font-size: 14px; color: var(--ink-2); }
+    .bar a:hover { color: var(--ink); }
+    .bar-title { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 0; background: var(--accent); }
+
+    /* hero */
+    .hero { padding: clamp(56px, 9vw, 120px) 0 clamp(40px, 6vw, 72px); }
+    .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+    .eyebrow b { color: var(--accent); font-weight: 500; }
+    .hero h1 { font-size: clamp(36px, 6vw, 76px); font-weight: 400; margin: 18px 0 20px; max-width: 16ch; letter-spacing: -.03em; line-height: 1.02; }
+    .hero h1 em { font-style: normal; color: var(--ink-3); }
+    .lede { font-size: clamp(18px, 1.2vw + 12px, 23px); color: var(--ink-2); max-width: 60ch; line-height: 1.5; }
+    .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; margin-top: 44px; }
+    .meta div { background: var(--panel); padding: 16px 18px; }
+    .meta dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+    .meta dd { margin: 4px 0 0; font-size: 15px; }
+
+    /* headline figures */
+    .figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+    .fig { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
+    .fig b { display: block; font-size: clamp(34px, 3.4vw, 46px); font-weight: 400; letter-spacing: -.03em; line-height: 1; }
+    .fig span { display: block; color: var(--ink-2); font-size: 15px; margin-top: 10px; }
+
+    /* chapters */
+    section.chap { padding: clamp(56px, 8vw, 104px) 0; border-top: 1px solid var(--line); }
+    .chap-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-bottom: clamp(28px, 4vw, 48px); max-width: 780px; }
+    .chap-no { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+    .chap h2 { font-size: clamp(28px, 3.4vw, 44px); font-weight: 400; letter-spacing: -.02em; }
+    .chap-head p { color: var(--ink-2); font-size: clamp(17px, .6vw + 13px, 20px); }
+    .prose { max-width: 70ch; }
+    .prose p + p { margin-top: 1em; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; }
+    .card h3 { font-size: 19px; margin-bottom: 8px; }
+    .card p { color: var(--ink-2); font-size: 15.5px; }
+    .card .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 10px; display: block; }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+    @media (max-width: 860px) { .split { grid-template-columns: minmax(0, 1fr); } }
+
+    /* lifecycle strip */
+    .life { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--panel); }
+    .life div { padding: 18px; border-right: 1px solid var(--line); position: relative; }
+    .life div:last-child { border-right: 0; }
+    .life b { display: block; font-weight: 500; font-size: 15px; }
+    .life span { display: block; font-size: 13.5px; color: var(--ink-2); margin-top: 4px; }
+    .life .gap { background: var(--accent-soft); }
+    .life .gap b { color: var(--accent); }
+    .life-cap { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+    @media (max-width: 760px) { .life { grid-template-columns: minmax(0, 1fr); } .life div { border-right: 0; border-bottom: 1px solid var(--line); } .life div:last-child { border-bottom: 0; } }
+
+    blockquote { margin: 0; padding: 20px 22px; border-left: 2px solid var(--accent); background: var(--panel); border-radius: 0 var(--r) var(--r) 0; font-size: 18px; line-height: 1.5; }
+    blockquote cite { display: block; margin-top: 10px; font-style: normal; font-size: 13px; color: var(--ink-3); }
+
+    /* tables */
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); }
+    table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+    th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); background: var(--panel-2); white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    td.m { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+
+    /* steps (7-step framework) */
+    .steps { list-style: none; counter-reset: s; display: grid; gap: 0; border-left: 1px solid var(--line-2); margin-left: 18px; }
+    .steps li { counter-increment: s; position: relative; padding: 0 0 26px 34px; }
+    .steps li::before { content: counter(s); position: absolute; left: -18px; top: -2px; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--bg); border: 1px solid var(--line-2); font-family: var(--mono); font-size: 13px; }
+    .steps li:last-child { padding-bottom: 0; }
+    .steps b { display: block; font-weight: 500; }
+    .steps span { display: block; font-size: 15px; color: var(--ink-2); }
+    .steps em { display: block; font-style: normal; font-size: 13.5px; color: var(--accent); margin-top: 4px; }
+
+    /* tags */
+    .tried { list-style: none; display: grid; gap: 12px; }
+    .tried li { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; align-items: start; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; font-size: 15.5px; }
+    .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; text-align: center; border: 1px solid currentColor; }
+    .tag.kept { color: var(--good); }
+    .tag.dropped { color: var(--ink-3); }
+    .tried b { font-weight: 500; }
+    .tried span.why { display: block; color: var(--ink-2); margin-top: 4px; }
+
+    /* ---------- product mockups ---------- */
+    .device { background: var(--bg-2); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0,0,0,.25); }
+    .device-top { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+    .logo-sq { width: 30px; height: 30px; border-radius: 7px; background: var(--ink); color: var(--bg); display: grid; place-items: center; flex: none; }
+    .app-name { font-weight: 500; font-size: 14px; line-height: 1.1; }
+    .app-name small { display: block; font-weight: 400; font-size: 12px; color: var(--ink-3); }
+    .pill { font-size: 12px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); white-space: nowrap; }
+    .grow { flex: 1; }
+    .device-body { padding: clamp(14px, 2vw, 22px); }
+    .caption { margin-top: 14px; font-size: 14px; color: var(--ink-3); max-width: 80ch; }
+    .caption b { color: var(--ink-2); font-weight: 500; }
+
+    /* intake */
+    .intake { display: grid; grid-template-columns: 200px minmax(0, 1fr) 260px; gap: 18px; }
+    @media (max-width: 980px) { .intake { grid-template-columns: minmax(0, 1fr); } .intake-nav { display: none; } }
+    .intake-nav ol { list-style: none; display: grid; gap: 4px; font-size: 13.5px; }
+    .intake-nav li { padding: 8px 10px; border-radius: 6px; color: var(--ink-3); display: flex; justify-content: space-between; }
+    .intake-nav li.done { color: var(--ink-2); }
+    .intake-nav li.done::after { content: "✓"; color: var(--good); }
+    .intake-nav li.on { background: var(--panel-2); color: var(--ink); font-weight: 500; }
+    .intake-nav li.warn::after { content: "!"; color: var(--warn); font-weight: 700; }
+    .fld { display: grid; gap: 6px; margin-bottom: 14px; }
+    .fld label, .fld .lbl { font-size: 12.5px; color: var(--ink-3); }
+    .inp { border: 1px solid var(--line-2); border-radius: 8px; padding: 9px 12px; font-size: 14.5px; background: var(--panel); display: flex; justify-content: space-between; gap: 8px; }
+    .inp small { color: var(--ink-3); }
+    .inp.miss { border-color: var(--warn); border-style: dashed; color: var(--ink-3); }
+    .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+    .seg button { border: 1px solid var(--line-2); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+    .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .assume { background: var(--panel-2); border-radius: 10px; padding: 14px; font-size: 13.5px; }
+    .assume h4 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin-bottom: 10px; }
+    .assume ul { list-style: none; display: grid; gap: 10px; }
+    .assume li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; }
+    .dot.g { background: var(--good); } .dot.w { background: var(--warn); } .dot.b { background: var(--bad); }
+    .assume li span small { display: block; color: var(--ink-3); }
+    .derived { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .derived div { font-size: 12px; color: var(--ink-3); }
+    .derived b { display: block; font-size: 20px; color: var(--ink); font-weight: 400; }
+
+    /* spec package tabs */
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; margin: -4px 0 18px; }
+    .tabs button { border: 0; background: none; padding: 10px 14px; font-size: 14px; color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+    .tabs button .n { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-left: 6px; }
+    .panel[hidden] { display: none; }
+    .specgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 10px; }
+    .spec { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--panel); }
+    .spec dt { font-size: 12px; color: var(--ink-3); }
+    .spec dd { margin: 2px 0 0; font-size: 15px; }
+    .spec dd small { color: var(--ink-3); font-size: 12.5px; display: block; }
+    .src { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+    .conf { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+    .signoff { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-top: 16px; padding: 12px 14px; border: 1px dashed var(--line-2); border-radius: 8px; font-size: 13.5px; color: var(--ink-2); }
+    .btn { border: 1px solid var(--ink); background: var(--ink); color: var(--bg); border-radius: 8px; padding: 8px 14px; font-size: 13.5px; cursor: pointer; }
+    .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line-2); }
+
+    .uc-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13.5px; color: var(--ink-2); }
+    .fit { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
+    .fit i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+    .fit.rec i { background: var(--good); } .fit.ok i { background: var(--warn); } .fit.no i { background: var(--line-2); }
+    .fit.rec { font-weight: 500; }
+    .meter { display: inline-flex; gap: 2px; vertical-align: middle; }
+    .meter i { width: 10px; height: 6px; border-radius: 1px; background: var(--line); }
+    .meter i.on { background: var(--ink-2); }
+    .why-box { margin-top: 12px; background: var(--panel-2); border-radius: 8px; padding: 12px 14px; font-size: 14px; color: var(--ink-2); }
+    .why-box b { color: var(--ink); font-weight: 500; }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; white-space: nowrap; }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .status.g { color: var(--good); } .status.w { color: var(--warn); } .status.b { color: var(--bad); }
+
+    /* roadmap */
+    .road { display: grid; gap: 6px; }
+    .road-row { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 12px; align-items: center; font-size: 13.5px; }
+    .road-row .nm { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .road-track { position: relative; height: 22px; background: var(--panel-2); border-radius: 4px; }
+    .road-bar { position: absolute; top: 3px; bottom: 3px; border-radius: 4px; background: var(--ink-2); }
+    .road-bar.crit { background: var(--accent); }
+    .road-gate { position: absolute; top: -2px; width: 2px; height: 26px; background: var(--ink); }
+    .road-axis { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 12px; font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+    .road-axis div:last-child { display: flex; justify-content: space-between; }
+    @media (max-width: 640px) { .road-row, .road-axis { grid-template-columns: 110px minmax(0, 1fr); } }
+
+    /* control plane mock */
+    .cp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.1fr); gap: 12px; }
+    .cp .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+    .cp .copilot { grid-row: span 2; }
+    @media (max-width: 1040px) { .cp { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cp .copilot { grid-row: auto; grid-column: 1 / -1; } }
+    @media (max-width: 600px) { .cp { grid-template-columns: minmax(0, 1fr); } }
+    .t-k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+    .t-h { font-size: 15px; font-weight: 500; }
+    .t-s { font-size: 12px; color: var(--ink-3); }
+    .big { font-size: 34px; font-weight: 400; letter-spacing: -.03em; line-height: 1.1; margin-top: 6px; }
+    .big small { font-size: 13px; color: var(--ink-3); letter-spacing: 0; margin-left: 4px; }
+    .delta { font-size: 12.5px; color: var(--good); }
+    .legend { list-style: none; display: grid; gap: 6px; font-size: 13px; margin-top: 10px; }
+    .legend li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+    .legend i { width: 10px; height: 10px; border-radius: 2px; }
+    .legend span:last-child { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+    .sites { list-style: none; display: grid; gap: 4px; font-size: 13px; margin-top: 10px; }
+    .sites li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 30px 48px; gap: 8px; align-items: center; padding: 3px 0; }
+    .grade { width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; }
+    .grade.A { background: var(--good); } .grade.B { background: var(--ink-3); } .grade.C { background: var(--warn); }
+    .sites .v { font-family: var(--mono); font-size: 12px; text-align: right; }
+    .up { color: var(--good); } .dn { color: var(--bad); }
+    .action { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-top: 10px; background: var(--bg-2); }
+    .action .chip { font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); border: 1px solid var(--line-2); border-radius: 4px; padding: 2px 6px; }
+    .action p { font-size: 13.5px; font-weight: 500; margin: 8px 0 4px; line-height: 1.35; }
+    .action .t-s { line-height: 1.4; }
+    .impact { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
+    .impact b { color: var(--ink); font-weight: 500; }
+    .imp2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .imp2 div { border: 1px solid var(--line-2); border-radius: 6px; padding: 5px 8px; font-size: 11px; color: var(--ink-3); text-align: center; }
+    .imp2 b { display: block; color: var(--ink); font-size: 13px; font-weight: 500; }
+
+    .gauge-lbl { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+    .hr-line { border-top: 1px solid var(--line); margin: 10px 0; }
+    .kv { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); }
+    .kv b { color: var(--ink); font-weight: 500; }
+
+    /* tooltip */
+    .tip { position: fixed; z-index: 50; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12.5px; padding: 6px 9px; border-radius: 6px; opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s; max-width: 240px; }
+    .tip.on { opacity: 1; transform: none; }
+    [data-tip] { cursor: default; }
+
+    /* architecture */
+    .arch { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-items: stretch; }
+    .arch .col { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; position: relative; }
+    .arch .col h4 { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; margin-bottom: 10px; }
+    .arch .col ul { list-style: none; display: grid; gap: 6px; font-size: 13.5px; }
+    .arch .col li { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; background: var(--bg-2); }
+    .arch .col.hi { border-color: var(--accent); }
+    .arch .col.hi h4 { color: var(--accent); }
+    .arch .col:not(:last-child)::after { content: "→"; position: absolute; right: -10px; top: 50%; transform: translate(50%, -50%); color: var(--ink-3); font-size: 14px; z-index: 1; }
+    @media (max-width: 900px) { .arch { grid-template-columns: minmax(0, 1fr); } .arch .col:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -10px; transform: translate(50%, 50%); } }
+
+    /* timeline */
+    .weeks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 800px) { .weeks { grid-template-columns: minmax(0, 1fr); } }
+    .week { border-top: 2px solid var(--ink); padding-top: 14px; }
+    .week:nth-child(4) { border-top-color: var(--accent); }
+    .week .k { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+    .week h3 { font-size: 18px; margin: 4px 0 8px; }
+    .week ul { padding-left: 18px; font-size: 14.5px; color: var(--ink-2); display: grid; gap: 4px; }
+
+    /* suggest LLM */
+    .llm { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 16px; align-items: start; }
+    @media (max-width: 860px) { .llm { grid-template-columns: minmax(0, 1fr); } }
+    .llm-tasks { list-style: none; display: grid; gap: 6px; }
+    .llm-tasks button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 12px 14px; cursor: pointer; display: grid; gap: 2px; }
+    .llm-tasks button b { font-weight: 500; font-size: 15px; }
+    .llm-tasks button span { font-size: 12.5px; color: var(--ink-3); }
+    .llm-tasks button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--accent); }
+    .llm-pick { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: clamp(18px, 2.4vw, 28px); }
+    .llm-badge { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+    .llm-name { font-size: clamp(24px, 2.4vw, 32px); font-weight: 400; letter-spacing: -.02em; margin: 8px 0 2px; }
+    .llm-id { font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+    .llm-why { margin-top: 14px; color: var(--ink-2); max-width: 70ch; }
+    .llm-caps { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px; margin-top: 16px; }
+    .llm-caps li { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; background: var(--bg-2); }
+    .llm-caps li b { display: block; font-weight: 500; font-size: 13px; }
+    .llm-caps li span { color: var(--ink-2); }
+    .llm-alt { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+    .llm-alt b { color: var(--ink); font-weight: 500; }
+    .llm-cfg { margin-top: 12px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); background: var(--panel-2); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+
+    .note { font-size: 13px; color: var(--ink-3); margin-top: 18px; max-width: 80ch; }
+    footer { border-top: 1px solid var(--line); padding: 40px 0 60px; color: var(--ink-3); font-size: 14px; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    footer a { color: var(--ink-2); }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="wrap">
+      <a href="../index.html#case-studies">← The Museum of Human Decisions</a>
+      <span class="bar-title">Exhibit · BESS Lifecycle Platform</span>
+    </div>
+    <span class="progress" aria-hidden="true"></span>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <div class="wrap hero">
+      <p class="eyebrow"><b>●</b> Case study · Energy · Enterprise AI · 2026</p>
+      <h1>From a blank site to a fleet run in euros, <em>not only in megawatt-hours.</em></h1>
+      <p class="lede">An AI-enabled platform that guides a battery energy storage (BESS) project from its first specification to day-to-day commercial operation. Two products, one asset model: a <strong>Spec Copilot</strong> for engineers deciding what to build, and a <strong>Value Control Plane</strong> for the people deciding how to run it.</p>
+
+      <dl class="meta">
+        <div><dt>Client</dt><dd>Independent power producer, EU fleet + US pipeline (under NDA)</dd></div>
+        <div><dt>My role</dt><dd>Lead product designer, from discovery to MVP</dd></div>
+        <div><dt>Team</dt><dd>PM, 2 designers, data scientist, 5 engineers, 2 domain SMEs</dd></div>
+        <div><dt>Timeline</dt><dd>10-week MVP, then scale-out over 2 quarters</dd></div>
+        <div><dt>Platform</dt><dd>Web app on the client's existing PI data landscape</dd></div>
+      </dl>
+
+      <div class="figs" aria-label="Headline outcomes">
+        <div class="fig"><b>3 wk → 2 d</b><span>to a first, reviewable specification package</span></div>
+        <div class="fig"><b>2.5×</b><span>more compliance obligations caught before detailed engineering</span></div>
+        <div class="fig"><b>€96k</b><span>per quarter in actions surfaced by the Value Copilot in the pilot</span></div>
+        <div class="fig"><b>6 sites</b><span>on one control plane; site two took a fraction of site one's effort</span></div>
+      </div>
+    </div>
+
+    <!-- ============ 01 CONTEXT ============ -->
+    <section class="chap" id="context">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">01 · Context</p>
+          <h2>A battery project is two hard problems wearing one name.</h2>
+          <p>Before the site exists, the question is <em>what should we build, and are we allowed to?</em> After it runs, the question is <em>is it making money, and why not?</em> The client answered both in spreadsheets, PDFs and people's heads, and nothing carried over from one to the other.</p>
+        </div>
+
+        <div class="life" role="list" aria-label="BESS project lifecycle">
+          <div role="listitem"><b>Feasibility</b><span>Use case, size, site screening</span></div>
+          <div role="listitem" class="gap"><b>Specification</b><span>Chemistry, BMS, inverter, layout, codes</span></div>
+          <div role="listitem"><b>Build</b><span>Permits, procurement, construction</span></div>
+          <div role="listitem"><b>Commission</b><span>Testing, witness tests, energization</span></div>
+          <div role="listitem" class="gap"><b>Operate</b><span>Dispatch, trading, O&amp;M, value</span></div>
+        </div>
+        <div class="life-cap"><span>Weeks of manual engineering, high rework risk</span><span>Fleet measured in MWh, managed in €</span></div>
+
+        <div class="grid-2" style="margin-top:32px">
+          <div class="prose">
+            <p>The client owned six operating storage sites across Portugal, Spain, France, Italy and Germany (480 MWh, 240 MW) and had a growing pipeline of US projects. Every new project started from a blank template, and every operating site reported availability in megawatt-hours while the board asked about margin in euros.</p>
+            <p>I was brought in to design one product. Three weeks into discovery, it was clear the two problems shared a root: <strong>the decisions made during specification were the same facts operations needed later</strong>, from usable capacity and degradation curves to warranty limits and inverter capability. They were simply lost at handover.</p>
+          </div>
+          <blockquote>“We spend three weeks writing a spec, hand it to EPC, and two years later my asset managers are reverse-engineering it from O&amp;M manuals to work out why a site is under-earning.”<cite>Head of Asset Management, discovery interview</cite></blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 PROBLEM ============ -->
+    <section class="chap" id="problem">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">02 · The problem</p>
+          <h2>Interdependent decisions, fragmented ownership, and no single view of value.</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card"><span class="k">Specify</span><h3>Every choice moves every other choice</h3><p>System size, chemistry, BMS, inverter, footprint, enclosures, fire safety and interconnection are interdependent. Change the duration and the chemistry shortlist, enclosure count and fire separation all move.</p></div>
+          <div class="card"><span class="k">Select</span><h3>Trade-offs nobody compared the same way twice</h3><p>Cost, safety, degradation, cycle life, temperature range, warranty terms and utility acceptance were weighed in a different spreadsheet each time, by whoever had the time.</p></div>
+          <div class="card"><span class="k">Comply</span><h3>Rules that change at every border</h3><p>Federal, state, utility, fire code, environmental and permitting requirements vary by location and application. One missed obligation means rework, delay or failed commissioning.</p></div>
+          <div class="card"><span class="k">Execute</span><h3>Plans split across six teams</h3><p>Engineering, procurement, permitting, utility coordination, construction and commissioning each kept their own plan. No one held the step-by-step roadmap.</p></div>
+          <div class="card"><span class="k">Operate</span><h3>Measured in MWh, managed in euros</h3><p>Dashboards showed availability and state of charge. Nobody could say which site was losing money, to what cause, or which action would recover it.</p></div>
+          <div class="card"><span class="k">Scale</span><h3>Site two cost as much as site one</h3><p>Without a shared asset model, each new site meant rebuilding data pipelines, reports and analysis from scratch.</p></div>
+        </div>
+        <p class="prose" style="margin-top:32px;font-size:clamp(18px,1vw + 12px,22px)"><strong>Design challenge:</strong> How might we turn basic project information into a specification engineers trust enough to sign, and carry those decisions into a fleet view that runs on euros?</p>
+      </div>
+    </section>
+
+    <!-- ============ 03 RESEARCH ============ -->
+    <section class="chap" id="research">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">03 · Research</p>
+          <h2>Seven roles, one asset, very different questions.</h2>
+          <p>18 interviews, 4 contextual sessions in a control room and a site office, and a teardown of 3 past specification packages and their RFI logs.</p>
+        </div>
+
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Phase</th><th>The decision they own</th><th>What they need to see</th></tr></thead>
+            <tbody>
+              <tr><td>Development engineer</td><td>Specify</td><td>Size, chemistry, architecture</td><td>Options compared on the same criteria, with sources</td></tr>
+              <tr><td>Permitting &amp; compliance lead</td><td>Specify / Build</td><td>Which obligations apply, and when</td><td>A jurisdiction-specific checklist tied to project phases</td></tr>
+              <tr><td>Procurement lead</td><td>Build</td><td>OEM and vendor selection</td><td>Bankability, lead times, warranty terms, side by side</td></tr>
+              <tr><td>Asset manager</td><td>Operate</td><td>Is each site meeting its business case?</td><td>Margin, profit per cycle, LCOS and ROACE against plan</td></tr>
+              <tr><td>Dispatch &amp; trading</td><td>Operate</td><td>When to charge, discharge, bid</td><td>Spreads, headroom, degradation cost per cycle</td></tr>
+              <tr><td>O&amp;M engineer</td><td>Operate</td><td>What to fix first</td><td>Availability loss priced in euros, by cause</td></tr>
+              <tr><td>Data &amp; performance analyst</td><td>Operate</td><td>Is the number right?</td><td>Lineage from every KPI back to the source tag</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="font-size:22px;margin:44px 0 18px">What we learned</h3>
+        <div class="grid-2">
+          <div class="card"><span class="k">Insight 1</span><h3>Engineers don't want an answer. They want a defensible draft.</h3><p>No engineer would sign a spec a machine wrote. Every one of them would happily edit a good draft, as long as they could see where each number came from.</p></div>
+          <div class="card"><span class="k">Insight 2</span><h3>Missing inputs caused more rework than wrong ones.</h3><p>In the RFI logs we reviewed, most late changes traced back to something nobody asked early: fire setbacks, the utility's ride-through rules, soil bearing, or the enclosure's cold-weather rating.</p></div>
+          <div class="card"><span class="k">Insight 3</span><h3>"Recommended" without "for what" was ignored.</h3><p>A chemistry ranked "best" was distrusted. The same chemistry described as "best for 4-hour firming at this site, because…" was accepted.</p></div>
+          <div class="card"><span class="k">Insight 4</span><h3>Operators think in euros per decision, not KPIs per page.</h3><p>Asset managers wanted three things: what we're making, where we're losing it, and what to do on Monday.</p></div>
+        </div>
+        <blockquote style="margin-top:16px">“Show me the clause, not the conclusion. If I can't point the fire marshal to a section number, it doesn't exist.”<cite>Permitting lead, US development team</cite></blockquote>
+      </div>
+    </section>
+
+    <!-- ============ 04 APPROACH ============ -->
+    <section class="chap" id="approach">
+      <div class="wrap">
+        <div class="split">
+          <div>
+            <div class="chap-head">
+              <p class="chap-no">04 · Approach</p>
+              <h2>Seven steps, one asset model from spec to dispatch.</h2>
+              <p>We ran the work as a framework the client could repeat for every new site and region. Each step had a design deliverable, not just an engineering one.</p>
+            </div>
+            <div class="card" style="margin-top:8px">
+              <span class="k">Principle</span>
+              <h3>Write once, use for the asset's whole life</h3>
+              <p>Every decision captured in the Spec Copilot (rated power, usable energy, warranty cycle limits, degradation curve, inverter capability) becomes a field in the asset information model the Control Plane reads after commissioning. Nothing is re-keyed at handover.</p>
+            </div>
+          </div>
+          <ol class="steps">
+            <li><b>Set the business objectives</b><span>Availability in MWh and €, deviation from theoretical performance, shadow costs, cycle profitability.</span><em>Design: a shared KPI glossary, signed off by finance and operations</em></li>
+            <li><b>Identify the key users and decisions</b><span>Developers, permitting, procurement, asset managers, dispatch &amp; trading, O&amp;M, analysts.</span><em>Design: role-to-decision map (above)</em></li>
+            <li><b>Prioritize the business KPIs</b><span>Fleet and cycle profitability (€/MWh, €/cycle), LCOS and ROACE.</span><em>Design: cut from 40 candidate metrics to 4 headline KPIs</em></li>
+            <li><b>Map data sources and reuse what exists</b><span>BMS/EMS, CRM/ERP, GIS and market APIs fed into PI. No new sensors or databases.</span><em>Design: a data-availability matrix behind every screen</em></li>
+            <li><b>Structure and contextualize the data</b><span>Asset information model, ontology instantiation, templates so site two costs a fraction of site one.</span><em>Design: the spec package <i>is</i> the template</em></li>
+            <li><b>Build the analytics enablers</b><span>Cost, revenue and degradation models behind every euro on the dashboard.</span><em>Design: every number opens its own calculation</em></li>
+            <li><b>Deliver the MVP, then scale</b><span>A 10-week fast track on 1–2 representative sites, with a modular design to add sites and regions.</span><em>Design: component library and region packs</em></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 SPEC COPILOT: INTAKE ============ -->
+    <section class="chap" id="spec-intake">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">05 · Product 1 · Spec Copilot</p>
+          <h2>A guided intake that asks what an experienced engineer would ask.</h2>
+          <p>The Copilot prompts for key project inputs, shows what it derived from them, and refuses to guess on anything that would change the answer. Below: a 100 MW / 400 MWh renewable-firming project in Kern County, California.</p>
+        </div>
+
+        <div class="device" role="img" aria-label="Spec Copilot intake screen mockup">
+          <div class="device-top">
+            <span class="logo-sq"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+            <span class="app-name">BESS Spec Copilot<small>Project · Kern Solar+Storage</small></span>
+            <span class="grow"></span>
+            <span class="pill">Draft v3</span>
+            <span class="pill">Step 3 of 8</span>
+          </div>
+          <div class="device-body">
+            <div class="intake">
+              <nav class="intake-nav" aria-label="Intake steps (mockup)">
+                <ol>
+                  <li class="done">Project &amp; location</li>
+                  <li class="done">Use case</li>
+                  <li class="on">Sizing</li>
+                  <li class="warn">Site constraints</li>
+                  <li>Interconnection</li>
+                  <li>Commercial</li>
+                  <li>Preferences</li>
+                  <li>Review</li>
+                </ol>
+              </nav>
+              <div>
+                <div class="fld"><span class="lbl">Primary use case</span>
+                  <div class="seg" aria-hidden="true"><button aria-pressed="false" tabindex="-1">Peak shaving</button><button aria-pressed="true" tabindex="-1">Renewable firming</button><button aria-pressed="false" tabindex="-1">Frequency response</button><button aria-pressed="false" tabindex="-1">Microgrid resiliency</button><button aria-pressed="false" tabindex="-1">Capacity support</button></div>
+                </div>
+                <div class="row2">
+                  <div class="fld"><span class="lbl">Power at point of interconnection</span><div class="inp">100 <small>MW AC</small></div></div>
+                  <div class="fld"><span class="lbl">Discharge duration</span><div class="inp">4 <small>hours</small></div></div>
+                </div>
+                <div class="row2">
+                  <div class="fld"><span class="lbl">Cycles per year (expected)</span><div class="inp">365 <small>1 / day</small></div></div>
+                  <div class="fld"><span class="lbl">Design life</span><div class="inp">20 <small>years</small></div></div>
+                </div>
+                <div class="row2">
+                  <div class="fld"><span class="lbl">End-of-life capacity guarantee</span><div class="inp">400 <small>MWh at POI, year 20</small></div></div>
+                  <div class="fld"><span class="lbl">Available site area</span><div class="inp miss">Not provided <small>needed for layout</small></div></div>
+                </div>
+                <div class="fld"><span class="lbl">Ambient design range</span><div class="inp">−4 °C to 46 °C <small>from site GIS · edit</small></div></div>
+              </div>
+              <aside class="assume" aria-label="Copilot assumptions (mockup)">
+                <h4>What I derived</h4>
+                <ul>
+                  <li><i class="dot g"></i><span>Augmentation strategy needed to hold 400 MWh to year 20<small>Degradation model · LFP curve</small></span></li>
+                  <li><i class="dot g"></i><span>Transmission-connected; IEEE 2800 applies<small>CAISO queue · 230 kV POI</small></span></li>
+                  <li><i class="dot w"></i><span>Assumed 88% round-trip efficiency at POI<small>Override if OEM data is known</small></span></li>
+                  <li><i class="dot b"></i><span>Site area missing. Layout, enclosure spacing and fire setbacks are on hold.<small>Blocks 3 sections</small></span></li>
+                </ul>
+                <div class="derived">
+                  <div>Installed BOL energy<b>~480 MWh</b></div>
+                  <div>Enclosures (5 MWh)<b>~96</b></div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+        <p class="caption"><b>Why it looks like a form, not a chat.</b> Our first prototype was conversational. Engineers wanted to scan every input at once and edit any of them in place, so chat moved to a side panel for "why did you assume that?" questions.</p>
+      </div>
+    </section>
+
+    <!-- ============ 06 SPEC PACKAGE ============ -->
+    <section class="chap" id="spec-package">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">06 · The specification package</p>
+          <h2>Six outputs, one format: claim, source, confidence, owner.</h2>
+          <p>The package is generated in sections that can each be reviewed and signed off separately. Try the tabs, and change the use case on the chemistry tab to watch the recommendation move.</p>
+        </div>
+
+        <div class="device">
+          <div class="device-top">
+            <span class="logo-sq"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+            <span class="app-name">Specification package<small>Kern Solar+Storage · 100 MW / 400 MWh</small></span>
+            <span class="grow"></span>
+            <span class="pill">2 of 6 sections signed</span>
+            <span class="pill">Export PDF / XLSX</span>
+          </div>
+          <div class="device-body">
+            <div class="tabs" role="tablist" aria-label="Specification sections">
+              <button role="tab" id="t-spec" aria-controls="p-spec" aria-selected="true">Technical spec<span class="n">✓</span></button>
+              <button role="tab" id="t-chem" aria-controls="p-chem" aria-selected="false" tabindex="-1">Battery chemistry<span class="n">✓</span></button>
+              <button role="tab" id="t-inv" aria-controls="p-inv" aria-selected="false" tabindex="-1">Inverter</button>
+              <button role="tab" id="t-comp" aria-controls="p-comp" aria-selected="false" tabindex="-1">Compliance<span class="n">31</span></button>
+              <button role="tab" id="t-road" aria-controls="p-road" aria-selected="false" tabindex="-1">Roadmap</button>
+              <button role="tab" id="t-risk" aria-controls="p-risk" aria-selected="false" tabindex="-1">Risk register<span class="n">14</span></button>
+            </div>
+
+            <!-- Technical spec -->
+            <div class="panel" role="tabpanel" id="p-spec" aria-labelledby="t-spec">
+              <dl class="specgrid">
+                <div class="spec"><dt>Power rating</dt><dd>100 MW AC at POI<small>~108 MVA inverter fleet for reactive capability</small></dd></div>
+                <div class="spec"><dt>Energy capacity</dt><dd>400 MWh usable at POI<small>~480 MWh installed at beginning of life</small></dd></div>
+                <div class="spec"><dt>Discharge duration</dt><dd>4 h at rated power<small>0.25C nominal</small></dd></div>
+                <div class="spec"><dt>Enclosures</dt><dd>~96 × 5 MWh containerized<small>+ augmentation pads reserved for years 7 and 13</small></dd></div>
+                <div class="spec"><dt>Physical footprint</dt><dd><span class="status w">On hold: site area missing</span><small>Estimate 4–5 ha incl. setbacks</small></dd></div>
+                <div class="spec"><dt>BMS requirements</dt><dd>3-tier (cell, rack, system)<small>Cell-level V/T, SoC/SoH, fault isolation, EMS + SCADA interface</small></dd></div>
+                <div class="spec"><dt>Inverter requirements</dt><dd>Grid-forming capable PCS<small>4-quadrant, IEEE 2800 ride-through</small></dd></div>
+                <div class="spec"><dt>Transformers</dt><dd>MV skids 0.69/34.5 kV + main 34.5/230 kV<small>Main GSU long-lead: flag for procurement</small></dd></div>
+                <div class="spec"><dt>Communications</dt><dd>Redundant fiber ring, DNP3 / IEC 61850<small>Market telemetry to ISO</small></dd></div>
+                <div class="spec"><dt>Safety systems</dt><dd>UL 9540A-tested units, gas detection, deflagration venting<small>Per NFPA 855 and the hazard mitigation analysis</small></dd></div>
+                <div class="spec"><dt>Commissioning criteria</dt><dd>Capacity, RTE and response-time tests<small>Utility witness testing before COD</small></dd></div>
+                <div class="spec"><dt>Design life</dt><dd>20 years<small>Warranty and augmentation aligned</small></dd></div>
+              </dl>
+              <div class="signoff"><span>Signed by <b>R. Okafor, Lead Electrical Engineer</b> · 3 edits from draft · 2 Oct 2026</span><span class="src">source: intake v3, degradation model v1.4</span></div>
+            </div>
+
+            <!-- Chemistry -->
+            <div class="panel" role="tabpanel" id="p-chem" aria-labelledby="t-chem" hidden>
+              <div class="uc-bar">
+                <span>Evaluate for:</span>
+                <div class="seg" id="uc">
+                  <button type="button" data-uc="firm" aria-pressed="true">4 h renewable firming</button>
+                  <button type="button" data-uc="freq" aria-pressed="false">Frequency response</button>
+                  <button type="button" data-uc="peak" aria-pressed="false">Peak shaving</button>
+                  <button type="button" data-uc="micro" aria-pressed="false">Cold-climate microgrid</button>
+                  <button type="button" data-uc="long" aria-pressed="false">8–10 h capacity</button>
+                </div>
+              </div>
+              <div class="tbl-wrap">
+                <table id="chem-table">
+                  <thead><tr><th>Criterion</th><th>LFP</th><th>NMC</th><th>Sodium-ion</th><th>Vanadium flow</th></tr></thead>
+                  <tbody>
+                    <tr><td><b>Fit for this use case</b></td><td data-fit="lfp"></td><td data-fit="nmc"></td><td data-fit="na"></td><td data-fit="vrfb"></td></tr>
+                    <tr><td>Safety (thermal runaway)</td><td>Good; high onset temperature</td><td>Lower; higher thermal sensitivity</td><td>Good; early field data</td><td>Very good; aqueous electrolyte</td></tr>
+                    <tr><td>Cycle life</td><td>6,000–8,000</td><td>3,000–5,000</td><td>3,000–6,000 (limited field data)</td><td>15,000+ (electrolyte does not wear)</td></tr>
+                    <tr><td>Degradation behavior</td><td>Gradual, well characterized</td><td>Faster at high SoC and heat</td><td>Still being characterized</td><td>Minimal capacity fade; stack refurbishment</td></tr>
+                    <tr><td>Energy density</td><td><span class="meter" aria-label="3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td><td><span class="meter" aria-label="5 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td><td><span class="meter" aria-label="2 of 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td><td><span class="meter" aria-label="1 of 5"><i class="on"></i><i></i><i></i><i></i><i></i></span></td></tr>
+                    <tr><td>Temperature sensitivity</td><td>Needs HVAC in heat and cold</td><td>Most sensitive</td><td>Strong cold performance</td><td>Narrow electrolyte window</td></tr>
+                    <tr><td>Cost (2–4 h)</td><td>Lowest</td><td>Medium</td><td>Low (projected)</td><td>Highest at short duration</td></tr>
+                    <tr><td>Supply-chain maturity</td><td>Mature; concentrated in China</td><td>Mature; nickel and cobalt exposure</td><td>Emerging; few bankable OEMs</td><td>Niche; few OEMs</td></tr>
+                    <tr><td>Recyclability</td><td>Low value recovered</td><td>Higher value (Ni, Co)</td><td>Abundant materials</td><td>Electrolyte reusable</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="why-box" id="chem-why" aria-live="polite"></div>
+              <div class="signoff"><span>Signed by <b>R. Okafor</b> · rationale edited · 2 Oct 2026</span><span class="src">sources: OEM datasheets (4), degradation model v1.4, 2026 cost benchmark</span></div>
+            </div>
+
+            <!-- Inverter -->
+            <div class="panel" role="tabpanel" id="p-inv" aria-labelledby="t-inv" hidden>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Criterion</th><th>Central, grid-following</th><th>Central, grid-forming</th><th>String / modular, grid-forming</th></tr></thead>
+                  <tbody>
+                    <tr><td><b>Fit</b></td><td><span class="fit ok"><i></i>Acceptable</span></td><td><span class="fit rec"><i></i>Recommended</span></td><td><span class="fit ok"><i></i>Strong alternative</span></td></tr>
+                    <tr><td>Grid-forming capability</td><td>No</td><td>Yes: voltage source, synthetic inertia</td><td>Yes, coordinated by plant controller</td></tr>
+                    <tr><td>Reactive power support</td><td>Full 4-quadrant</td><td>Full 4-quadrant</td><td>Full 4-quadrant</td></tr>
+                    <tr><td>Efficiency</td><td>~98.5%</td><td>~98.5%</td><td>~98%</td></tr>
+                    <tr><td>Modularity &amp; reliability</td><td>Large single points of failure</td><td>Large single points of failure</td><td>Graceful degradation; more units to maintain</td></tr>
+                    <tr><td>Controls</td><td>Mature PPC integration</td><td>Tuning studies needed with utility</td><td>More complex plant control</td></tr>
+                    <tr><td>Standards</td><td>UL 1741, IEEE 2800</td><td>UL 1741, IEEE 2800</td><td>UL 1741, IEEE 2800</td></tr>
+                    <tr><td>Future-proofing</td><td>Risk if ISO requires grid-forming</td><td>Ready for emerging grid-forming requirements</td><td>Ready</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="why-box"><b>Why grid-forming here:</b> the POI sits on a weak, solar-heavy part of the network. Grid-forming capability costs little extra now and avoids a retrofit if the utility tightens its requirements. <span class="src">Confidence: medium · confirm in system impact study</span></div>
+              <div class="signoff"><span>Awaiting review · <b>Grid integration lead</b></span><span><button class="btn ghost" type="button">Comment</button> <button class="btn" type="button">Approve section</button></span></div>
+            </div>
+
+            <!-- Compliance -->
+            <div class="panel" role="tabpanel" id="p-comp" aria-labelledby="t-comp" hidden>
+              <div class="uc-bar"><span>Jurisdiction: <b>United States › California › Kern County › CAISO</b></span><span class="grow"></span><span class="status g">22 mapped</span><span class="status w">7 need input</span><span class="status b">2 blocking</span></div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Layer</th><th>Requirement</th><th>Applies because</th><th>Phase</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td>Fire</td><td class="m">NFPA 855</td><td>Stationary ESS installation, spacing, HMA</td><td>Design</td><td><span class="status w">Site area needed</span></td></tr>
+                    <tr><td>Product safety</td><td class="m">UL 9540 / 9540A / 1973</td><td>System listing and thermal-runaway test data</td><td>Procurement</td><td><span class="status g">In spec</span></td></tr>
+                    <tr><td>Building / electrical</td><td class="m">IFC 1207 · NEC 706</td><td>As adopted by California code cycle</td><td>Design</td><td><span class="status g">Mapped</span></td></tr>
+                    <tr><td>Interconnection</td><td class="m">IEEE 2800-2022</td><td>Transmission-connected inverter-based resource</td><td>Engineering</td><td><span class="status g">In spec</span></td></tr>
+                    <tr><td>Interconnection</td><td class="m">FERC Order 2023 · CAISO tariff</td><td>Cluster study process, site control and readiness deposits</td><td>Feasibility</td><td><span class="status b">Deposit date in 21 days</span></td></tr>
+                    <tr><td>Reliability</td><td class="m">NERC PRC-024 / PRC-029</td><td>Ride-through for inverter-based resources</td><td>Testing</td><td><span class="status g">Mapped</span></td></tr>
+                    <tr><td>Cybersecurity</td><td class="m">NERC CIP-002 to -014</td><td>Impact rating depends on final BES classification</td><td>Design</td><td><span class="status w">Classification needed</span></td></tr>
+                    <tr><td>State</td><td class="m">CPUC GO 167-C</td><td>Maintenance and emergency-response standards for storage</td><td>Operations</td><td><span class="status g">Mapped</span></td></tr>
+                    <tr><td>Environmental</td><td class="m">CEQA</td><td>Discretionary county permit triggers review</td><td>Permitting</td><td><span class="status b">Pathway not chosen</span></td></tr>
+                    <tr><td>Local</td><td class="m">Kern County AHJ + fire marshal</td><td>Conditional use permit, emergency response plan</td><td>Permitting</td><td><span class="status w">Pre-app meeting</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note">Each row links to the clause, the code edition the county has adopted, and the date it was last checked. The Copilot drafts; the permitting lead owns. Showing 10 of 31.</p>
+            </div>
+
+            <!-- Roadmap -->
+            <div class="panel" role="tabpanel" id="p-road" aria-labelledby="t-road" hidden>
+              <div class="road" id="road" aria-label="Implementation roadmap, months 0 to 30"></div>
+              <div class="road-axis" style="margin-top:8px"><div></div><div><span>M0</span><span>M6</span><span>M12</span><span>M18</span><span>M24</span><span>M30</span></div></div>
+              <p class="note"><span style="color:var(--accent)">■</span> Critical path &nbsp; ▏ Stage gate with sign-off. Hover a bar for its deliverables and dependencies. Every phase lists its deliverables, owner, dependencies and validation step.</p>
+            </div>
+
+            <!-- Risk -->
+            <div class="panel" role="tabpanel" id="p-risk" aria-labelledby="t-risk" hidden>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Category</th><th>Risk</th><th>Likelihood × impact</th><th>Mitigation</th><th>Owner</th></tr></thead>
+                  <tbody>
+                    <tr><td>Interconnection</td><td>Network upgrades from the cluster study exceed budget</td><td><span class="status b">High × High</span></td><td>Budget contingency; evaluate a smaller POI injection</td><td>Development</td></tr>
+                    <tr><td>Procurement</td><td>Main GSU transformer lead time of 18 months or more</td><td><span class="status b">High × High</span></td><td>Reserve a slot at concept stage; dual-source specification</td><td>Procurement</td></tr>
+                    <tr><td>Permitting</td><td>CEQA pathway extends schedule</td><td><span class="status w">Med × High</span></td><td>Early county pre-application meeting; start biological surveys now</td><td>Permitting</td></tr>
+                    <tr><td>Physical space</td><td>Setbacks reduce usable area below 4 ha</td><td><span class="status w">Med × Med</span></td><td>Higher-density enclosures; revisit augmentation pads</td><td>Engineering</td></tr>
+                    <tr><td>Safety</td><td>AHJ requires large-scale fire test data beyond UL 9540A</td><td><span class="status w">Med × Med</span></td><td>Shortlist OEMs with published large-scale fire test results</td><td>Engineering</td></tr>
+                    <tr><td>Commissioning</td><td>Grid-forming tuning delays utility witness tests</td><td><span class="status w">Med × Med</span></td><td>Run EMT model studies before factory acceptance testing</td><td>Grid integration</td></tr>
+                    <tr><td>Cybersecurity</td><td>CIP impact rating changes late</td><td><span class="status g">Low × High</span></td><td>Design to medium impact from day one</td><td>OT security</td></tr>
+                    <tr><td>Long-term performance</td><td>Degradation runs faster than warranty curve</td><td><span class="status g">Low × High</span></td><td>SoH tracked in the Control Plane against the warranty curve</td><td>Asset management</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="caption"><b>Same structure everywhere.</b> Chemistries, inverters and OEMs are all compared on the same criteria in the same order, so a reviewer learns to read one table and can read them all.</p>
+      </div>
+    </section>
+
+    <!-- ============ 07 DESIGN DECISIONS ============ -->
+    <section class="chap" id="decisions">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">07 · Decisions that shaped it</p>
+          <h2>What we kept, and what we dropped.</h2>
+          <p>Tested across 4 rounds with 11 engineers and operators, using real past projects so they could compare our output with what they had actually built.</p>
+        </div>
+        <ul class="tried" role="list">
+          <li><span class="tag kept">Kept</span><span><b>Every AI statement shows its source, confidence and owner.</b><span class="why">Trust went up when people could see where a claim came from. Regulations cite the clause, the edition the jurisdiction has adopted, and the date it was last checked.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Missing inputs block, they don't guess.</b><span class="why">If site area is unknown, layout and fire setbacks say "on hold" and point to the input that unblocks them. Engineers called this the most useful thing in the product.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Sign-off section by section.</b><span class="why">The AI drafts and a named engineer approves. Edits are tracked, so the review becomes the audit trail.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>Conversational intake.</b><span class="why">Slower to review and impossible to scan. Chat survived as a side panel for asking why the Copilot assumed something.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>A single overall score per chemistry.</b><span class="why">Reviewers didn't trust a number that hid its weighting. It became fit for this use case, with a written rationale.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Euros first, megawatt-hours second.</b><span class="why">In the Control Plane, every availability loss carries a shadow cost. O&amp;M tickets started being ranked by value lost.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>A 40-tile operations dashboard.</b><span class="why">Replaced by four headline KPIs, three diagnostic views and a ranked action list. Time to answer "which site needs attention" fell from minutes to seconds in testing.</span></span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ 08 CONTROL PLANE ============ -->
+    <section class="chap" id="control-plane">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">08 · Product 2 · Value Control Plane</p>
+          <h2>Monitoring the fleet in euros, built on the PI landscape they already had.</h2>
+          <p>After commissioning, the signed spec becomes the site's asset model. Rated capacity, warranty limits and the degradation curve feed the cost, revenue and degradation models behind every euro on screen.</p>
+        </div>
+
+        <div class="device">
+          <div class="device-top">
+            <span class="logo-sq"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+            <span class="app-name">BESS Value<small>Control Plane</small></span>
+            <span class="grow"></span>
+            <span class="pill">All sites ▾</span>
+            <span class="pill">Last 12 months ▾</span>
+            <span class="pill">● Live · 6 sites · 480 MWh · 240 MW</span>
+          </div>
+          <div class="device-body">
+            <div class="cp">
+              <!-- KPI 1 -->
+              <div class="tile">
+                <p class="t-k">Gross margin, fleet</p>
+                <p class="big">4.82<small>€m / quarter</small></p>
+                <p class="delta">▲ 6.1% vs last quarter</p>
+                <svg id="spark" viewBox="0 0 220 60" style="width:100%;height:60px;margin-top:6px" aria-label="Gross margin by quarter, rising 14.2% year on year"></svg>
+                <div class="kv"><span>▲ 14.2% YoY</span><span>Forecast next qtr <b>€5.10m</b></span></div>
+              </div>
+              <!-- KPI 2 -->
+              <div class="tile">
+                <p class="t-k">Profit per cycle</p>
+                <p class="big">412<small>€ / equivalent cycle</small></p>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:8px">
+                  <svg viewBox="0 0 80 80" width="80" height="80" aria-label="78% of target">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--line)" stroke-width="8"/>
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--good)" stroke-width="8" stroke-linecap="round" stroke-dasharray="156.8 201" transform="rotate(-90 40 40)"/>
+                    <text x="40" y="45" text-anchor="middle" font-size="16" fill="var(--ink)" font-family="Roboto">78%</text>
+                  </svg>
+                  <div class="t-s">Target<br><b style="color:var(--ink);font-weight:500">412 / 530 €</b><br>1,240 of 1,410 cycles profitable</div>
+                </div>
+              </div>
+              <!-- KPI 3 -->
+              <div class="tile">
+                <p class="t-k">Levelised cost of storage</p>
+                <p class="t-s">Fleet average, rolling 12 months</p>
+                <svg viewBox="0 0 160 90" style="width:100%;max-width:200px;margin:6px auto 0" aria-label="LCOS 86 euros per MWh discharged, in the watch band">
+                  <path d="M20 80 A60 60 0 0 1 60.6 23.4" fill="none" stroke="var(--good)" stroke-width="12"/>
+                  <path d="M62.5 22.7 A60 60 0 0 1 97.5 22.7" fill="none" stroke="var(--warn)" stroke-width="12"/>
+                  <path d="M99.4 23.4 A60 60 0 0 1 140 80" fill="none" stroke="var(--bad)" stroke-width="12" opacity=".35"/>
+                  <text x="80" y="70" text-anchor="middle" font-size="26" fill="var(--ink)" font-family="Roboto">86</text>
+                  <text x="80" y="86" text-anchor="middle" font-size="9" fill="var(--ink-3)" font-family="Roboto">€ / MWh discharged</text>
+                </svg>
+                <div class="gauge-lbl"><span>Strong</span><span>Watch</span><span>Eroding</span></div>
+                <div class="hr-line"></div>
+                <div class="kv"><span>ROACE, fleet</span><b>9.4%</b></div>
+              </div>
+              <!-- Copilot -->
+              <div class="tile copilot">
+                <p class="t-h">Value Copilot</p>
+                <p class="t-s">4 actions worth €96k this quarter</p>
+                <div class="action">
+                  <span class="chip">Arbitrage</span>
+                  <p>Move 40 MWh of discharge into the 18:00–20:00 window</p>
+                  <p class="t-s">The day-ahead spread widens to €74/MWh in the evening peak. Aveiro and Cadiz have the headroom.</p>
+                  <div class="impact"><span>Impact score</span><b>9.1 / 10</b></div>
+                  <div class="imp2"><div>Margin<b>+€22.4k/qtr</b></div><div>Cycles<b>+0.4 / day</b></div></div>
+                </div>
+                <div class="action">
+                  <span class="chip">Degradation</span>
+                  <p>Cap depth of discharge at 85% at Dortmund</p>
+                  <p class="t-s">Deep cycling adds €61 per cycle in degradation cost against €38 of incremental margin.</p>
+                  <div class="impact"><span>Impact score</span><b>8.4 / 10</b></div>
+                  <div class="imp2"><div>Shadow cost<b>−€9.8k/qtr</b></div><div>SoH<b>+0.6 pt/yr</b></div></div>
+                </div>
+                <div class="action">
+                  <span class="chip">Ancillary</span>
+                  <p>Re-bid Brest into the FCR capacity auction</p>
+                  <div class="impact"><span>Impact score</span><b>7.2 / 10</b></div>
+                </div>
+              </div>
+              <!-- Revenue stack -->
+              <div class="tile">
+                <p class="t-h">Revenue stack</p>
+                <p class="t-s">Share of gross margin, last 12 months</p>
+                <svg id="donut" viewBox="0 0 120 120" style="width:130px;height:130px;margin:10px auto 0" aria-label="Revenue stack donut"></svg>
+                <ul class="legend" id="donut-legend"></ul>
+                <div class="hr-line"></div>
+                <div class="kv"><span>Merchant share of margin</span><b>65%</b></div>
+                <p class="t-s">Target 70% by 2027</p>
+              </div>
+              <!-- Site rating -->
+              <div class="tile">
+                <p class="t-h">Site profitability rating</p>
+                <p class="t-s">6 sites, margin per MWh vs plan</p>
+                <div style="display:flex;align-items:baseline;gap:12px;margin-top:6px"><span class="big">87</span><span class="t-s">Fleet score · peer median 79 · +8 pts vs plan</span></div>
+                <ul class="sites">
+                  <li><span class="grade A">A</span><span>Aveiro</span><span class="v">94</span><span class="v up">▲2.1</span></li>
+                  <li><span class="grade A">A</span><span>Cadiz</span><span class="v">91</span><span class="v up">▲4.3</span></li>
+                  <li><span class="grade B">B</span><span>Brest</span><span class="v">87</span><span class="v dn">▼0.8</span></li>
+                  <li><span class="grade B">B</span><span>Enna</span><span class="v">83</span><span class="v up">▲1.5</span></li>
+                  <li><span class="grade C">C</span><span>Dortmund</span><span class="v">76</span><span class="v dn">▼3.2</span></li>
+                </ul>
+                <div class="hr-line"></div>
+                <div class="kv"><span>Margin per MWh, fleet</span><b>€41</b></div>
+              </div>
+              <!-- Value leakage -->
+              <div class="tile">
+                <p class="t-h">Value leakage</p>
+                <p class="t-s">Shadow cost by cause, rolling 8 weeks (€k)</p>
+                <ul class="legend" id="leak-legend" style="grid-template-columns:1fr 1fr;margin-top:8px"></ul>
+                <svg id="leak" viewBox="0 0 220 120" style="width:100%;height:120px;margin-top:6px" aria-label="Weekly shadow cost stacked by cause"></svg>
+                <div class="hr-line"></div>
+                <div class="kv"><span>Deviation from theoretical</span><b>6.8%</b></div>
+                <div class="kv"><span>Shadow cost this quarter</span><b>€148k <span class="up" style="font-weight:400">▼14%</span></b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="caption"><b>Every number opens its own calculation.</b> Click any KPI and you see the model, its inputs and the PI tags behind it. That was the analysts' condition for trusting the dashboard.</p>
+
+        <div class="grid-3" style="margin-top:40px">
+          <div class="card"><span class="k">What we're making</span><h3>Four headline KPIs</h3><p>Gross margin, profit per cycle, LCOS and ROACE. Each is shown against plan, never on its own.</p></div>
+          <div class="card"><span class="k">Where we're losing it</span><h3>Three diagnostic views</h3><p>Revenue stack, site rating and value leakage. Availability, dispatch, degradation and market losses are each priced in euros.</p></div>
+          <div class="card"><span class="k">What to do on Monday</span><h3>A ranked action list</h3><p>Each action shows an impact score, two concrete numbers and the site it applies to. Accepted actions are tracked against what they actually earned.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 ARCHITECTURE ============ -->
+    <section class="chap" id="architecture">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">09 · Under the surface</p>
+          <h2>No new sensors, no new databases.</h2>
+          <p>Design worked with engineering to keep the platform on the client's existing PI landscape. The Spec Copilot writes into the same asset model the Control Plane reads.</p>
+        </div>
+        <div class="arch">
+          <div class="col"><h4>Sources</h4><ul><li>BMS / EMS</li><li>SCADA &amp; PI historian</li><li>CRM / ERP</li><li>GIS</li><li>Market &amp; price APIs</li><li>Code &amp; regulation library</li></ul></div>
+          <div class="col hi"><h4>Asset model</h4><ul><li>Signed spec package</li><li>Ontology &amp; site templates</li><li>Warranty &amp; degradation curves</li></ul></div>
+          <div class="col"><h4>Analytics</h4><ul><li>Cost model</li><li>Revenue model</li><li>Degradation model</li><li>Compliance rules engine</li></ul></div>
+          <div class="col"><h4>AI layer</h4><ul><li>Model router (see Suggest LLM)</li><li>Spec drafting with citations</li><li>Option comparison</li><li>Action ranking &amp; impact</li></ul></div>
+          <div class="col hi"><h4>Experiences</h4><ul><li>Spec Copilot</li><li>Value Control Plane</li><li>Exports: PDF, XLSX, RFP</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 SUGGEST LLM ============ -->
+    <section class="chap" id="suggest-llm">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">10 · Suggest LLM</p>
+          <h2>The right model for each job, not one model for everything.</h2>
+          <p>The platform runs six different kinds of AI work. Each one has its own needs for reasoning depth, speed, volume and auditability. Pick a task to see which model we suggest for it and why.</p>
+        </div>
+
+        <div class="llm">
+          <ul class="llm-tasks" id="llm-tasks" role="list" aria-label="AI tasks in the platform"></ul>
+          <div class="llm-pick" id="llm-pick" aria-live="polite"></div>
+        </div>
+
+        <h3 style="font-size:22px;margin:44px 0 18px">All options at a glance</h3>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Model</th><th>Role in the platform</th><th>Why it fits</th><th>Context</th><th>Price (in / out per 1M tokens)</th></tr></thead>
+            <tbody>
+              <tr><td><b>Claude Opus 5.5</b><br><span class="src">claude-opus-5-5</span></td><td>Primary engine: spec drafting, chemistry and inverter trade-offs, compliance screening</td><td>Deep reasoning across interdependent design decisions; document citations down to the clause; structured outputs for the spec schema</td><td class="m">1M</td><td class="m">$4 / $20</td></tr>
+              <tr><td><b>Claude Sonnet 5.5</b><br><span class="src">claude-sonnet-5-5</span></td><td>Value Copilot actions and the interactive "ask why" panel</td><td>Fast enough to feel interactive, strong at tool use against the cost, revenue and degradation models</td><td class="m">1M</td><td class="m">$2 / $10</td></tr>
+              <tr><td><b>Claude Haiku 5.5</b><br><span class="src">claude-haiku-5-5</span></td><td>High-volume extraction: OEM datasheets, warranty PDFs, alarm and ticket tagging</td><td>Very low cost per document; quick and consistent at reading into fixed schemas</td><td class="m">1M</td><td class="m">$0.10 / $0.50</td></tr>
+              <tr><td><b>Claude Fable 5.1</b><br><span class="src">claude-fable-5-1</span></td><td>Escalation only: conflicting codes, interconnection study review, fleet-wide re-optimization</td><td>The most capable model for long, multi-step reasoning, kept for the few cases where a wrong answer is expensive</td><td class="m">1M</td><td class="m">$10 / $50</td></tr>
+              <tr><td><b>OpenAI GPT family</b></td><td>Alternative primary engine</td><td>Strong tool use and broad ecosystem. Suits utilities already standardized on Azure OpenAI</td><td class="m">Varies</td><td class="m">Check vendor</td></tr>
+              <tr><td><b>Google Gemini family</b></td><td>Alternative for drawings and multimodal input</td><td>Long context and strong vision for single-line diagrams and site plans. Suits teams on Google Cloud and BigQuery</td><td class="m">Varies</td><td class="m">Check vendor</td></tr>
+              <tr><td><b>Open-weight models</b><br><span class="src">e.g. Llama, Mistral, Qwen</span></td><td>Self-hosted option inside the operational-technology (OT) network</td><td>Data never leaves the client's network. Useful where NERC CIP or internal policy rules out cloud APIs, at the cost of reasoning quality and hosting effort</td><td class="m">Varies</td><td class="m">Your own infrastructure</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-3" style="margin-top:32px">
+          <div class="card"><span class="k">Design implication</span><h3>The model is invisible, its provenance isn't</h3><p>Users never choose a model. Every output still records which model and which sources produced it, so a signed spec can be audited years later.</p></div>
+          <div class="card"><span class="k">Design implication</span><h3>Escalation is a UI state</h3><p>When a task goes to the escalation model, the section shows "deeper review in progress", with a time estimate, instead of a spinner.</p></div>
+          <div class="card"><span class="k">Design implication</span><h3>Deploy where the client already is</h3><p>Claude is available through Anthropic's API, Amazon Bedrock, Google Cloud Vertex AI and Microsoft Foundry, so the platform can follow the client's existing cloud contract.</p></div>
+        </div>
+        <p class="note">Model names, context windows and list prices are as of October 2026 and change often. Check current vendor pricing before committing. For non-Claude providers we list model families rather than specific versions.</p>
+      </div>
+    </section>
+
+    <!-- ============ 11 DELIVERY ============ -->
+    <section class="chap" id="delivery">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">11 · Delivery</p>
+          <h2>A 10-week fast track, then modular scale.</h2>
+          <p>We proved the platform on two representative sites, Aveiro and Dortmund (the best and the weakest performers), plus one US pipeline project for the Spec Copilot.</p>
+        </div>
+        <div class="weeks">
+          <div class="week"><p class="k">Weeks 1–2</p><h3>Discover</h3><ul><li>18 interviews, 4 site visits</li><li>KPI glossary signed off</li><li>Data-availability audit in PI</li></ul></div>
+          <div class="week"><p class="k">Weeks 3–4</p><h3>Define</h3><ul><li>Asset model &amp; information architecture</li><li>Spec output format</li><li>Low-fidelity flows</li></ul></div>
+          <div class="week"><p class="k">Weeks 5–7</p><h3>Prototype &amp; test</h3><ul><li>4 rounds, 11 users</li><li>Tested against real past projects</li><li>Component library</li></ul></div>
+          <div class="week"><p class="k">Weeks 8–10</p><h3>Ship MVP</h3><ul><li>2 sites live on the Control Plane</li><li>1 US project specified</li><li>Region pack template</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 OUTCOMES ============ -->
+    <section class="chap" id="outcomes">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">12 · What changed</p>
+          <h2>Faster from concept to commissioning, and a fleet that explains itself.</h2>
+        </div>
+        <div class="figs">
+          <div class="fig"><b>2 days</b><span>to a first reviewable spec package, down from about 3 weeks</span></div>
+          <div class="fig"><b>31 vs 12</b><span>compliance obligations identified at concept stage, compared with the last comparable project</span></div>
+          <div class="fig"><b>−38%</b><span>engineering RFIs during preliminary design on the pilot project</span></div>
+          <div class="fig"><b>−14%</b><span>quarterly shadow cost after O&amp;M began ranking work by value lost</span></div>
+          <div class="fig"><b>+6.1%</b><span>fleet gross margin quarter on quarter, to €4.82m</span></div>
+          <div class="fig"><b>~70%</b><span>less setup effort for each new site after the first, using templates</span></div>
+        </div>
+        <div class="grid-2" style="margin-top:32px">
+          <div class="card"><span class="k">Benefit</span><h3>Consistency by design</h3><p>One repeatable analysis process covers sizing, chemistry, BMS, inverter, layout and regulatory screening, so two engineers on two continents now produce comparable specs.</p></div>
+          <div class="card"><span class="k">Benefit</span><h3>Risk surfaced earlier</h3><p>Missing inputs, unsuitable options, space limits, code requirements and interconnection issues are flagged before detailed engineering begins, when changing course is still cheap.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12 REFLECTION ============ -->
+    <section class="chap" id="reflection">
+      <div class="wrap">
+        <div class="chap-head">
+          <p class="chap-no">13 · Reflection</p>
+          <h2>What I'd do differently.</h2>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>Bring the fire marshal in earlier</h3><p>We designed the compliance view with permitting leads. The people who actually read the output are authorities having jurisdiction. One session with an AHJ in week two would have reshaped the export format sooner.</p></div>
+          <div class="card"><h3>Design the "no" as carefully as the "yes"</h3><p>The most valued moments were when the Copilot said <em>I can't answer this yet</em>. I'd prototype refusals and on-hold states from day one, not discover them in round three.</p></div>
+          <div class="card"><h3>Track whether actions paid off</h3><p>We shipped the action list before tracking what accepted actions actually earned. Closing that loop is what turns a Copilot from interesting into trusted.</p></div>
+        </div>
+        <p class="note">Client details are anonymized. Figures are from the pilot period and rounded; regulatory references reflect the example project's jurisdiction and are illustrative of the product's output, not legal guidance.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>Girish Dunga · UX Designer, product thinker, experience creator</span>
+      <a href="../index.html#case-studies">Back to all case studies →</a>
+    </div>
+  </footer>
+
+  <div class="tip" id="tip" role="tooltip"></div>
+
+  <script>
+  (function () {
+    var css = function (v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); };
+    var NS = 'http://www.w3.org/2000/svg';
+    var el = function (tag, attrs) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; };
+
+    /* tooltip */
+    var tip = document.getElementById('tip');
+    document.addEventListener('pointerover', function (e) {
+      var t = e.target.closest('[data-tip]'); if (!t) return;
+      tip.textContent = t.getAttribute('data-tip'); tip.classList.add('on');
+    });
+    document.addEventListener('pointermove', function (e) {
+      if (!tip.classList.contains('on')) return;
+      var x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8);
+      tip.style.left = x + 'px'; tip.style.top = (e.clientY + 16) + 'px';
+    });
+    document.addEventListener('pointerout', function (e) { if (e.target.closest('[data-tip]')) tip.classList.remove('on'); });
+
+    /* reading progress */
+    var bar = document.querySelector('.progress');
+    addEventListener('scroll', function () {
+      var h = document.documentElement.scrollHeight - innerHeight;
+      bar.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+    }, { passive: true });
+
+    /* tabs */
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+    function select(tab) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function () { select(t); });
+      t.addEventListener('keydown', function (e) {
+        var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return; e.preventDefault();
+        var n = tabs[(i + d + tabs.length) % tabs.length]; select(n); n.focus();
+      });
+    });
+
+    /* chemistry by use case */
+    var FIT = { rec: 'Recommended', ok: 'Viable', no: 'Not suited' };
+    var UC = {
+      firm:  { lfp: 'rec', nmc: 'ok', na: 'ok', vrfb: 'ok', why: '<b>LFP for 4-hour firming at this site:</b> lowest cost at this duration, a mature bankable supply, and a well-characterized degradation curve that keeps the year-20 guarantee affordable through augmentation. Vanadium flow becomes competitive beyond about 6 hours.' },
+      freq:  { lfp: 'rec', nmc: 'ok', na: 'ok', vrfb: 'no', why: '<b>LFP for frequency response:</b> handles high C-rates and frequent shallow cycling well. NMC is viable where the footprint is tight. Flow batteries respond too slowly per MW of capacity to make sense at short duration.' },
+      peak:  { lfp: 'rec', nmc: 'ok', na: 'ok', vrfb: 'no', why: '<b>LFP for 2-hour peak shaving:</b> the best cost per kWh and good cycle life for daily cycling. Sodium-ion is worth piloting as OEMs mature.' },
+      micro: { lfp: 'rec', nmc: 'no', na: 'ok', vrfb: 'no', why: '<b>LFP with heating, or sodium-ion as an option:</b> sodium-ion performs better at low temperatures, but few OEMs are bankable yet. LFP is recommended, with sodium-ion carried as an alternate in the RFP.' },
+      long:  { lfp: 'ok', nmc: 'no', na: 'no', vrfb: 'rec', why: '<b>Vanadium flow for 8–10 hours:</b> energy is decoupled from power, so adding duration is cheap; the electrolyte barely degrades and is non-flammable. LFP stays viable but needs significant augmentation.' }
+    };
+    var why = document.getElementById('chem-why');
+    function setUC(k) {
+      var u = UC[k];
+      document.querySelectorAll('#uc button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.uc === k); });
+      document.querySelectorAll('#chem-table [data-fit]').forEach(function (td) {
+        var f = u[td.dataset.fit]; td.innerHTML = '<span class="fit ' + f + '"><i></i>' + FIT[f] + '</span>';
+      });
+      why.innerHTML = u.why + ' <span class="src">Confidence: high · 4 OEM datasheets · degradation model v1.4</span>';
+    }
+    document.querySelectorAll('#uc button').forEach(function (b) { b.addEventListener('click', function () { setUC(b.dataset.uc); }); });
+    setUC('firm');
+
+    /* roadmap */
+    var phases = [
+      ['Feasibility & concept', 0, 3, 0, 'Use case, sizing, site screen · gate: investment approval'],
+      ['Site assessment', 1, 4, 0, 'Geotech, survey, environmental baseline'],
+      ['Interconnection & utility studies', 1, 18, 1, 'Cluster study, facilities study, interconnection agreement'],
+      ['Preliminary engineering', 3, 8, 0, 'Single-line diagram, layout, HMA draft · gate: spec sign-off'],
+      ['Permitting (CUP, CEQA, AHJ)', 4, 16, 1, 'Conditional use permit, CEQA document, fire marshal review'],
+      ['Procurement (BESS, PCS, GSU)', 8, 20, 1, 'RFP from spec package, OEM award, GSU slot'],
+      ['Detailed engineering', 10, 18, 0, 'IFC drawings, protection studies, EMT models'],
+      ['Site preparation & civil', 16, 21, 0, 'Grading, foundations, cable trenches'],
+      ['Installation', 20, 25, 1, 'Enclosures, PCS, MV and HV equipment'],
+      ['Testing & utility witness', 24, 27, 1, 'FAT/SAT, protection tests, utility witness tests'],
+      ['Energization & performance validation', 26, 28, 1, 'Capacity, RTE, response tests · gate: COD'],
+      ['Handover to operations', 28, 30, 0, 'Asset model live in the Control Plane, O&M manuals, training']
+    ];
+    var road = document.getElementById('road'), MAX = 30;
+    phases.forEach(function (p) {
+      var row = document.createElement('div'); row.className = 'road-row';
+      row.innerHTML = '<span class="nm">' + p[0] + '</span><div class="road-track"><span class="road-bar' + (p[3] ? ' crit' : '') + '" style="left:' + (p[1] / MAX * 100) + '%;width:' + ((p[2] - p[1]) / MAX * 100) + '%" data-tip="' + p[0] + ' · M' + p[1] + '–M' + p[2] + ' · ' + p[4] + '"></span>' + (/gate/.test(p[4]) ? '<span class="road-gate" style="left:calc(' + (p[2] / MAX * 100) + '% - 1px)"></span>' : '') + '</div>';
+      road.appendChild(row);
+    });
+
+    /* suggest LLM */
+    var LLM = [
+      { t: 'Draft the spec package', s: 'Sizing, BMS, inverter, layout · Spec Copilot',
+        m: 'Claude Opus 5.5', id: 'claude-opus-5-5', badge: 'Suggested · primary engine',
+        why: 'Specification is a chain of interdependent decisions. Changing the duration moves the chemistry shortlist, enclosure count and fire setbacks. That needs a model that reasons across many constraints at once and explains its trade-offs in writing an engineer can sign.',
+        caps: [['Adaptive thinking + effort', 'Deeper reasoning on hard sections, less on routine ones'], ['Structured outputs', 'The spec comes back in a fixed schema that feeds the asset model'], ['Tool use', 'Calls the sizing, degradation and cost models instead of estimating numbers'], ['1M-token context', 'Intake, OEM datasheets and past specs in one request']],
+        alt: '<b>Alternatives:</b> the OpenAI GPT family or the Google Gemini family, if the client is standardized on Azure or Google Cloud.',
+        cfg: 'model: claude-opus-5-5 · effort: high · output_config.format: spec_schema' },
+      { t: 'Screen compliance with citations', s: 'Federal, state, utility, fire, environmental',
+        m: 'Claude Opus 5.5', id: 'claude-opus-5-5', badge: 'Suggested · auditability first',
+        why: 'Research showed permitting leads trust a clause, not a conclusion. Citations on supplied documents let every compliance row point to the exact passage in NFPA 855, IEEE 2800 or the county code it came from.',
+        caps: [['Document citations', 'Each claim links to the cited text and page'], ['PDF input', 'Code books and utility interconnection handbooks read natively'], ['Prompt caching', 'The regulation library stays cached across projects, cutting cost and latency'], ['Web search tool', 'Checks for newer code editions and adoption dates']],
+        alt: '<b>Escalate to Claude Fable 5.1</b> when two jurisdictions conflict or the model flags low confidence.',
+        cfg: 'model: claude-opus-5-5 · documents: citations enabled · cache_control on code library' },
+      { t: 'Read OEM datasheets & PDFs', s: 'Cells, PCS, warranties · thousands of pages',
+        m: 'Claude Haiku 5.5', id: 'claude-haiku-5-5', badge: 'Suggested · high volume',
+        why: 'Extracting cycle life, temperature ranges, warranty throughput and certifications from vendor PDFs is high-volume, well-defined work. A small, fast model at a very low price per document fits it best, and its results are checked against the schema.',
+        caps: [['Lowest cost per document', '$0.10 / $0.50 per 1M tokens'], ['Batch API', 'Re-extract the whole OEM library overnight at 50% cost'], ['Structured outputs', 'Every datasheet lands in the same comparison schema'], ['1M-token context', 'Long datasheets read in one pass']],
+        alt: '<b>Alternative:</b> an open-weight model self-hosted, if vendor documents are under NDA and must stay on the client\'s network.',
+        cfg: 'model: claude-haiku-5-5 · Message Batches · output_config.format: datasheet_schema' },
+      { t: 'Rank Value Copilot actions', s: 'Arbitrage, degradation, ancillary · Control Plane',
+        m: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', badge: 'Suggested · speed + judgment',
+        why: 'The Copilot runs every day across six sites. It calls the revenue, cost and degradation models, compares the results and writes a short, specific recommendation with two numbers attached. That needs good judgment and reliable tool use at a price that works for daily runs.',
+        caps: [['Tool use', 'Queries PI tags, market prices and the analytics models'], ['Speed', 'Fresh actions within minutes of a market update'], ['Price', 'Half of Opus per token, sensible for always-on use'], ['1M-token context', 'Holds a full quarter of site history']],
+        alt: '<b>Alternative:</b> Claude Opus 5.5 for the weekly fleet-wide review, where depth matters more than speed.',
+        cfg: 'model: claude-sonnet-5-5 · effort: medium · tools: revenue, cost, degradation, pi_query' },
+      { t: 'Answer "why did you assume that?"', s: 'Side-panel chat in both products',
+        m: 'Claude Sonnet 5.5', id: 'claude-sonnet-5-5', badge: 'Suggested · interactive',
+        why: 'Engineers ask short follow-up questions while they review. Answers have to stream back quickly and stay grounded in the current spec section and its sources, not general knowledge.',
+        caps: [['Streaming', 'Answers start appearing immediately'], ['Low effort for chat', 'Short, direct replies'], ['Grounded context', 'Current section, assumptions and citations passed in'], ['Mid-conversation system messages', 'Updates context without breaking the cache']],
+        alt: '<b>Alternative:</b> Claude Haiku 5.5 for simple definition lookups, to cut cost further.',
+        cfg: 'model: claude-sonnet-5-5 · effort: low · streaming' },
+      { t: 'Escalate the hard cases', s: 'Conflicting codes, interconnection studies',
+        m: 'Claude Fable 5.1', id: 'claude-fable-5-1', badge: 'Suggested · escalation only',
+        why: 'A few questions carry six- or seven-figure consequences, such as reviewing a system impact study or resolving a conflict between a county fire code and a state standard. For those, the most capable model is worth its price and its longer response time.',
+        caps: [['Strongest reasoning', 'For long, multi-step technical analysis'], ['Long turns', 'Can work for minutes on one question, shown as "deeper review" in the UI'], ['1M context, 128K output', 'Full study reports in, a full written review out'], ['Effort up to max', 'Used when correctness matters more than cost']],
+        alt: '<b>Triggered by:</b> low confidence, a conflicting citation, or an engineer pressing "review deeper".',
+        cfg: 'model: claude-fable-5-1 · effort: xhigh · routed only on escalation' }
+    ];
+    var list = document.getElementById('llm-tasks'), pick = document.getElementById('llm-pick');
+    function showLLM(i) {
+      var x = LLM[i];
+      list.querySelectorAll('button').forEach(function (b, j) { b.setAttribute('aria-pressed', j === i); });
+      pick.innerHTML = '<p class="llm-badge">● ' + x.badge + '</p><p class="llm-name">' + x.m + '</p><p class="llm-id">' + x.id + '</p>' +
+        '<p class="llm-why">' + x.why + '</p><ul class="llm-caps" role="list">' +
+        x.caps.map(function (c) { return '<li><b>' + c[0] + '</b><span>' + c[1] + '</span></li>'; }).join('') +
+        '</ul><p class="llm-alt">' + x.alt + '</p><p class="llm-cfg">' + x.cfg + '</p>';
+    }
+    LLM.forEach(function (x, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<button type="button" aria-pressed="false"><b>' + x.t + '</b><span>' + x.s + '</span></button>';
+      li.firstChild.addEventListener('click', function () { showLLM(i); });
+      list.appendChild(li);
+    });
+    showLLM(0);
+
+    /* charts (drawn after theme tokens resolve) */
+    function draw() {
+      var s = [css('--s1'), css('--s2'), css('--s3'), css('--s4')], surf = css('--panel');
+
+      /* sparkline */
+      var sp = document.getElementById('spark'); sp.innerHTML = '';
+      var q = [3.62, 3.71, 3.88, 3.80, 4.05, 4.22, 4.54, 4.82], lab = ['Q1 25','Q2 25','Q3 25','Q4 25','Q1 26','Q2 26','Q3 26','Q4 26'];
+      var X = function (i) { return 6 + i * (208 / 7); }, Y = function (v) { return 54 - (v - 3.5) / 1.4 * 48; };
+      sp.appendChild(el('line', { x1: 0, x2: 220, y1: 56, y2: 56, stroke: css('--line'), 'stroke-width': 1 }));
+      sp.appendChild(el('polyline', { points: q.map(function (v, i) { return X(i) + ',' + Y(v); }).join(' '), fill: 'none', stroke: s[0], 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+      q.forEach(function (v, i) {
+        var last = i === q.length - 1;
+        if (last) sp.appendChild(el('circle', { cx: X(i), cy: Y(v), r: 4, fill: s[0], stroke: surf, 'stroke-width': 2 }));
+        var hit = el('rect', { x: X(i) - 13, y: 0, width: 26, height: 60, fill: 'transparent' });
+        hit.setAttribute('data-tip', lab[i] + ' · €' + v.toFixed(2) + 'm'); sp.appendChild(hit);
+      });
+
+      /* donut */
+      var dn = document.getElementById('donut'); dn.innerHTML = '';
+      var parts = [['Price arbitrage', 46], ['Capacity payments', 27], ['Ancillary services', 19], ['Congestion relief', 8]];
+      var R = 46, C = 2 * Math.PI * R, off = 0, gap = 2;
+      parts.forEach(function (p, i) {
+        var len = p[1] / 100 * C;
+        var c = el('circle', { cx: 60, cy: 60, r: R, fill: 'none', stroke: s[i], 'stroke-width': 16, 'stroke-dasharray': (len - gap) + ' ' + (C - len + gap), 'stroke-dashoffset': -off, transform: 'rotate(-90 60 60)' });
+        c.setAttribute('data-tip', p[0] + ' · ' + p[1] + '% of gross margin'); dn.appendChild(c); off += len;
+      });
+      document.getElementById('donut-legend').innerHTML = parts.map(function (p, i) { return '<li><i style="background:' + s[i] + '"></i><span>' + p[0] + '</span><span>' + p[1] + '%</span></li>'; }).join('');
+
+      /* value leakage stacked bars */
+      var lk = document.getElementById('leak'); lk.innerHTML = '';
+      var causes = ['Availability', 'Dispatch', 'Degradation', 'Market'];
+      var wk = [[7,4,5,3],[6,5,5,3],[7,4,6,4],[6,4,6,5],[8,5,5,4],[5,3,5,3],[4,3,5,2],[3,3,4,2]];
+      var bw = 18, step = 220 / 8, base = 116, k = 4.2;
+      lk.appendChild(el('line', { x1: 0, x2: 220, y1: base + .5, y2: base + .5, stroke: css('--line'), 'stroke-width': 1 }));
+      wk.forEach(function (w, i) {
+        var y = base, x = i * step + (step - bw) / 2;
+        w.forEach(function (v, j) {
+          var h = v * k - (j < w.length - 1 ? 0 : 0);
+          var top = j === w.length - 1;
+          var r = el('path', { d: top ? 'M' + x + ',' + y + ' v' + (-(h - 4)) + ' q0,-4 4,-4 h' + (bw - 8) + ' q4,0 4,4 v' + (h - 4) + ' z' : 'M' + x + ',' + y + ' v' + (-h + 1) + ' h' + bw + ' v' + (h - 1) + ' z', fill: s[j] });
+          r.setAttribute('data-tip', 'Week ' + (i + 1) + ' · ' + causes[j] + ' · €' + v + 'k');
+          lk.appendChild(r); y -= h;
+          if (!top) { lk.appendChild(el('line', { x1: x, x2: x + bw, y1: y + .5, y2: y + .5, stroke: surf, 'stroke-width': 2 })); }
+        });
+      });
+      document.getElementById('leak-legend').innerHTML = causes.map(function (c, i) { return '<li><i style="background:' + s[i] + '"></i><span>' + c + '</span><span></span></li>'; }).join('');
+    }
+    draw();
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+  })();
+  </script>
+</body>
+</html>
