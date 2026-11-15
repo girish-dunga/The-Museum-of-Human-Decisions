@@ -342,21 +342,21 @@
     <div class="wrap hero">
       <p class="eyebrow"><b>●</b> Case study · Energy · Enterprise AI · 2026</p>
       <h1>From a blank site to a fleet run in euros, <em>not only in megawatt-hours.</em></h1>
-      <p class="lede">An AI-enabled platform that guides a battery energy storage (BESS) project from its first specification to day-to-day commercial operation. Two products, one asset model: a <strong>Spec Copilot</strong> for engineers deciding what to build, and a <strong>Value Control Plane</strong> for the people deciding how to run it.</p>
+      <p class="lede">An AI platform that guides a battery energy storage (BESS) project from its first specification to day-to-day commercial operation. Two products, one asset model: a <strong>Spec Copilot</strong> for engineers deciding what to build, and a <strong>Value Control Plane</strong> for the people deciding how to run it.</p>
 
       <dl class="meta">
         <div><dt>Client</dt><dd>Independent power producer, EU fleet + US pipeline (under NDA)</dd></div>
-        <div><dt>My role</dt><dd>Lead product designer, from discovery to MVP</dd></div>
-        <div><dt>Team</dt><dd>PM, 2 designers, data scientist, 5 engineers, 2 domain SMEs</dd></div>
-        <div><dt>Timeline</dt><dd>10-week MVP, then scale-out over 2 quarters</dd></div>
-        <div><dt>Platform</dt><dd>Web app on the client's existing PI data landscape</dd></div>
+        <div><dt>My role</dt><dd>Lead product designer, from first research to first release (MVP)</dd></div>
+        <div><dt>Team</dt><dd>Product manager, 2 designers, data scientist, 5 engineers, 2 energy experts</dd></div>
+        <div><dt>Timeline</dt><dd>10-week first release, then expanded over 6 months</dd></div>
+        <div><dt>Platform</dt><dd>Web app on the client's existing PI data system</dd></div>
       </dl>
 
       <div class="figs" aria-label="Headline outcomes">
         <div class="fig"><b>3 wk → 2 d</b><span>to a first, reviewable specification package</span></div>
-        <div class="fig"><b>2.5×</b><span>more compliance obligations caught before detailed engineering</span></div>
-        <div class="fig"><b>€96k</b><span>per quarter in actions surfaced by the Value Copilot in the pilot</span></div>
-        <div class="fig"><b>6 sites</b><span>on one control plane; site two took a fraction of site one's effort</span></div>
+        <div class="fig"><b>2.5×</b><span>more legal requirements found before detailed engineering</span></div>
+        <div class="fig"><b>€96k</b><span>per quarter in actions found by the Value Copilot in the pilot</span></div>
+        <div class="fig"><b>6 sites</b><span>on one platform; site two took a small part of site one's effort</span></div>
       </div>
     </div>
 
@@ -365,8 +365,8 @@
       <div class="wrap">
         <div class="chap-head">
           <p class="chap-no">01 · Context</p>
-          <h2>A battery project is two hard problems wearing one name.</h2>
-          <p>Before the site exists, the question is <em>what should we build, and are we allowed to?</em> After it runs, the question is <em>is it making money, and why not?</em> The client answered both in spreadsheets, PDFs and people's heads, and nothing carried over from one to the other.</p>
+          <h2>A battery project is really two hard problems under one name.</h2>
+          <p>Before the site exists, the question is <em>what should we build, and are we allowed to?</em> After it runs, the question is <em>is it making money, and why not?</em> The client answered both in spreadsheets, PDFs and people's memory, and nothing was passed from one to the other.</p>
         </div>
 
         <div class="life" role="list" aria-label="BESS project lifecycle">
@@ -381,7 +381,7 @@
         <div class="grid-2" style="margin-top:32px">
           <div class="prose">
             <p>The client owned six operating storage sites across Portugal, Spain, France, Italy and Germany (480 MWh, 240 MW) and had a growing pipeline of US projects. Every new project started from a blank template, and every operating site reported availability in megawatt-hours while the board asked about margin in euros.</p>
-            <p>I was brought in to design one product. Three weeks into discovery, it was clear the two problems shared a root: <strong>the decisions made during specification were the same facts operations needed later</strong>, from usable capacity and degradation curves to warranty limits and inverter capability. They were simply lost at handover.</p>
+            <p>I was brought in to design one product. Three weeks into research, it was clear the two problems had the same cause. <strong>The decisions made during specification were the same facts the operations team needed later.</strong> These included usable capacity, how fast the batteries wear out, warranty limits and inverter capability. They were simply lost at handover.</p>
           </div>
           <blockquote>“We spend three weeks writing a spec, hand it to EPC, and two years later my asset managers are reverse-engineering it from O&amp;M manuals to work out why a site is under-earning.”<cite>Head of Asset Management, discovery interview</cite></blockquote>
         </div>
@@ -393,15 +393,15 @@
       <div class="wrap">
         <div class="chap-head">
           <p class="chap-no">02 · The problem</p>
-          <h2>Interdependent decisions, fragmented ownership, and no single view of value.</h2>
+          <h2>Decisions that depend on each other, owners spread across teams, and no single view of value.</h2>
         </div>
         <div class="grid-3">
-          <div class="card"><span class="k">Specify</span><h3>Every choice moves every other choice</h3><p>System size, chemistry, BMS, inverter, footprint, enclosures, fire safety and interconnection are interdependent. Change the duration and the chemistry shortlist, enclosure count and fire separation all move.</p></div>
-          <div class="card"><span class="k">Select</span><h3>Trade-offs nobody compared the same way twice</h3><p>Cost, safety, degradation, cycle life, temperature range, warranty terms and utility acceptance were weighed in a different spreadsheet each time, by whoever had the time.</p></div>
-          <div class="card"><span class="k">Comply</span><h3>Rules that change at every border</h3><p>Federal, state, utility, fire code, environmental and permitting requirements vary by location and application. One missed obligation means rework, delay or failed commissioning.</p></div>
-          <div class="card"><span class="k">Execute</span><h3>Plans split across six teams</h3><p>Engineering, procurement, permitting, utility coordination, construction and commissioning each kept their own plan. No one held the step-by-step roadmap.</p></div>
+          <div class="card"><span class="k">Specify</span><h3>Every choice moves every other choice</h3><p>System size, chemistry, BMS, inverter, footprint, enclosures, fire safety and grid connection all depend on each other. Change the duration and the chemistry shortlist, enclosure count and fire separation all move.</p></div>
+          <div class="card"><span class="k">Select</span><h3>Choices nobody compared the same way twice</h3><p>Cost, safety, degradation, cycle life, temperature range, warranty terms and utility acceptance were weighed in a different spreadsheet each time, by whoever had the time.</p></div>
+          <div class="card"><span class="k">Comply</span><h3>Rules that change at every border</h3><p>Federal, state, utility, fire code, environmental and permitting requirements vary by location and application. One missed requirement means rework, delay or failed commissioning.</p></div>
+          <div class="card"><span class="k">Execute</span><h3>Plans split across six teams</h3><p>Engineering, procurement, permitting, utility coordination, construction and commissioning each kept their own plan. No one held the full step-by-step plan.</p></div>
           <div class="card"><span class="k">Operate</span><h3>Measured in MWh, managed in euros</h3><p>Dashboards showed availability and state of charge. Nobody could say which site was losing money, to what cause, or which action would recover it.</p></div>
-          <div class="card"><span class="k">Scale</span><h3>Site two cost as much as site one</h3><p>Without a shared asset model, each new site meant rebuilding data pipelines, reports and analysis from scratch.</p></div>
+          <div class="card"><span class="k">Scale</span><h3>Site two cost as much as site one</h3><p>Without a shared asset model, each new site meant rebuilding data pipelines, reports and analysis from the start.</p></div>
         </div>
         <p class="prose" style="margin-top:32px;font-size:clamp(18px,1vw + 12px,22px)"><strong>Design challenge:</strong> How might we turn basic project information into a specification engineers trust enough to sign, and carry those decisions into a fleet view that runs on euros?</p>
       </div>
@@ -413,7 +413,7 @@
         <div class="chap-head">
           <p class="chap-no">03 · Research</p>
           <h2>Seven roles, one asset, very different questions.</h2>
-          <p>18 interviews, 4 contextual sessions in a control room and a site office, and a teardown of 3 past specification packages and their RFI logs.</p>
+          <p>18 interviews, 4 sessions watching people work in a control room and a site office, and a close review of 3 past specification packages and their logs of open questions (RFIs).</p>
         </div>
 
         <div class="tbl-wrap">
@@ -433,10 +433,10 @@
 
         <h3 style="font-size:22px;margin:44px 0 18px">What we learned</h3>
         <div class="grid-2">
-          <div class="card"><span class="k">Insight 1</span><h3>Engineers don't want an answer. They want a defensible draft.</h3><p>No engineer would sign a spec a machine wrote. Every one of them would happily edit a good draft, as long as they could see where each number came from.</p></div>
-          <div class="card"><span class="k">Insight 2</span><h3>Missing inputs caused more rework than wrong ones.</h3><p>In the RFI logs we reviewed, most late changes traced back to something nobody asked early: fire setbacks, the utility's ride-through rules, soil bearing, or the enclosure's cold-weather rating.</p></div>
+          <div class="card"><span class="k">Insight 1</span><h3>Engineers don't want an answer. They want a draft they can check and defend.</h3><p>No engineer would sign a spec a machine wrote. Every one of them would happily edit a good draft, as long as they could see where each number came from.</p></div>
+          <div class="card"><span class="k">Insight 2</span><h3>Missing inputs caused more rework than wrong ones.</h3><p>In the question logs we reviewed, most late changes came back to something nobody asked early: fire setbacks, the utility's ride-through rules, soil bearing, or the enclosure's cold-weather rating.</p></div>
           <div class="card"><span class="k">Insight 3</span><h3>"Recommended" without "for what" was ignored.</h3><p>A chemistry ranked "best" was distrusted. The same chemistry described as "best for 4-hour firming at this site, because…" was accepted.</p></div>
-          <div class="card"><span class="k">Insight 4</span><h3>Operators think in euros per decision, not KPIs per page.</h3><p>Asset managers wanted three things: what we're making, where we're losing it, and what to do on Monday.</p></div>
+          <div class="card"><span class="k">Insight 4</span><h3>Operators think in euros per decision, not KPIs per page.</h3><p>Asset managers wanted three things: what we're making, where we're losing it, and what to do next.</p></div>
         </div>
         <blockquote style="margin-top:16px">“Show me the clause, not the conclusion. If I can't point the fire marshal to a section number, it doesn't exist.”<cite>Permitting lead, US development team</cite></blockquote>
       </div>
@@ -450,22 +450,22 @@
             <div class="chap-head">
               <p class="chap-no">04 · Approach</p>
               <h2>Seven steps, one asset model from spec to dispatch.</h2>
-              <p>We ran the work as a framework the client could repeat for every new site and region. Each step had a design deliverable, not just an engineering one.</p>
+              <p>We ran the work as a method the client could repeat for every new site and region. Each step had a design output, not just an engineering one.</p>
             </div>
             <div class="card" style="margin-top:8px">
               <span class="k">Principle</span>
               <h3>Write once, use for the asset's whole life</h3>
-              <p>Every decision captured in the Spec Copilot (rated power, usable energy, warranty cycle limits, degradation curve, inverter capability) becomes a field in the asset information model the Control Plane reads after commissioning. Nothing is re-keyed at handover.</p>
+              <p>Every decision made in the Spec Copilot is saved in the site’s shared model. This includes rated power, usable energy, warranty cycle limits, how fast the batteries wear out, and inverter capability. The Control Plane reads the same model once the site is running. Nothing is typed in again at handover.</p>
             </div>
           </div>
           <ol class="steps">
             <li><b>Set the business objectives</b><span>Availability in MWh and €, deviation from theoretical performance, shadow costs, cycle profitability.</span><em>Design: a shared KPI glossary, signed off by finance and operations</em></li>
             <li><b>Identify the key users and decisions</b><span>Developers, permitting, procurement, asset managers, dispatch &amp; trading, O&amp;M, analysts.</span><em>Design: role-to-decision map (above)</em></li>
-            <li><b>Prioritize the business KPIs</b><span>Fleet and cycle profitability (€/MWh, €/cycle), LCOS and ROACE.</span><em>Design: cut from 40 candidate metrics to 4 headline KPIs</em></li>
-            <li><b>Map data sources and reuse what exists</b><span>BMS/EMS, CRM/ERP, GIS and market APIs fed into PI. No new sensors or databases.</span><em>Design: a data-availability matrix behind every screen</em></li>
-            <li><b>Structure and contextualize the data</b><span>Asset information model, ontology instantiation, templates so site two costs a fraction of site one.</span><em>Design: the spec package <i>is</i> the template</em></li>
-            <li><b>Build the analytics enablers</b><span>Cost, revenue and degradation models behind every euro on the dashboard.</span><em>Design: every number opens its own calculation</em></li>
-            <li><b>Deliver the MVP, then scale</b><span>A 10-week fast track on 1–2 representative sites, with a modular design to add sites and regions.</span><em>Design: component library and region packs</em></li>
+            <li><b>Choose the key business measures (KPIs)</b><span>Fleet and cycle profitability (€/MWh, €/cycle), LCOS and ROACE.</span><em>Design: cut 40 possible measures down to 4 main KPIs</em></li>
+            <li><b>Map data sources and reuse what exists</b><span>BMS/EMS, CRM/ERP, GIS and market APIs fed into PI. No new sensors or databases.</span><em>Design: a table of which data exists, behind every screen</em></li>
+            <li><b>Organise the data and add context</b><span>One shared model of each site and its equipment, with templates so site two costs a small part of site one.</span><em>Design: the spec package <i>is</i> the template</em></li>
+            <li><b>Build the models behind the numbers</b><span>Cost, revenue and degradation models behind every euro on the dashboard.</span><em>Design: every number opens its own calculation</em></li>
+            <li><b>Ship a first version, then grow</b><span>A quick 10-week start on 1–2 typical sites, built in parts so new sites and regions can be added.</span><em>Design: component library and region packs</em></li>
           </ol>
         </div>
       </div>
@@ -477,7 +477,7 @@
         <div class="chap-head">
           <p class="chap-no">05 · Product 1 · Spec Copilot</p>
           <h2>A guided intake that asks what an experienced engineer would ask.</h2>
-          <p>The Copilot prompts for key project inputs, shows what it derived from them, and refuses to guess on anything that would change the answer. Below: a 100 MW / 400 MWh renewable-firming project in Kern County, California.</p>
+          <p>The Copilot prompts for key project inputs, shows what it worked out from them, and won’t guess on anything that would change the answer. Below: a 100 MW / 400 MWh renewable-firming project in Kern County, California.</p>
         </div>
 
         <div class="device" role="img" aria-label="Spec Copilot intake screen mockup">
@@ -521,7 +521,7 @@
                 <div class="fld"><span class="lbl">Ambient design range</span><div class="inp">−4 °C to 46 °C <small>from site GIS · edit</small></div></div>
               </div>
               <aside class="assume" aria-label="Copilot assumptions (mockup)">
-                <h4>What I derived</h4>
+                <h4>What I worked out</h4>
                 <ul>
                   <li><i class="dot g"></i><span>Augmentation strategy needed to hold 400 MWh to year 20<small>Degradation model · LFP curve</small></span></li>
                   <li><i class="dot g"></i><span>Transmission-connected; IEEE 2800 applies<small>CAISO queue · 230 kV POI</small></span></li>
@@ -536,7 +536,7 @@
             </div>
           </div>
         </div>
-        <p class="caption"><b>Why it looks like a form, not a chat.</b> Our first prototype was conversational. Engineers wanted to scan every input at once and edit any of them in place, so chat moved to a side panel for "why did you assume that?" questions.</p>
+        <p class="caption"><b>Why it looks like a form, not a chat.</b> Our first version was a chat. Engineers wanted to scan every input at once and edit any of them in place, so chat moved to a side panel for "why did you assume that?" questions.</p>
       </div>
     </section>
 
@@ -702,13 +702,13 @@
           <p>Tested across 4 rounds with 11 engineers and operators, using real past projects so they could compare our output with what they had actually built.</p>
         </div>
         <ul class="tried" role="list">
-          <li><span class="tag kept">Kept</span><span><b>Every AI statement shows its source, confidence and owner.</b><span class="why">Trust went up when people could see where a claim came from. Regulations cite the clause, the edition the jurisdiction has adopted, and the date it was last checked.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Every AI statement shows its source, confidence and owner.</b><span class="why">Trust went up when people could see where a claim came from. Rules quote the clause, the version the local area uses, and the date it was last checked.</span></span></li>
           <li><span class="tag kept">Kept</span><span><b>Missing inputs block, they don't guess.</b><span class="why">If site area is unknown, layout and fire setbacks say "on hold" and point to the input that unblocks them. Engineers called this the most useful thing in the product.</span></span></li>
-          <li><span class="tag kept">Kept</span><span><b>Sign-off section by section.</b><span class="why">The AI drafts and a named engineer approves. Edits are tracked, so the review becomes the audit trail.</span></span></li>
-          <li><span class="tag dropped">Dropped</span><span><b>Conversational intake.</b><span class="why">Slower to review and impossible to scan. Chat survived as a side panel for asking why the Copilot assumed something.</span></span></li>
-          <li><span class="tag dropped">Dropped</span><span><b>A single overall score per chemistry.</b><span class="why">Reviewers didn't trust a number that hid its weighting. It became fit for this use case, with a written rationale.</span></span></li>
-          <li><span class="tag kept">Kept</span><span><b>Euros first, megawatt-hours second.</b><span class="why">In the Control Plane, every availability loss carries a shadow cost. O&amp;M tickets started being ranked by value lost.</span></span></li>
-          <li><span class="tag dropped">Dropped</span><span><b>A 40-tile operations dashboard.</b><span class="why">Replaced by four headline KPIs, three diagnostic views and a ranked action list. Time to answer "which site needs attention" fell from minutes to seconds in testing.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Sign-off section by section.</b><span class="why">The AI drafts and a named engineer approves. Edits are tracked, so the review becomes the record of who checked what.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>A chat-style start.</b><span class="why">Slower to review and impossible to scan. Chat stayed as a side panel for asking why the Copilot assumed something.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>A single overall score per chemistry.</b><span class="why">Reviewers didn't trust a number that hid how it was calculated. It became fit for this use case, with a written reason.</span></span></li>
+          <li><span class="tag kept">Kept</span><span><b>Euros first, megawatt-hours second.</b><span class="why">In the Control Plane, every availability loss carries a hidden cost in euros (a shadow cost). O&amp;M tickets started being ranked by value lost.</span></span></li>
+          <li><span class="tag dropped">Dropped</span><span><b>A 40-tile operations dashboard.</b><span class="why">Replaced by four main measures, three views that explain problems, and a ranked action list. Time to answer "which site needs attention" fell from minutes to seconds in testing.</span></span></li>
         </ul>
       </div>
     </section>
@@ -718,7 +718,7 @@
       <div class="wrap">
         <div class="chap-head">
           <p class="chap-no">08 · Product 2 · Value Control Plane</p>
-          <h2>Monitoring the fleet in euros, built on the PI landscape they already had.</h2>
+          <h2>Tracking every site in euros, built on the PI data system they already had.</h2>
           <p>After commissioning, the signed spec becomes the site's asset model. Rated capacity, warranty limits and the degradation curve feed the cost, revenue and degradation models behind every euro on screen.</p>
         </div>
 
@@ -818,9 +818,9 @@
                 <div class="hr-line"></div>
                 <div class="kv"><span>Margin per MWh, fleet</span><b>€41</b></div>
               </div>
-              <!-- Value leakage -->
+              <!-- Lost value -->
               <div class="tile">
-                <p class="t-h">Value leakage</p>
+                <p class="t-h">Lost value</p>
                 <p class="t-s">Shadow cost by cause, rolling 8 weeks (€k)</p>
                 <ul class="legend" id="leak-legend" style="grid-template-columns:1fr 1fr;margin-top:8px"></ul>
                 <svg id="leak" viewBox="0 0 220 120" style="width:100%;height:120px;margin-top:6px" aria-label="Weekly shadow cost stacked by cause"></svg>
@@ -835,8 +835,8 @@
 
         <div class="grid-3" style="margin-top:40px">
           <div class="card"><span class="k">What we're making</span><h3>Four headline KPIs</h3><p>Gross margin, profit per cycle, LCOS and ROACE. Each is shown against plan, never on its own.</p></div>
-          <div class="card"><span class="k">Where we're losing it</span><h3>Three diagnostic views</h3><p>Revenue stack, site rating and value leakage. Availability, dispatch, degradation and market losses are each priced in euros.</p></div>
-          <div class="card"><span class="k">What to do on Monday</span><h3>A ranked action list</h3><p>Each action shows an impact score, two concrete numbers and the site it applies to. Accepted actions are tracked against what they actually earned.</p></div>
+          <div class="card"><span class="k">Where we're losing it</span><h3>Three diagnostic views</h3><p>Revenue stack, site rating and lost value. Availability, dispatch, degradation and market losses are each priced in euros.</p></div>
+          <div class="card"><span class="k">What to do next</span><h3>A ranked action list</h3><p>Each action shows an impact score, two concrete numbers and the site it applies to. Accepted actions are tracked against what they actually earned.</p></div>
         </div>
       </div>
     </section>
@@ -845,9 +845,9 @@
     <section class="chap" id="architecture">
       <div class="wrap">
         <div class="chap-head">
-          <p class="chap-no">09 · Under the surface</p>
+          <p class="chap-no">09 · How it is built</p>
           <h2>No new sensors, no new databases.</h2>
-          <p>Design worked with engineering to keep the platform on the client's existing PI landscape. The Spec Copilot writes into the same asset model the Control Plane reads.</p>
+          <p>Design worked with engineering to keep the platform on the client's existing PI data system. The Spec Copilot writes into the same asset model the Control Plane reads.</p>
         </div>
         <div class="arch">
           <div class="col"><h4>Sources</h4><ul><li>BMS / EMS</li><li>SCADA &amp; PI historian</li><li>CRM / ERP</li><li>GIS</li><li>Market &amp; price APIs</li><li>Code &amp; regulation library</li></ul></div>
@@ -865,7 +865,7 @@
         <div class="chap-head">
           <p class="chap-no">10 · Suggest LLM</p>
           <h2>The right model for each job, not one model for everything.</h2>
-          <p>The platform runs six different kinds of AI work. Each one has its own needs for reasoning depth, speed, volume and auditability. Pick a task to see which model we suggest for it and why.</p>
+          <p>The platform runs six different kinds of AI work. Each one has its own needs for reasoning depth, speed, volume and a clear record of how answers were made. Pick a task to see which model we suggest for it and why.</p>
         </div>
 
         <div class="llm">
@@ -890,8 +890,8 @@
         </div>
 
         <div class="grid-3" style="margin-top:32px">
-          <div class="card"><span class="k">Design implication</span><h3>The model is invisible, its provenance isn't</h3><p>Users never choose a model. Every output still records which model and which sources produced it, so a signed spec can be audited years later.</p></div>
-          <div class="card"><span class="k">Design implication</span><h3>Escalation is a UI state</h3><p>When a task goes to the escalation model, the section shows "deeper review in progress", with a time estimate, instead of a spinner.</p></div>
+          <div class="card"><span class="k">Design implication</span><h3>Users don’t see the model, but they can see where answers came from</h3><p>Users never choose a model. Every output still records which model and which sources produced it, so a signed spec can be audited years later.</p></div>
+          <div class="card"><span class="k">Design implication</span><h3>Handing off to a stronger model is shown on screen</h3><p>When a task goes to the strongest model, the section shows "deeper review in progress", with a time estimate, instead of a spinner.</p></div>
           <div class="card"><span class="k">Design implication</span><h3>Deploy where the client already is</h3><p>Claude is available through Anthropic's API, Amazon Bedrock, Google Cloud Vertex AI and Microsoft Foundry, so the platform can follow the client's existing cloud contract.</p></div>
         </div>
         <p class="note">Model names, context windows and list prices are as of October 2026 and change often. Check current vendor pricing before committing. For non-Claude providers we list model families rather than specific versions.</p>
@@ -903,8 +903,8 @@
       <div class="wrap">
         <div class="chap-head">
           <p class="chap-no">11 · Delivery</p>
-          <h2>A 10-week fast track, then modular scale.</h2>
-          <p>We proved the platform on two representative sites, Aveiro and Dortmund (the best and the weakest performers), plus one US pipeline project for the Spec Copilot.</p>
+          <h2>A quick 10-week start, then growth in steps.</h2>
+          <p>We tested the platform on two typical sites, Aveiro and Dortmund (the best and the weakest performers), plus one US pipeline project for the Spec Copilot.</p>
         </div>
         <div class="weeks">
           <div class="week"><p class="k">Weeks 1–2</p><h3>Discover</h3><ul><li>18 interviews, 4 site visits</li><li>KPI glossary signed off</li><li>Data-availability audit in PI</li></ul></div>
@@ -932,7 +932,7 @@
         </div>
         <div class="grid-2" style="margin-top:32px">
           <div class="card"><span class="k">Benefit</span><h3>Consistency by design</h3><p>One repeatable analysis process covers sizing, chemistry, BMS, inverter, layout and regulatory screening, so two engineers on two continents now produce comparable specs.</p></div>
-          <div class="card"><span class="k">Benefit</span><h3>Risk surfaced earlier</h3><p>Missing inputs, unsuitable options, space limits, code requirements and interconnection issues are flagged before detailed engineering begins, when changing course is still cheap.</p></div>
+          <div class="card"><span class="k">Benefit</span><h3>Risks found earlier</h3><p>Missing inputs, unsuitable options, space limits, code requirements and interconnection issues are flagged before detailed engineering begins, when changing course is still cheap.</p></div>
         </div>
       </div>
     </section>
@@ -945,18 +945,18 @@
           <h2>What I'd do differently.</h2>
         </div>
         <div class="grid-3">
-          <div class="card"><h3>Bring the fire marshal in earlier</h3><p>We designed the compliance view with permitting leads. The people who actually read the output are authorities having jurisdiction. One session with an AHJ in week two would have reshaped the export format sooner.</p></div>
+          <div class="card"><h3>Bring the fire marshal in earlier</h3><p>We designed the legal requirements view with permitting leads. But the people who actually read the output are the local officials who approve projects (AHJs). One session with them in week two would have reshaped the export format sooner.</p></div>
           <div class="card"><h3>Design the "no" as carefully as the "yes"</h3><p>The most valued moments were when the Copilot said <em>I can't answer this yet</em>. I'd prototype refusals and on-hold states from day one, not discover them in round three.</p></div>
-          <div class="card"><h3>Track whether actions paid off</h3><p>We shipped the action list before tracking what accepted actions actually earned. Closing that loop is what turns a Copilot from interesting into trusted.</p></div>
+          <div class="card"><h3>Track whether actions worked</h3><p>We shipped the action list before tracking what accepted actions actually earned. Checking those results is what turns a Copilot from interesting into trusted.</p></div>
         </div>
-        <p class="note">Client details are anonymized. Figures are from the pilot period and rounded; regulatory references reflect the example project's jurisdiction and are illustrative of the product's output, not legal guidance.</p>
+        <p class="note">Client details are hidden. Figures are from the pilot and rounded. Legal references are for the example project’s location and show what the product produces. They are not legal advice.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <span>Girish Dunga · UX Designer, product thinker, experience creator</span>
+      <span>Girish Dunga · UX Designer, product experience strategist, experience creator</span>
       <a href="../index.html#case-studies">Back to all case studies →</a>
     </div>
   </footer>

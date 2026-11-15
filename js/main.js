@@ -326,15 +326,15 @@
           'We spent two weeks in waiting rooms and on the phones with receptionists. The pattern was clear: most callers already knew what they needed. What they lacked was visibility. Nobody could see whether an appointment existed before committing to the queue.',
           'Older patients, carers and shift workers were hit hardest. For them, the phone line was the only door, and it was open for 40 minutes a day.' ],
           quote: ['I book at 7am because that’s when I’m brave enough to call.', 'Participant 07, age 68'] },
-        { label: 'The friction', title: 'Every existing flow asked who you were before showing what was possible.', body: [
+        { label: 'The problem', title: 'Every existing flow asked who you were before showing what was possible.', body: [
           'Login, then patient details, then reason for visit, then availability. Forty percent of people abandoned before they ever saw a time slot, and many then phoned anyway.' ] },
         { label: 'The decisions', tradeoffs: [
           ['Availability before identity', 'Login first', 'People commit when they can see a real option. Identity is asked for only once a slot is chosen.'],
-          ['Plain-language reasons', 'Clinical triage codes', 'Patients describe symptoms in their own words. A light triage layer maps them for staff, not the other way round.'],
+          ['Reasons in plain words', 'Medical urgency codes', 'Patients describe symptoms in their own words. A simple step sorts them by urgency for staff, not the other way round.'],
           ['Keep the phone line, make it quieter', 'Digital only', 'Excluding people who can’t or won’t use an app was never acceptable. Success meant the phone line served the people who needed it most.'] ] },
         { label: 'What changed', outcomes: [['−41%', 'calls to the morning queue within three months'], ['3 taps', 'to book from the home screen, down from 11'], ['1,000', 'patients a day booking without calling, by month six']] },
         { label: 'What I’d do differently', body: [
-          'I’d bring receptionists into co-design sessions from week one, not week six. They knew the edge cases better than any dataset, and they became the product’s strongest advocates once they were included.' ] },
+          'I’d bring receptionists into design sessions from week one, not week six. They knew the unusual cases better than any dataset, and they became the product’s strongest advocates once they were included.' ] },
       ],
     },
     ledger: {
@@ -342,18 +342,18 @@
       kicker: 'Transaction slips · Fintech',
       title: 'Ledger',
       lede: 'A business bank account that explains its own numbers, so a payment never arrives as a small panic.',
-      meta: [['Role', 'Senior product designer'], ['Team', 'Squad of 9, with risk and compliance'], ['Duration', '7 months'], ['Scope', 'Transactions, statements, payment confirmations']],
+      meta: [['Role', 'Senior product designer'], ['Team', 'Team of 9, with risk and legal'], ['Duration', '7 months'], ['Scope', 'Transactions, statements, payment confirmations']],
       chapters: [
         { label: 'The person', title: 'Small business owners read statements the way you read a letter from the tax office.', body: [
-          'Diary studies with 16 owners showed the same moment again and again: an unfamiliar line on a statement, a jolt of worry, then 20 minutes of searching emails to work out what it was.' ],
+          'Diary studies with 16 owners showed the same moment again and again. They saw a line on their statement they didn’t recognise and felt a moment of worry. Then they spent 20 minutes searching their emails to find out what it was.' ],
           quote: ['I don’t mind paying things. I mind not knowing what I paid.', 'Café owner, diary study, week 2'] },
-        { label: 'The friction', title: 'Merchant descriptors were written for banks, not people.', body: [
+        { label: 'The problem', title: 'Shop names on statements were written for banks, not people.', body: [
           '“DD MBRSHP 88-21” is perfectly clear to a payments system. To a person it reads as a mystery charge. Foreign exchange adjustments and pending holds made it worse, moving the balance without any visible reason.' ] },
         { label: 'The decisions', tradeoffs: [
-          ['Explain every line in plain words', 'Show raw descriptors', 'We enriched transactions with merchant names, logos and a one-line reason. Raw data stays one tap away for accountants.'],
+          ['Explain every line in plain words', 'Show raw bank codes', 'We enriched transactions with merchant names, logos and a one-line reason. Raw data stays one tap away for accountants.'],
           ['Show the balance you can actually spend', 'Show the ledger balance', 'Pending holds were the biggest source of “where did my money go?” tickets.'],
           ['Ask before categorising', 'Auto-categorise silently', 'Silent mistakes eroded trust faster than slower, confirmed ones.'] ] },
-        { label: 'What changed', outcomes: [['−52%', '“unrecognised payment” support tickets'], ['38% → 12%', 'drop-off in the payment flow after redesign'], ['4.7★', 'app rating among business customers, up from 3.9']] },
+        { label: 'What changed', outcomes: [['−52%', '“unrecognised payment” support tickets'], ['38% → 12%', 'of people giving up in the payment flow after redesign'], ['4.7★', 'app rating among business customers, up from 3.9']] },
         { label: 'What I’d do differently', body: [
           'We underestimated how many owners share access with a partner or bookkeeper. I’d design for shared visibility from the start, not as a phase-two feature.' ] },
       ],
@@ -368,13 +368,13 @@
         { label: 'The person', title: 'The users of a design system are designers and engineers on a deadline.', body: [
           'We interviewed 31 people across product teams. Nobody wanted more components. They wanted fewer decisions to argue about, and confidence that what they shipped was accessible.' ],
           quote: ['I just want to know which button to use without a meeting.', 'Front-end engineer, payments team'] },
-        { label: 'The friction', title: 'Four button styles, eleven greys and no single source of truth.', body: [
+        { label: 'The problem', title: 'Four button styles, eleven greys and no one agreed set of styles.', body: [
           'An audit found 230 near-duplicate components across products. Each had been a reasonable decision locally. Together they made every product feel slightly different, and slightly harder to use.' ] },
         { label: 'The decisions', tradeoffs: [
           ['Tokens before components', 'Ship a component library first', 'Agreeing on colour, type and spacing first made every later component cheaper to build and easier to theme.'],
-          ['Accessibility as a default, not a checklist', 'Audit at the end', 'Every component ships with keyboard behaviour, focus states and contrast built in. Teams inherit compliance instead of retrofitting it.'],
+          ['Accessibility as a default, not a checklist', 'Audit at the end', 'Every component ships with keyboard behaviour, focus states and contrast built in. Teams meet the accessibility rules from the start, instead of fixing them later.'],
           ['Contribution model', 'Central team builds everything', 'Teams propose, the core team reviews. The system grows at the speed of the organisation.'] ] },
-        { label: 'What changed', outcomes: [['230 → 64', 'components after consolidation'], ['40', 'teams building on the same foundations'], ['−60%', 'accessibility defects found in QA']] },
+        { label: 'What changed', outcomes: [['230 → 64', 'components after merging duplicates'], ['40', 'teams building on the same foundations'], ['−60%', 'accessibility defects found in QA']] },
         { label: 'What I’d do differently', body: [
           'I would publish decisions, not just components. The most-read page in the docs turned out to be “why we did it this way”.' ] },
       ],
@@ -389,13 +389,13 @@
         { label: 'The person', title: 'Clinicians weren’t short of skill. They were short of minutes.', body: [
           'GPs in our partner practices spent up to two hours a day answering routine messages: repeat prescriptions, test results, appointment questions. Every minute spent there was a minute not spent with a patient in the room.' ],
           quote: ['I trust it when it tells me what it isn’t sure about.', 'GP partner, week 9 of the pilot'] },
-        { label: 'The friction', title: 'A confident AI is easy to build. A trustworthy one is a design problem.', body: [
-          'Early prototypes drafted fluent, plausible replies. Clinicians approved 94% of them unchanged, which sounded like success until we realised it meant they had stopped reading closely.' ] },
+        { label: 'The problem', title: 'A confident AI is easy to build. A trustworthy one is a design problem.', body: [
+          'Early test versions wrote smooth replies that sounded right. Clinicians approved 94% of them unchanged, which sounded like success until we realised it meant they had stopped reading closely.' ] },
         { label: 'The decisions', tradeoffs: [
           ['Show uncertainty, visibly', 'Present every draft the same way', 'Drafts carry a confidence signal and highlight the exact sentence the model is unsure about, so attention goes where it matters.'],
-          ['Automate the routine, escalate the rest', 'Full automation, or none', 'Admin replies send automatically after a short delay. Anything clinical needs a human.'],
+          ['Automate the routine, pass the rest to a person', 'Full automation, or none', 'Admin replies send automatically after a short delay. Anything clinical needs a human.'],
           ['Explain the source', 'Fluent answers without context', 'Each draft cites the record entries it used. Clinicians verify in seconds rather than searching.'] ] },
-        { label: 'What changed', outcomes: [['11,400', 'clinician hours returned per year across the pilot'], ['4 h → 52 min', 'median reply time to patients'], ['0', 'clinical safety incidents during the pilot']] },
+        { label: 'What changed', outcomes: [['11,400', 'clinician hours returned per year across the pilot'], ['4 h → 52 min', 'median reply time to patients'], ['0', 'patient safety problems during the pilot']] },
         { label: 'What I’d do differently', body: [
           'I would run safety reviews with patients, not only clinicians. The people receiving the messages had sharp, different instincts about tone and about what should never be automated.' ] },
       ],
@@ -504,7 +504,7 @@
   const JOURNEYS = {
     patient: {
       before: {
-        loop: true, laps: 4, labels: ['Doing', 'Thinking', 'Pain point', 'Design opportunity'],
+        loop: true, laps: 4, labels: ['Doing', 'Thinking', 'Problem', 'Design idea'],
         status: (lap, done) => (done ? 'Attempt 4 · 07:42' : `Attempt ${lap}`),
         end: 'Fourth attempt, 07:42. Still no appointment.',
         stops: [
@@ -1742,7 +1742,7 @@
           human: '“It can do anything. I just needed it to do one thing tonight.”',
         },
       ],
-      note: 'What shipped: a simple surface with flexibility one level down. Progressive disclosure means power is there when it’s needed, never imposed on the first night.',
+      note: 'What shipped: a simple screen, with more options one step away. Extra features appear when they’re needed, and are never forced on people on the first night.',
     },
     {
       situation: 'An AI drafts replies to patient messages for a busy GP practice. Clinicians are overloaded; patients are waiting.',
@@ -1763,7 +1763,7 @@
           human: '“I approve 94 out of 100 without reading closely. That’s the dangerous part.”',
         },
       ],
-      note: 'What shipped: automate the routine, escalate anything clinical, and show clinicians exactly which sentence the model is unsure about. Trust comes from knowing when to ask.',
+      note: 'What shipped: automate the routine, send anything medical to a clinician, and show clinicians exactly which sentence the model is unsure about. Trust comes from knowing when to ask.',
     },
   ];
 
@@ -2153,7 +2153,7 @@
   const FUTURES = [
     {
       id: 'live', domain: 'Live', name: 'Sakhi', hue: 30, year: '2033', device: 'Kitchen display and voice',
-      line: 'Ambient care for people who live alone.',
+      line: 'Quiet, caring help for people who live alone.',
       provocation: 'What if a home could notice you were struggling, without ever watching you?',
       scenario: {
         who: 'Meera, 81, lives alone. Her daughter Asha lives two hours away.',
@@ -2173,7 +2173,7 @@
           ['Share by consent, in their words', 'The resident decides who is told and what they are told.'],
           ['Step back when things recover', 'As the routine returns, Sakhi goes quiet again.'],
         ],
-        anti: ['Family dashboards that turn care into surveillance', 'Alarms that shame or frighten', 'Data leaving the home by default'],
+        anti: ['Family screens that turn care into spying', 'Alarms that shame or frighten', 'Data leaving the home by default'],
       },
       prototype: {
         start: 'a',
@@ -2216,16 +2216,16 @@
         beats: [
           ['09:00', 'Aira has turned three meeting requests into one shared document review, and shows John why.'],
           ['11:00', 'A focus block. Aira holds messages, and lets through the two people John marked as urgent.'],
-          ['14:30', 'A meeting is about to overrun. Aira shows the room the cost: four people, 22 focus minutes each.'],
+          ['14:30', 'A meeting is about to run late. Aira shows the room the cost: four people, 22 focus minutes each.'],
           ['17:00', 'Weekly reflection, for John only: nine hours of deep work, and what made them possible.'],
         ],
-        signals: ['AI assistants joining every meeting', 'Burnout rising in knowledge work', 'Async tools becoming normal', 'Four-day week trials'],
+        signals: ['AI assistants joining every meeting', 'Burnout rising in knowledge work', 'Written updates replacing meetings', 'Four-day week trials'],
       },
       framework: {
-        name: 'Attention as a shared resource',
+        name: 'Everyone’s focus time matters',
         principles: [
           ['Make the cost of time visible', 'Every meeting shows what it costs in focus, not just in minutes.'],
-          ['Negotiate, don’t auto-decline', 'Aira proposes alternatives and the requester agrees.'],
+          ['Negotiate, don’t auto-decline', 'Aira suggests other options, and the person asking agrees.'],
           ['The person sets the rules', 'Focus hours, urgent people and quiet days are set by the individual.'],
           ['Team patterns, never scores', 'Managers see team-level trends. Never a ranking of individuals.'],
         ],
@@ -2234,7 +2234,7 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'New request · 11:00 today', t: '“Quick sync” from Smitha', b: '30 minutes, during your focus block. Aira suggests an async reply instead.', c: [['Suggest async', 'async'], ['Ask why it’s live', 'why'], ['Accept anyway', 'accept']] },
+          a: { k: 'New request · 11:00 today', t: '“Quick sync” from Smitha', b: '30 minutes, during your focus block. Aira suggests a written reply instead.', c: [['Suggest a written reply', 'async'], ['Ask why it’s live', 'why'], ['Accept anyway', 'accept']] },
           async: { k: 'Sent to Smitha', t: 'Could this be a comment on the doc?', b: 'Smitha agreed. Your focus block is intact, and the decision is logged on the doc.', c: [] },
           why: { k: 'Smitha replied', t: '“It’s a blocker for the release.”', b: 'Aira moves it to 12:15, right after your focus block. 15 minutes, not 30.', c: [['Book 12:15', 'booked']] },
           booked: { k: 'Booked', t: '12:15 · 15 minutes', b: 'Focus protected, blocker unblocked. Both of you saw why.', c: [] },
@@ -2248,17 +2248,17 @@
       },
       ai: {
         inputs: ['Calendar load', 'Message urgency', 'Deadlines', 'Personal focus rules', 'Meeting history'],
-        outputs: [['Protect focus', 0.71], ['Propose async', 0.22], ['Interrupt now', 0.07]],
+        outputs: [['Protect focus', 0.71], ['Suggest a written reply', 0.22], ['Interrupt now', 0.07]],
         guardrails: ['Never reports an individual’s productivity', 'Never declines without the person’s rule', 'Always shows why'],
       },
       impact: {
-        params: [['team', 'People using Aira', 10, 2000, 10, 200, ''], ['async', 'Meetings that become async', 5, 60, 5, 25, '%']],
+        params: [['team', 'People using Aira', 10, 2000, 10, 200, ''], ['async', 'Meetings replaced by written updates', 5, 60, 5, 25, '%']],
         outputs: [
           ['Focus hours regained each week', (p) => p.team * 8 * 0.5 * p.async / 100, 8000, ' h'],
           ['Meetings avoided each month', (p) => p.team * 8 * 4 * p.async / 100 / 3, 30000, ''],
           ['Individual scores shown to managers', () => 0, 1, ''],
         ],
-        assumptions: ['About 8 meetings per person per week', 'Average meeting is 30 minutes', 'A meeting has about 3 attendees'],
+        assumptions: ['About 8 meetings per person per week', 'Average meeting is 30 minutes', 'A meeting has about 3 people'],
       },
     },
     {
@@ -2273,17 +2273,17 @@
           ['16:03', 'She gets them all right. Veda updates its picture of her, and says so.'],
           ['19:00', 'Her teacher sees six students share the same gap, and plans one ten-minute group session. No rankings.'],
         ],
-        signals: ['AI tutors in every subject', 'Teacher shortages', 'Mastery-based grading', 'Students asking who owns their data'],
+        signals: ['AI tutors in every subject', 'Teacher shortages', 'Grading by skills, not time', 'Students asking who owns their data'],
       },
       framework: {
-        name: 'Learner in the loop',
+        name: 'The learner stays involved',
         principles: [
           ['Explain every suggestion', 'Each recommendation shows the evidence behind it.'],
           ['Let learners contest it', 'Disagreeing is a feature. The model learns from it.'],
-          ['Mastery, not minutes', 'Progress is what you can do, not how long you spent.'],
+          ['Skills, not minutes', 'Progress is what you can do, not how long you spent.'],
           ['Teachers see patterns, not rankings', 'Group gaps for planning. No league tables.'],
         ],
-        anti: ['Black-box “next lesson” buttons', 'Engagement streaks that reward time over learning', 'Class rankings from AI scores'],
+        anti: ['“Next lesson” buttons that never explain why', 'Engagement streaks that reward time over learning', 'Class rankings from AI scores'],
       },
       prototype: {
         start: 'a',
@@ -2301,7 +2301,7 @@
         links: [['graph', 'lumen', 'structure'], ['learner', 'lumen', 'evidence'], ['lumen', 'sneha', 'explains'], ['sneha', 'learner', 'corrects'], ['bank', 'lumen', 'activities'], ['lumen', 'teacher', 'group gaps'], ['sneha', 'parents', 'shares'], ['school', 'graph', 'curriculum']],
       },
       ai: {
-        inputs: ['Recent answers', 'Time per question', 'Self-rated confidence', 'Curriculum map', 'Learner pushback'],
+        inputs: ['Recent answers', 'Time per question', 'Self-rated confidence', 'Curriculum map', 'When learners disagree'],
         outputs: [['Two-minute check', 0.48], ['Revisit lesson', 0.37], ['Move ahead', 0.15]],
         guardrails: ['Never ranks students against each other', 'Always explains a recommendation', 'A learner can always see and correct their model'],
       },
@@ -2385,12 +2385,12 @@
         signals: ['Digital product passports in the EU', 'AR glasses in shops', 'Shopping agents that buy for you', 'The gap between values and the basket'],
       },
       framework: {
-        name: 'Values with a veto',
+        name: 'Your values have the final say',
         principles: [
-          ['Your values, your words', 'Goals are set by the person, never inferred and sold back.'],
-          ['Show the trade-off, not a verdict', 'Cost, carbon and repair side by side. No moralising.'],
-          ['The person always wins', 'Overrides are respected and never nagged about.'],
-          ['No paid persuasion', 'The agent cannot be paid to recommend anything.'],
+          ['Your values, your words', 'Goals are set by the person, never guessed and sold back.'],
+          ['Show both sides, don’t judge', 'Cost, carbon and repair side by side. No lecturing.'],
+          ['The person always wins', 'When the person says no, the agent accepts it and never asks again.'],
+          ['No paid promotion', 'The agent cannot be paid to recommend anything.'],
         ],
         anti: ['Sponsored “green” picks', 'Guilt notifications', 'Blocking a purchase'],
       },
@@ -2406,7 +2406,7 @@
       system: {
         people: [['anjali', 'Anjali', 'Sets goals. Overrides anything.'], ['retail', 'Retailers', 'Publish product passports.'], ['makers', 'Makers', 'Credited in the true-cost view.'], ['reg', 'Regulator', 'Audits that the agent takes no money for picks.']],
         systems: [['passport', 'Product passports', 'Carbon, materials, repairability, origin.'], ['agent', 'Shopping agent', 'Works for Anjali only.'], ['budget', 'Budget and goals', 'Stored with Anjali, not the shop.'], ['repair', 'Repair network', 'Suggested when something breaks.']],
-        links: [['retail', 'passport', 'publish'], ['makers', 'passport', 'origin'], ['passport', 'agent', 'true cost'], ['budget', 'agent', 'goals'], ['agent', 'anjali', 'trade-offs'], ['reg', 'agent', 'audits'], ['agent', 'repair', 'later']],
+        links: [['retail', 'passport', 'publish'], ['makers', 'passport', 'origin'], ['passport', 'agent', 'true cost'], ['budget', 'agent', 'goals'], ['agent', 'anjali', 'choices'], ['reg', 'agent', 'audits'], ['agent', 'repair', 'later']],
       },
       ai: {
         inputs: ['Product passport', 'Price', 'Her goals', 'Budget left', 'Past choices'],
@@ -2431,17 +2431,17 @@
         who: 'Fatima speaks Arabic. Her son’s teacher, Mr. Smith, speaks English.',
         beats: [
           ['15:30', 'Parents’ evening, by video. Mitra translates in real time, in Fatima’s own voice, which she agreed to.'],
-          ['15:32', 'An idiom. Instead of guessing, Mitra marks it as uncertain on both screens.'],
+          ['15:32', 'A saying. Instead of guessing, Mitra marks it as uncertain on both screens.'],
           ['15:34', '“He’s quite lively” arrives with its cultural meaning, not just its words.'],
           ['15:45', 'A summary in both languages, edited and approved by both of them before it is saved.'],
         ],
-        signals: ['Real-time speech translation', 'Fears about voice cloning', 'Multilingual classrooms', 'Distrust of deepfakes'],
+        signals: ['Real-time speech translation', 'Fears about voice cloning', 'Multilingual classrooms', 'Distrust of fake voices and videos'],
       },
       framework: {
         name: 'Translate meaning, keep the person',
         principles: [
           ['Mark uncertainty, never smooth it', 'Doubtful phrases are flagged to both people.'],
-          ['Voice by consent', 'A cloned voice is used only by its owner, and is watermarked.'],
+          ['Voice by consent', 'A copied voice is used only by its owner, and carries a hidden mark.'],
           ['One record for both sides', 'Both people see and approve the same summary.'],
           ['Humans can pause the machine', 'Either person can stop translation and call an interpreter.'],
         ],
@@ -2452,18 +2452,18 @@
         frames: {
           a: { k: 'Live captions · uncertain', t: '“He has a heart of gold, but his head is in the clouds.”', b: 'Mitra is unsure about the second half. It may mean distracted, or dreamy.', c: [['Ask Fatima to rephrase', 'rephrase'], ['Show the literal meaning', 'literal'], ['Call an interpreter', 'human']] },
           rephrase: { k: 'Fatima rephrased', t: '“He is kind, but he gets distracted.”', b: 'Translated with high confidence. Both screens agree.', c: [] },
-          literal: { k: 'Literal meaning', t: '“His head is in the clouds”', b: 'A common idiom for being distracted. Shown to both, labelled as an idiom.', c: [] },
+          literal: { k: 'Literal meaning', t: '“His head is in the clouds”', b: 'A common saying for being distracted. Shown to both, labelled as a saying.', c: [] },
           human: { k: 'Interpreter joining', t: 'About 2 minutes', b: 'Mitra pauses. The conversation is never left to a guess.', c: [] },
         },
       },
       system: {
         people: [['fatima', 'Fatima', 'Owns her voice model. Approves the summary.'], ['teacher', 'Mr. Smith', 'Sees uncertainty flags and approves the summary.'], ['interp', 'Interpreter', 'On call when either person asks.'], ['school', 'School', 'Keeps the approved summary only.']],
-        systems: [['voice', 'Voice model', 'On Fatima’s device. Watermarked.'], ['translate', 'Translation model', 'Flags low-confidence phrases.'], ['culture', 'Cultural notes', 'Explains idioms and tone.'], ['summary', 'Shared summary', 'One record, approved by both.']],
+        systems: [['voice', 'Voice model', 'On Fatima’s device. Marked as a copy.'], ['translate', 'Translation model', 'Flags phrases it isn’t sure about.'], ['culture', 'Cultural notes', 'Explains sayings and tone.'], ['summary', 'Shared summary', 'One record, approved by both.']],
         links: [['fatima', 'voice', 'consents'], ['voice', 'translate', 'speech'], ['culture', 'translate', 'meaning'], ['translate', 'teacher', 'flags'], ['translate', 'interp', 'when unsure'], ['summary', 'fatima', 'approve'], ['summary', 'teacher', 'approve'], ['summary', 'school', 'saved']],
       },
       ai: {
         inputs: ['Speech', 'Tone of voice', 'Context: school', 'Glossary', 'Cultural notes'],
-        outputs: [['Confident translation', 0.76], ['Flag the ambiguity', 0.19], ['Call an interpreter', 0.05]],
+        outputs: [['Confident translation', 0.76], ['Flag the unclear phrase', 0.19], ['Call an interpreter', 0.05]],
         guardrails: ['Never smooths over uncertainty', 'A voice is only ever used by its owner', 'Either person can stop it at any moment'],
       },
       impact: {
@@ -2473,7 +2473,7 @@
           ['Interpreter hours focused on hard cases', (p) => p.calls * p.human / 100 * 0.5, 15000, ' h'],
           ['Voices used without consent', () => 0, 1, ''],
         ],
-        assumptions: ['80% of calls are with families who would otherwise struggle', 'Interpreter calls last about 30 minutes', 'Every voice model is watermarked'],
+        assumptions: ['80% of calls are with families who would otherwise struggle', 'Interpreter calls last about 30 minutes', 'Every copied voice carries a hidden mark'],
       },
     },
     {
@@ -2483,18 +2483,18 @@
       scenario: {
         who: 'Rahul, an illustrator, finishing a book cover late at night.',
         beats: [
-          ['22:00', 'Rahul sketches. The studio suggests three colour palettes from a model trained only on licensed, opted-in work.'],
+          ['22:00', 'Rahul sketches. The studio suggests three colour palettes from a model trained only on licensed work, with the artists’ agreement.'],
           ['22:20', 'Rahul keeps one. The credits record it: human sketch, AI palette assist, and the source collection.'],
           ['Next week', 'A publisher licenses the cover. A share of the fee flows to the artists whose work trained the palette.'],
           ['Always', 'Anyone can inspect the credits, like ingredients on a label.'],
         ],
-        signals: ['Content credentials becoming standard', 'Artists challenging training data', 'Generative tools in every studio', 'Collective licensing models'],
+        signals: ['Records of who made content becoming standard', 'Artists challenging training data', 'AI image tools in every studio', 'Shared ways of paying artists'],
       },
       framework: {
         name: 'Credit is a feature',
         principles: [
-          ['Consent before training', 'Only opted-in, licensed work trains the models.'],
-          ['Visible provenance', 'Every piece shows what was human and what was assisted.'],
+          ['Consent before training', 'Only licensed work from artists who agreed is used to train the models.'],
+          ['Show where it came from', 'Every piece shows what a person made and what the AI helped with.'],
           ['Value flows back', 'A share of every licence pays the artists behind the model.'],
           ['The human signs off', 'Nothing is published without the maker’s name on it.'],
         ],
@@ -2503,7 +2503,7 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Studio · palette assist', t: 'Three palettes for “Night Harbour”', b: 'From the Coastal Light collection: 212 opted-in artists.', c: [['Use “Ember”', 'use'], ['See who it learned from', 'who'], ['Keep my own colours', 'own']] },
+          a: { k: 'Studio · palette assist', t: 'Three palettes for “Night Harbour”', b: 'From the Coastal Light collection: 212 artists who agreed to share.', c: [['Use “Ember”', 'use'], ['See who it learned from', 'who'], ['Keep my own colours', 'own']] },
           who: { k: 'Source collection', t: 'Coastal Light', b: '212 artists opted in. Each is credited, and paid when the palette is used commercially.', c: [['Use “Ember”', 'use']] },
           use: { k: 'Credits updated', t: 'Sketch: Rahul · Palette: AI-assisted', b: 'Source: Coastal Light. The credits travel with the file wherever it goes.', c: [['Publish', 'pub']] },
           pub: { k: 'Published', t: 'Signed by Rahul', b: 'When it is licensed, 4% of the fee is shared with the source artists.', c: [] },
@@ -2511,14 +2511,14 @@
         },
       },
       system: {
-        people: [['rahul', 'Rahul', 'Makes the work and signs it off.'], ['artists', 'Source artists', 'Opted in. Credited and paid.'], ['buyer', 'Publisher', 'Licenses the work and sees the credits.'], ['public', 'Audience', 'Can inspect provenance.']],
-        systems: [['studio', 'Studio AI', 'Assists. Never publishes.'], ['data', 'Licensed collections', 'Opted-in work only.'], ['credits', 'Credentials registry', 'Tamper-evident credits.'], ['pool', 'Licensing pool', 'Shares fees with source artists.']],
+        people: [['rahul', 'Rahul', 'Makes the work and signs it off.'], ['artists', 'Source artists', 'Opted in. Credited and paid.'], ['buyer', 'Publisher', 'Licenses the work and sees the credits.'], ['public', 'Audience', 'Can see where each piece came from.']],
+        systems: [['studio', 'Studio AI', 'Assists. Never publishes.'], ['data', 'Licensed collections', 'Only work artists agreed to share.'], ['credits', 'Credit records', 'Credits that can’t be changed in secret.'], ['pool', 'Licensing pool', 'Shares fees with source artists.']],
         links: [['artists', 'data', 'opt in'], ['data', 'studio', 'trains'], ['studio', 'rahul', 'assists'], ['rahul', 'credits', 'signs'], ['credits', 'buyer', 'travels'], ['buyer', 'pool', 'fee'], ['pool', 'artists', 'share'], ['credits', 'public', 'inspect']],
       },
       ai: {
         inputs: ['Rahul’s sketch', 'Mood words', 'Licensed collection', 'Palette history', 'Contrast rules'],
         outputs: [['Ember', 0.44], ['Tidewater', 0.35], ['Lantern', 0.21]],
-        guardrails: ['Trains only on opted-in work', 'Credits cannot be stripped', 'Never publishes on its own'],
+        guardrails: ['Trains only on work artists agreed to share', 'Credits cannot be stripped', 'Never publishes on its own'],
       },
       impact: {
         params: [['works', 'Works licensed a year', 100, 200000, 100, 10000, ''], ['fee', 'Average licence fee', 50, 5000, 50, 800, '£']],
@@ -2527,7 +2527,7 @@
           ['Works with visible credits', (p) => p.works, 200000, ''],
           ['Works trained on scraped data', () => 0, 1, ''],
         ],
-        assumptions: ['4% of each licence goes to the pool', 'Every licensed work carries content credentials', 'Collections are opt-in only'],
+        assumptions: ['4% of each licence goes to the pool', 'Every licensed work carries a record of who made it', 'Artists choose to join collections'],
       },
     },
   ];
@@ -2580,25 +2580,61 @@
   // The shape of each product's screen in its full story
   const FX_FORM = { live: 'display', work: 'desktop', travel: 'phone', shop: 'hud', communicate: 'call', learn: 'tablet', create: 'tablet' };
 
-  // Each product's mark: a circle in its own colour holding one white symbol of its idea.
-  // Original designs: a home (Sakhi), a star on a path (Tara), a focus dial (Aira), the true cost (Maya),
-  // two people sharing one meaning (Mitra), a learning loop (Veda), a spark with its sources (Medha).
+  // Each product's mark: an abstract form of moving light in its own colour family, shaped around one
+  // white point. The white point is the person; the colour around it is the AI. Original designs:
+  // a pebble of warm presence (Sakhi), a sparkle in orbit (Tara), arcs closing on a centre (Aira),
+  // a cut gem showing its facets (Maya), two forms sharing light (Mitra), an endless ribbon (Veda),
+  // a bloom made of blended sources (Medha).
+  // A = main gradient, B = the same light turned the other way, C = a clip unique to this mark.
   const FX_GLYPH = {
-    live: '<path d="M18 33L32 20L46 33" stroke-width="4"/><path d="M22 30V45H42V30" stroke-width="4"/><circle cx="32" cy="37" r="3.6" fill="#fff" stroke="none"/>',
-    travel: '<path d="M37 14Q39 25 50 27Q39 29 37 40Q35 29 24 27Q35 25 37 14Z" fill="#fff" stroke="none"/><path d="M14 48C21 48 24 43 29 39" stroke-width="3.4" stroke-dasharray="1 6"/>',
-    work: '<circle cx="32" cy="32" r="14" stroke-width="4" opacity=".35"/><path d="M32 18A14 14 0 1 1 18 32" stroke-width="4"/><circle cx="32" cy="32" r="3.4" fill="#fff" stroke="none"/>',
-    shop: '<path d="M20 23H44M20 32H34M20 41H40" stroke-width="4.4"/><circle cx="44" cy="32" r="3" fill="#fff" stroke="none"/>',
-    communicate: '<circle cx="26" cy="32" r="10" stroke-width="3.6"/><circle cx="38" cy="32" r="10" stroke-width="3.6"/><path d="M32 24A10 10 0 0 1 32 40A10 10 0 0 1 32 24Z" fill="#fff" stroke="none"/>',
-    learn: '<path d="M45 33A13 13 0 1 1 39 21" stroke-width="4"/><path d="M37 14L40 22L32 24" stroke-width="4"/><circle cx="32" cy="34" r="4" fill="#fff" stroke="none"/>',
-    create: '<path d="M22 44C22 31 31 22 45 19C43 33 35 42 22 44Z" fill="#fff" stroke="none"/><circle cx="19" cy="21" r="2.6" fill="#fff" stroke="none"/><circle cx="47" cy="40" r="2.6" fill="#fff" stroke="none"/><circle cx="39" cy="49" r="2.1" fill="#fff" stroke="none" opacity=".8"/>',
+    live: (A, B) => `
+      <path fill="${A}" d="M33 6C47 6 58 15.5 58 30.5C58 46 46.5 58 31 58C15.5 58 6 46.5 6 32.5C6 17.5 18.5 6 33 6Z"/>
+      <path fill="${B}" opacity=".6" d="M35 17C44.5 18 50 25.5 49 34.5C48 44 40 50 30.5 49C21 48 15 40.5 16 31C17 22 25.5 16 35 17Z"/>
+      <circle cx="32" cy="33" r="11" fill="${A}" opacity=".9"/><circle cx="32" cy="33" r="7" fill="#fff"/>`,
+    travel: (A, B) => `
+      <ellipse cx="32" cy="34" rx="27" ry="10.5" transform="rotate(-24 32 34)" fill="none" stroke="${B}" stroke-width="3.6" opacity=".9"/>
+      <path fill="${A}" d="M32 6C34 21.6 38.4 26 54 28C38.4 30 34 34.4 32 50C30 34.4 25.6 30 10 28C25.6 26 30 21.6 32 6Z"/>
+      <circle cx="32" cy="28" r="4.6" fill="#fff"/><circle cx="54.5" cy="22.6" r="3.6" fill="#fff" class="fx-orbiter"/>`,
+    work: (A, B) => `
+      <path d="M32 6A26 26 0 1 1 6 32" fill="none" stroke="${A}" stroke-width="6.5" stroke-linecap="round"/>
+      <path d="M49 32A17 17 0 1 1 32 15" fill="none" stroke="${B}" stroke-width="6.5" stroke-linecap="round" opacity=".9"/>
+      <circle cx="32" cy="32" r="9" fill="${A}" opacity=".7"/><circle cx="32" cy="32" r="5.5" fill="#fff"/>`,
+    shop: (A, B) => `
+      <path fill="${A}" d="M18 9H46L58 24L32 57L6 24Z"/>
+      <path fill="${B}" opacity=".6" d="M22 24H42L32 57Z"/>
+      <path fill="#fff" opacity=".28" d="M18 9H46L42 24H22Z"/>
+      <path fill="#fff" opacity=".12" d="M6 24L18 9L22 24Z"/>
+      <circle cx="32" cy="24" r="4.6" fill="#fff"/>`,
+    communicate: (A, B, C) => `
+      <clipPath id="${C}"><circle cx="24" cy="30" r="17"/></clipPath>
+      <circle cx="24" cy="30" r="17" fill="${A}"/>
+      <circle cx="40" cy="35" r="17" fill="${B}" opacity=".88" style="mix-blend-mode: screen"/>
+      <circle cx="40" cy="35" r="17" fill="#fff" opacity=".55" clip-path="url(#${C})"/>
+      <circle cx="32" cy="32.5" r="4.4" fill="#fff"/>`,
+    learn: (A, B) => `
+      <path d="M32 32C26.5 22 11 22 11 32S26.5 42 32 32S53 22 53 32S37.5 42 32 32Z" fill="none" stroke="${A}" stroke-width="8" stroke-linejoin="round"/>
+      <path d="M32 32C37.5 42 53 42 53 32" fill="none" stroke="${B}" stroke-width="8" stroke-linecap="round" opacity=".75"/>
+      <circle cx="53" cy="32" r="5" fill="#fff"/>`,
+    create: (A, B) => `
+      <g style="mix-blend-mode: screen">
+        <ellipse cx="32" cy="19" rx="10" ry="15" fill="${A}"/>
+        <ellipse cx="32" cy="19" rx="10" ry="15" fill="${B}" transform="rotate(120 32 33)" opacity=".92"/>
+        <ellipse cx="32" cy="19" rx="10" ry="15" fill="${A}" transform="rotate(240 32 33)" opacity=".85"/>
+      </g>
+      <circle cx="32" cy="33" r="5" fill="#fff"/>
+      <path fill="#fff" d="M53 6C53.6 10.4 54.6 11.4 59 12C54.6 12.6 53.6 13.6 53 18C52.4 13.6 51.4 12.6 47 12C51.4 11.4 52.4 10.4 53 6Z"/>`,
   };
   let fxMarkId = 0;
   const FX_MARK = (f) => {
     const id = `fxm-${++fxMarkId}`, h = f.hue;
-    return `<svg class="fx-mark" viewBox="0 0 64 64" role="img" aria-label="${f.name} mark"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">` +
-      `<stop offset="0" stop-color="hsl(${h}, 92%, 70%)"/><stop offset="1" stop-color="hsl(${h + 26}, 78%, 44%)"/></linearGradient></defs>` +
-      `<circle cx="32" cy="32" r="32" fill="url(#${id})"/><circle cx="32" cy="32" r="30.5" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1"/>` +
-      `<g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">${FX_GLYPH[f.id] || ''}</g></svg>`;
+    // three tones from one colour family, so each mark shimmers without leaving its identity
+    const tones = [`hsl(${h - 34}, 96%, 72%)`, `hsl(${h}, 92%, 62%)`, `hsl(${h + 42}, 88%, 60%)`];
+    const turn = reduce ? '' : '<animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="14s" repeatCount="indefinite"/>';
+    const stops = (list) => list.map((c, k) => `<stop offset="${k / (list.length - 1)}" stop-color="${c}"/>`).join('');
+    return `<svg class="fx-mark fx-mark--${f.id}" viewBox="0 0 64 64" role="img" aria-label="${f.name} mark"><defs>` +
+      `<linearGradient id="${id}-a" x1="0" y1="0" x2="1" y2="1">${stops(tones)}${turn}</linearGradient>` +
+      `<linearGradient id="${id}-b" x1="1" y1="0" x2="0" y2="1">${stops(tones.slice().reverse())}${turn}</linearGradient></defs>` +
+      (FX_GLYPH[f.id] || FX_GLYPH.live)(`url(#${id}-a)`, `url(#${id}-b)`, `${id}-c`) + '</svg>';
   };
 
   // The stage: the seven products themselves, side by side, each as its own mark.
@@ -3553,7 +3589,7 @@
           return { level: 'Speak to a nurse within 1 hour.', why: 'Any fever in a baby under 3 months needs a clinician to check.', source: 'From a fixed clinical safety rule. The model was not asked.' };
         }
         if (temp === 2) {
-          return { level: 'Speak to a nurse tonight, within 4 hours.', why: 'A high temperature with no danger signs. Most settle, but a nurse should check.', source: 'From the model. Its confidence was 64%, below our threshold, so it moved you up one level.' };
+          return { level: 'Speak to a nurse tonight, within 4 hours.', why: 'A high temperature with no danger signs. Most settle, but a nurse should check.', source: 'From the model. Its confidence was 64%, below our safety limit, so it moved you up one level.' };
         }
         return { level: 'Care for him at home tonight.', why: 'No danger signs, and a temperature most children manage at home. Check again in 4 hours. If he becomes hard to wake, or a rash appears, call 999.', source: 'From the model, with 91% confidence.' };
       };

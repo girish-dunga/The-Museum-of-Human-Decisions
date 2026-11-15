@@ -134,7 +134,7 @@ html { --focus: #F2F2F2; }
 .badge { display: block; width: 88px; height: 88px; overflow: visible; }
 .badge-disc { fill: currentColor; }
 .badge-mark path { fill: var(--bar-bg, #111111); transition: fill .6s ease; }
-.badge-text { font: 500 13.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; fill: currentColor; }
+.badge-text { font: 500 12.8px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; fill: currentColor; }   /* sized so the longer line fits once around the ring */
 .badge-ring { transform-box: view-box; transform-origin: 100px 100px; animation: badge-spin 40s linear infinite; }
 .wordmark:hover .badge-ring { animation-play-state: paused; }
 @keyframes badge-spin { to { transform: rotate(360deg); } }
