@@ -1276,7 +1276,7 @@
           </li>
 
           <!-- Design system: blueprint -->
-          <li class="wall-item wall-item--blueprint" data-tags="access">
+          <li class="wall-item wall-item--blueprint" data-tags="access trust">
             <button class="artifact artifact--blueprint" type="button" data-project="foundation" aria-haspopup="dialog">
               <span class="pin" aria-hidden="true"></span>
               <span class="ev-tag" aria-hidden="true"><b>Exhibit C</b><span class="ev-v">230 → 64</span><span class="ev-u">components</span></span>
@@ -1303,7 +1303,7 @@
               <span class="caption">
                 <span class="caption-kind">Design system · 2023 – now</span>
                 <span class="caption-title">Foundation</span>
-                <span class="caption-tags"><i>Access</i></span>
+                <span class="caption-tags"><i>Access</i><i>Trust</i></span>
                 <span class="caption-cue">Unroll the plans</span>
               </span>
             </button>
@@ -1697,35 +1697,28 @@
       <header class="room-head">
         <p class="room-num" aria-hidden="true">07</p>
         <div>
-          <p class="placard-line" data-reveal>Room 07 &nbsp;·&nbsp; A day in the near future</p>
+          <p class="placard-line" data-reveal>Room 07 &nbsp;·&nbsp; Seven AI products, one day</p>
           <h2 id="future-title" class="room-title" data-reveal>The Future Human Experience Hub</h2>
           <p class="room-intro" data-reveal>
-            Seven people. One ordinary day, about ten years from now. Each one has an everyday problem, and a design idea
-            for how technology could help, while they stay in charge. Move through the day to meet them.
+            One ordinary day, about ten years from now. Seven different people, each in their own home or workplace across the city,
+            each with their own problem, and a separate product idea that helps them. Pick a product to see how it helps.
           </p>
         </div>
       </header>
 
       <div class="fd" data-fd>
-        <div class="fd-sky" aria-hidden="true">
-          <i class="fd-layer fd-layer--morning"></i><i class="fd-layer fd-layer--day"></i>
-          <i class="fd-layer fd-layer--evening"></i><i class="fd-layer fd-layer--night"></i>
-          <i class="fd-stars"></i>
-          <svg class="fd-path" viewBox="0 0 700 100" preserveAspectRatio="none"><polyline points=""/></svg>
-          <span class="fd-sun"></span>
-          <svg class="fd-land" viewBox="0 0 1400 120" preserveAspectRatio="none">
-            <path class="fd-hill" d="M0 70 C180 30 320 40 470 62 S760 92 930 58 S1240 30 1400 64 V120 H0Z"/>
-            <path class="fd-town" d="M0 120V96h60V80h34v16h40V70h28v26h70V86h46v-22h30v32h90V78h40v18h70V60h24v36h80V84h52v12h60V72h36v24h90V88h46V66h30v30h70V82h40v14h80V74h30v22h64V86h50v34Z"/>
-          </svg>
-          <div class="fd-clock"><b class="fd-time">07:10</b><span class="fd-part">Morning</span></div>
-          <p class="fd-tag">One day · about ten years from now</p>
+        <div class="fd-top">
+          <div class="fd-clock" aria-hidden="true"><b class="fd-time">07:10</b><span class="fd-part">Morning</span></div>
+          <div class="fd-top-r">
+            <p class="fd-tag">One day · about ten years from now</p>
+            <button class="fd-play" type="button" aria-pressed="false"><span class="fd-play-i" aria-hidden="true"></span><span class="fd-play-t">Play the day</span></button>
+          </div>
         </div>
-
-        <div class="fd-bar">
-          <ol class="fd-line" role="list" aria-label="Seven moments in the day. Choose one."></ol>
-          <button class="fd-play" type="button" aria-pressed="false"><span class="fd-play-i" aria-hidden="true"></span><span class="fd-play-t">Play the day</span></button>
+        <div class="fd-stage">
+          <i class="fd-aura" aria-hidden="true"></i>
+          <ol class="fd-line" role="list" aria-label="Seven separate AI products, in the order of the day. Choose one."></ol>
+          <p class="fd-cap" aria-hidden="true"></p>
         </div>
-
         <article class="fd-card" aria-live="polite" aria-atomic="true"></article>
       </div>
       <p class="fx-note">These are future design ideas, not real products. The people, stories and numbers are made up to explain each idea.</p>
@@ -2720,7 +2713,7 @@
         <button class="fxc-btn fxc-prev" type="button" aria-label="Previous idea">&larr;</button>
         <button class="fxc-btn fxc-next" type="button" aria-label="Next idea">&rarr;</button>
       </div>
-      <button class="fxc-btn fxc-close" type="button" aria-label="Close and return to the day"><span class="fxc-long">Back to the day</span><span aria-hidden="true">&times;</span></button>
+      <button class="fxc-btn fxc-close" type="button" aria-label="Close and return to the gallery"><span class="fxc-long">Back to the gallery</span><span aria-hidden="true">&times;</span></button>
       <span class="fxc-progress" aria-hidden="true"></span>
     </div>
     <div class="fxc-body"></div>

@@ -51,7 +51,8 @@
   function loopWhileVisible(el, frame) {
     let raf = 0, on = false, last = 0;
     const tick = (now) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      // a frame's timestamp can land a moment before the start time, so never step backwards
+      const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
       last = now;
       frame(dt, now / 1000);
       if (on) raf = requestAnimationFrame(tick);
@@ -102,11 +103,19 @@
       here.classList.add('is-changing');
     }
     const at = rooms.indexOf(room);
+    // the red marker settles exactly on the room you are in, gliding there from the last one
+    if (floorplan) floorplan.style.setProperty('--p', (at / Math.max(1, rooms.length - 1)).toFixed(4));
     $$('[data-room-link]').forEach((a, j) => {
       if (j === at) a.setAttribute('aria-current', 'location');
       else a.removeAttribute('aria-current');
       a.classList.toggle('is-passed', j < at);
     });
+    // the route names the new room for a moment, then steps back so it never sits over the exhibits
+    if (floorplan) {
+      floorplan.classList.add('is-announcing');
+      clearTimeout(enterRoom.quiet);
+      enterRoom.quiet = setTimeout(() => floorplan.classList.remove('is-announcing'), 2600);
+    }
     if (room.id === 'reflection-room') updateVisitSummary();
   }
   const roomObserver = new IntersectionObserver((entries) => {
@@ -118,13 +127,6 @@
   let routeQueued = false;
   const updateRoute = () => {
     routeQueued = false;
-    const y = window.scrollY + window.innerHeight * 0.5;
-    const tops = rooms.map((r) => r.getBoundingClientRect().top + window.scrollY);
-    let i = 0;
-    while (i < tops.length - 1 && y >= tops[i + 1]) i++;
-    const last = i === tops.length - 1;
-    const frac = last ? 0 : clamp((y - tops[i]) / (tops[i + 1] - tops[i]));
-    floorplan.style.setProperty('--p', ((i + frac) / (tops.length - 1)).toFixed(4));
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
     bar.style.setProperty('--read', scrollable > 0 ? clamp(window.scrollY / scrollable).toFixed(4) : 0);
   };
@@ -2150,15 +2152,15 @@
      ------------------------------------------------------------------------ */
   const FUTURES = [
     {
-      id: 'live', domain: 'Live', name: 'Hearth', hue: 30, year: '2033', device: 'Kitchen display and voice',
+      id: 'live', domain: 'Live', name: 'Sakhi', hue: 30, year: '2033', device: 'Kitchen display and voice',
       line: 'Ambient care for people who live alone.',
       provocation: 'What if a home could notice you were struggling, without ever watching you?',
       scenario: {
         who: 'Meera, 81, lives alone. Her daughter Asha lives two hours away.',
         beats: [
-          ['07:10', 'The kettle hasn’t boiled by its usual time. Hearth waits. No alarm, no message to anyone.'],
-          ['08:30', 'Still quiet. Hearth asks, softly, through the kitchen speaker: “Morning, Meera. All well?” She says she’s tired. Nothing is shared.'],
-          ['15:00', 'Three days of shorter walks and skipped lunches form a pattern. Hearth tells Meera first, and asks if Asha should know.'],
+          ['07:10', 'The kettle hasn’t boiled by its usual time. Sakhi waits. No alarm, no message to anyone.'],
+          ['08:30', 'Still quiet. Sakhi asks, softly, through the kitchen speaker: “Morning, Meera. All well?” She says she’s tired. Nothing is shared.'],
+          ['15:00', 'Three days of shorter walks and skipped lunches form a pattern. Sakhi tells Meera first, and asks if Asha should know.'],
           ['15:02', 'Meera chooses the words: “Tell Asha I’m tired, not that I’m skipping meals.” That is all Asha sees.'],
         ],
         signals: ['More people over 80 living alone, for longer', 'AI that runs on the appliance, not in the cloud', 'Family carers stretched across cities', 'Deep distrust of cameras in the home'],
@@ -2166,23 +2168,23 @@
       framework: {
         name: 'Notice, don’t watch',
         principles: [
-          ['Patterns, not people', 'Hearth senses routines from appliances: kettle, door, lights. No cameras, and no recordings.'],
+          ['Patterns, not people', 'Sakhi senses routines from appliances: kettle, door, lights. No cameras, and no recordings.'],
           ['Ask the person first', 'Every concern goes to the resident before anyone else, in plain words.'],
           ['Share by consent, in their words', 'The resident decides who is told and what they are told.'],
-          ['Step back when things recover', 'As the routine returns, Hearth goes quiet again.'],
+          ['Step back when things recover', 'As the routine returns, Sakhi goes quiet again.'],
         ],
         anti: ['Family dashboards that turn care into surveillance', 'Alarms that shame or frighten', 'Data leaving the home by default'],
       },
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Hearth · 08:30', t: 'Morning, Meera.', b: 'The kettle’s been quiet today. All well?', c: [['I’m fine', 'fine'], ['Not great today', 'low']] },
-          fine: { k: 'Hearth', t: 'Good to hear.', b: 'I’ll stay out of the way. Nothing has been shared with anyone.', c: [] },
-          low: { k: 'Hearth', t: 'Sorry to hear that.', b: 'Would you like me to let someone know?', c: [['Tell Asha', 'what'], ['Not now', 'later']] },
-          what: { k: 'Hearth · your words', t: 'What should I tell her?', b: 'Only what you choose is sent.', c: [['“I’m tired today”', 'sent1'], ['“I’d like a visit”', 'sent2']] },
+          a: { k: 'Sakhi · 08:30', t: 'Morning, Meera.', b: 'The kettle’s been quiet today. All well?', c: [['I’m fine', 'fine'], ['Not great today', 'low']] },
+          fine: { k: 'Sakhi', t: 'Good to hear.', b: 'I’ll stay out of the way. Nothing has been shared with anyone.', c: [] },
+          low: { k: 'Sakhi', t: 'Sorry to hear that.', b: 'Would you like me to let someone know?', c: [['Tell Asha', 'what'], ['Not now', 'later']] },
+          what: { k: 'Sakhi · your words', t: 'What should I tell her?', b: 'Only what you choose is sent.', c: [['“I’m tired today”', 'sent1'], ['“I’d like a visit”', 'sent2']] },
           sent1: { k: 'Sent to Asha', t: '“Mum says she’s tired today.”', b: 'Your routine, meals and walks were not shared.', c: [] },
           sent2: { k: 'Sent to Asha', t: '“Mum would like a visit.”', b: 'She sees your words, never your data.', c: [] },
-          later: { k: 'Hearth', t: 'Okay.', b: 'I’ll check in this afternoon, and only if things stay quiet.', c: [] },
+          later: { k: 'Sakhi', t: 'Okay.', b: 'I’ll check in this afternoon, and only if things stay quiet.', c: [] },
         },
       },
       system: {
@@ -2196,7 +2198,7 @@
         guardrails: ['Never diagnoses', 'Never contacts anyone without consent, except an emergency Meera pre-agreed', 'Raw signals never leave the home'],
       },
       impact: {
-        params: [['homes', 'Homes using Hearth', 1000, 50000, 1000, 10000, ''], ['share', 'Residents who share concerns', 10, 90, 5, 55, '%']],
+        params: [['homes', 'Homes using Sakhi', 1000, 50000, 1000, 10000, ''], ['share', 'Residents who share concerns', 10, 90, 5, 55, '%']],
         outputs: [
           ['Concerns raised early each year', (p) => p.homes * 6 * 0.4, 400000, ''],
           ['Of those, shared with family by choice', (p) => p.homes * 6 * 0.4 * p.share / 100, 400000, ''],
@@ -2206,15 +2208,15 @@
       },
     },
     {
-      id: 'work', domain: 'Work', name: 'Tempo', hue: 196, year: '2030', device: 'Desktop and calendar',
+      id: 'work', domain: 'Work', name: 'Aira', hue: 196, year: '2030', device: 'Desktop and calendar',
       line: 'An AI colleague that protects attention.',
       provocation: 'What if your calendar defended your focus as fiercely as it books your time?',
       scenario: {
         who: 'John, a product engineer on a hybrid team of nine.',
         beats: [
-          ['09:00', 'Tempo has turned three meeting requests into one shared document review, and shows John why.'],
-          ['11:00', 'A focus block. Tempo holds messages, and lets through the two people John marked as urgent.'],
-          ['14:30', 'A meeting is about to overrun. Tempo shows the room the cost: four people, 22 focus minutes each.'],
+          ['09:00', 'Aira has turned three meeting requests into one shared document review, and shows John why.'],
+          ['11:00', 'A focus block. Aira holds messages, and lets through the two people John marked as urgent.'],
+          ['14:30', 'A meeting is about to overrun. Aira shows the room the cost: four people, 22 focus minutes each.'],
           ['17:00', 'Weekly reflection, for John only: nine hours of deep work, and what made them possible.'],
         ],
         signals: ['AI assistants joining every meeting', 'Burnout rising in knowledge work', 'Async tools becoming normal', 'Four-day week trials'],
@@ -2223,7 +2225,7 @@
         name: 'Attention as a shared resource',
         principles: [
           ['Make the cost of time visible', 'Every meeting shows what it costs in focus, not just in minutes.'],
-          ['Negotiate, don’t auto-decline', 'Tempo proposes alternatives and the requester agrees.'],
+          ['Negotiate, don’t auto-decline', 'Aira proposes alternatives and the requester agrees.'],
           ['The person sets the rules', 'Focus hours, urgent people and quiet days are set by the individual.'],
           ['Team patterns, never scores', 'Managers see team-level trends. Never a ranking of individuals.'],
         ],
@@ -2232,16 +2234,16 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'New request · 11:00 today', t: '“Quick sync” from Smitha', b: '30 minutes, during your focus block. Tempo suggests an async reply instead.', c: [['Suggest async', 'async'], ['Ask why it’s live', 'why'], ['Accept anyway', 'accept']] },
+          a: { k: 'New request · 11:00 today', t: '“Quick sync” from Smitha', b: '30 minutes, during your focus block. Aira suggests an async reply instead.', c: [['Suggest async', 'async'], ['Ask why it’s live', 'why'], ['Accept anyway', 'accept']] },
           async: { k: 'Sent to Smitha', t: 'Could this be a comment on the doc?', b: 'Smitha agreed. Your focus block is intact, and the decision is logged on the doc.', c: [] },
-          why: { k: 'Smitha replied', t: '“It’s a blocker for the release.”', b: 'Tempo moves it to 12:15, right after your focus block. 15 minutes, not 30.', c: [['Book 12:15', 'booked']] },
+          why: { k: 'Smitha replied', t: '“It’s a blocker for the release.”', b: 'Aira moves it to 12:15, right after your focus block. 15 minutes, not 30.', c: [['Book 12:15', 'booked']] },
           booked: { k: 'Booked', t: '12:15 · 15 minutes', b: 'Focus protected, blocker unblocked. Both of you saw why.', c: [] },
-          accept: { k: 'Accepted', t: 'Focus block shortened', b: 'Your choice wins. Tempo notes it, without judgement.', c: [] },
+          accept: { k: 'Accepted', t: 'Focus block shortened', b: 'Your choice wins. Aira notes it, without judgement.', c: [] },
         },
       },
       system: {
-        people: [['john', 'John', 'Sets his own focus rules and urgent people.'], ['team', 'Teammates', 'Negotiate with Tempo, and always see why.'], ['lead', 'Team lead', 'Sees team-level patterns only.'], ['guests', 'External guests', 'Get plain-language proposals, never silent declines.']],
-        systems: [['cal', 'Calendar', 'Where time is booked.'], ['chat', 'Chat', 'Where interruptions arrive.'], ['rules', 'Focus rules', 'Owned and edited by each person.'], ['agent', 'Tempo agent', 'Negotiates in the open, on the person’s behalf.']],
+        people: [['john', 'John', 'Sets his own focus rules and urgent people.'], ['team', 'Teammates', 'Negotiate with Aira, and always see why.'], ['lead', 'Team lead', 'Sees team-level patterns only.'], ['guests', 'External guests', 'Get plain-language proposals, never silent declines.']],
+        systems: [['cal', 'Calendar', 'Where time is booked.'], ['chat', 'Chat', 'Where interruptions arrive.'], ['rules', 'Focus rules', 'Owned and edited by each person.'], ['agent', 'Aira agent', 'Negotiates in the open, on the person’s behalf.']],
         links: [['rules', 'agent', 'guides'], ['cal', 'agent', 'requests'], ['chat', 'agent', 'pings'], ['agent', 'john', 'proposes'], ['agent', 'team', 'negotiates'], ['agent', 'lead', 'team trends'], ['agent', 'guests', 'proposals']],
       },
       ai: {
@@ -2250,7 +2252,7 @@
         guardrails: ['Never reports an individual’s productivity', 'Never declines without the person’s rule', 'Always shows why'],
       },
       impact: {
-        params: [['team', 'People using Tempo', 10, 2000, 10, 200, ''], ['async', 'Meetings that become async', 5, 60, 5, 25, '%']],
+        params: [['team', 'People using Aira', 10, 2000, 10, 200, ''], ['async', 'Meetings that become async', 5, 60, 5, 25, '%']],
         outputs: [
           ['Focus hours regained each week', (p) => p.team * 8 * 0.5 * p.async / 100, 8000, ' h'],
           ['Meetings avoided each month', (p) => p.team * 8 * 4 * p.async / 100 / 3, 30000, ''],
@@ -2260,15 +2262,15 @@
       },
     },
     {
-      id: 'learn', domain: 'Learn', name: 'Lumen', hue: 152, year: '2031', device: 'Tablet',
+      id: 'learn', domain: 'Learn', name: 'Veda', hue: 152, year: '2031', device: 'Tablet',
       line: 'Learning that explains itself, and lets you disagree.',
       provocation: 'What if a learning system told you why it chose your next lesson, and changed its mind when you were right?',
       scenario: {
         who: 'Sneha, 15, revising physics after school.',
         beats: [
-          ['16:00', 'Lumen suggests revisiting vectors. Why: 3 of her last 5 force questions slipped on direction.'],
-          ['16:01', 'Sneha disagrees: “I just rushed.” Lumen offers a two-minute check instead of a lesson.'],
-          ['16:03', 'She gets them all right. Lumen updates its picture of her, and says so.'],
+          ['16:00', 'Veda suggests revisiting vectors. Why: 3 of her last 5 force questions slipped on direction.'],
+          ['16:01', 'Sneha disagrees: “I just rushed.” Veda offers a two-minute check instead of a lesson.'],
+          ['16:03', 'She gets them all right. Veda updates its picture of her, and says so.'],
           ['19:00', 'Her teacher sees six students share the same gap, and plans one ten-minute group session. No rankings.'],
         ],
         signals: ['AI tutors in every subject', 'Teacher shortages', 'Mastery-based grading', 'Students asking who owns their data'],
@@ -2286,16 +2288,16 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Lumen · next up', t: 'Revisit: vectors', b: 'Suggested because 3 of your last 5 force questions slipped on direction.', c: [['Start lesson', 'lesson'], ['I disagree', 'disagree']] },
-          disagree: { k: 'Tell Lumen why', t: 'What happened?', b: 'Your answer changes what Lumen thinks you know.', c: [['I rushed', 'check'], ['I don’t get it', 'lesson']] },
-          check: { k: 'Two-minute check', t: '3 questions on direction', b: 'If you get them right, Lumen moves you ahead.', c: [['I got 3 of 3', 'ahead']] },
-          ahead: { k: 'Lumen updated', t: 'You were right.', b: 'Vectors marked as secure. Next: momentum. Lumen explains what changed in its view of you.', c: [] },
+          a: { k: 'Veda · next up', t: 'Revisit: vectors', b: 'Suggested because 3 of your last 5 force questions slipped on direction.', c: [['Start lesson', 'lesson'], ['I disagree', 'disagree']] },
+          disagree: { k: 'Tell Veda why', t: 'What happened?', b: 'Your answer changes what Veda thinks you know.', c: [['I rushed', 'check'], ['I don’t get it', 'lesson']] },
+          check: { k: 'Two-minute check', t: '3 questions on direction', b: 'If you get them right, Veda moves you ahead.', c: [['I got 3 of 3', 'ahead']] },
+          ahead: { k: 'Veda updated', t: 'You were right.', b: 'Vectors marked as secure. Next: momentum. Veda explains what changed in its view of you.', c: [] },
           lesson: { k: 'Lesson · 8 minutes', t: 'Vectors: direction first', b: 'Short, visual, and it ends with the same two-minute check.', c: [] },
         },
       },
       system: {
         people: [['sneha', 'Sneha', 'Owns her learner model and can correct it.'], ['teacher', 'Teacher', 'Sees group gaps to plan lessons.'], ['parents', 'Parents', 'See progress summaries Sneha has shared.'], ['school', 'School', 'Sets the curriculum and privacy rules.']],
-        systems: [['learner', 'Learner model', 'What Lumen thinks Sneha knows. Visible to her.'], ['graph', 'Curriculum map', 'How topics depend on each other.'], ['bank', 'Practice bank', 'Short checks and lessons.'], ['lumen', 'Lumen engine', 'Recommends, explains, and updates when contested.']],
+        systems: [['learner', 'Learner model', 'What Veda thinks Sneha knows. Visible to her.'], ['graph', 'Curriculum map', 'How topics depend on each other.'], ['bank', 'Practice bank', 'Short checks and lessons.'], ['lumen', 'Veda engine', 'Recommends, explains, and updates when contested.']],
         links: [['graph', 'lumen', 'structure'], ['learner', 'lumen', 'evidence'], ['lumen', 'sneha', 'explains'], ['sneha', 'learner', 'corrects'], ['bank', 'lumen', 'activities'], ['lumen', 'teacher', 'group gaps'], ['sneha', 'parents', 'shares'], ['school', 'graph', 'curriculum']],
       },
       ai: {
@@ -2304,7 +2306,7 @@
         guardrails: ['Never ranks students against each other', 'Always explains a recommendation', 'A learner can always see and correct their model'],
       },
       impact: {
-        params: [['students', 'Students using Lumen', 100, 20000, 100, 1500, ''], ['contest', 'Suggestions that learners contest', 5, 40, 5, 15, '%']],
+        params: [['students', 'Students using Veda', 100, 20000, 100, 1500, ''], ['contest', 'Suggestions that learners contest', 5, 40, 5, 15, '%']],
         outputs: [
           ['Hours of unneeded revision avoided each term', (p) => p.students * 20 * p.contest / 100 * 0.6 * 0.25, 30000, ' h'],
           ['Group sessions planned from shared gaps', (p) => p.students / 25 * 6, 5000, ''],
@@ -2314,14 +2316,14 @@
       },
     },
     {
-      id: 'travel', domain: 'Travel', name: 'Continuum', hue: 262, year: '2032', device: 'Phone and AR glasses',
+      id: 'travel', domain: 'Travel', name: 'Tara', hue: 262, year: '2032', device: 'Phone and AR glasses',
       line: 'Journeys that repair themselves before they break.',
       provocation: 'What if a missed connection was fixed before you knew it had broken?',
       scenario: {
         who: 'David, a wheelchair user, crossing the city for a 09:15 interview.',
         beats: [
-          ['08:12', 'The lift at Central is out of service. Continuum reroutes before David leaves home: step-free via Halden, six minutes longer.'],
-          ['08:40', 'The tram is running late. Continuum asks the connecting bus to wait 90 seconds. The driver accepts.'],
+          ['08:12', 'The lift at Central is out of service. Tara reroutes before David leaves home: step-free via Halden, six minutes longer.'],
+          ['08:40', 'The tram is running late. Tara asks the connecting bus to wait 90 seconds. The driver accepts.'],
           ['09:05', 'At the platform, the step-free exit is highlighted in his glasses.'],
           ['09:06', 'Three operators, one fare, capped. One receipt.'],
         ],
@@ -2340,17 +2342,17 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Continuum · 08:12', t: 'Lift out at Central', b: 'New route: step-free via Halden. Arrives 09:06, six minutes later.', c: [['Take new route', 'go'], ['Show other options', 'options']] },
+          a: { k: 'Tara · 08:12', t: 'Lift out at Central', b: 'New route: step-free via Halden. Arrives 09:06, six minutes later.', c: [['Take new route', 'go'], ['Show other options', 'options']] },
           options: { k: 'Other options', t: 'Two more routes', b: 'Accessible taxi from 08:20 (£14), or wait for repair (unknown).', c: [['Take step-free route', 'go'], ['Book taxi', 'taxi']] },
-          go: { k: 'On your way', t: 'Leave at 08:18', b: 'Continuum will tell staff at Halden you’re coming, if you’d like.', c: [['Yes, tell them', 'staff'], ['No thanks', 'solo']] },
+          go: { k: 'On your way', t: 'Leave at 08:18', b: 'Tara will tell staff at Halden you’re coming, if you’d like.', c: [['Yes, tell them', 'staff'], ['No thanks', 'solo']] },
           staff: { k: 'Staff notified', t: 'Ramp ready at Halden', b: 'Only your arrival time and access need were shared.', c: [] },
-          solo: { k: 'Nobody told', t: 'Your journey, your call', b: 'Continuum keeps watching the route, quietly.', c: [] },
+          solo: { k: 'Nobody told', t: 'Your journey, your call', b: 'Tara keeps watching the route, quietly.', c: [] },
           taxi: { k: 'Taxi booked', t: 'Arrives 08:20', b: 'The fare is capped with today’s travel.', c: [] },
         },
       },
       system: {
         people: [['david', 'David', 'Sets access needs once. Approves anything shared.'], ['staff', 'Station staff', 'Told only with consent.'], ['drivers', 'Drivers', 'Asked to hold, never ordered.'], ['city', 'City authority', 'Sees anonymous flow data.']],
-        systems: [['ops', 'Rail, tram and bus', 'Live positions and disruptions.'], ['access', 'Access data', 'Lifts, ramps, step-free exits.'], ['planner', 'Continuum planner', 'Replans continuously around the person.'], ['pay', 'Fare capping', 'One price across operators.']],
+        systems: [['ops', 'Rail, tram and bus', 'Live positions and disruptions.'], ['access', 'Access data', 'Lifts, ramps, step-free exits.'], ['planner', 'Tara planner', 'Replans continuously around the person.'], ['pay', 'Fare capping', 'One price across operators.']],
         links: [['ops', 'planner', 'live data'], ['access', 'planner', 'lift status'], ['planner', 'david', 'reroutes'], ['david', 'staff', 'if agreed'], ['planner', 'drivers', 'hold requests'], ['planner', 'pay', 'journey'], ['planner', 'city', 'anonymous flows']],
       },
       ai: {
@@ -2369,13 +2371,13 @@
       },
     },
     {
-      id: 'shop', domain: 'Shop', name: 'Clearcart', hue: 345, year: '2031', device: 'AR glasses and phone',
+      id: 'shop', domain: 'Shop', name: 'Maya', hue: 345, year: '2031', device: 'AR glasses and phone',
       line: 'True cost, at a glance, and an agent that keeps your promises.',
       provocation: 'What if every price told the whole truth, and your shopping agent remembered what you promised yourself?',
       scenario: {
         who: 'Anjali, who set three goals in January: less plastic, local first, £60 a week.',
         beats: [
-          ['10:00', 'Saturday shop. Clearcart already knows her goals, in her own words.'],
+          ['10:00', 'Saturday shop. Maya already knows her goals, in her own words.'],
           ['10:12', 'Two jackets. Her glasses show the true cost: carbon, how repairable, and who made them.'],
           ['10:15', 'Her agent notes: “This breaks your plastic goal. Here’s a refillable one, £2 more.”'],
           ['10:16', 'Anjali buys the first one anyway. The agent records it, without judgement, and doesn’t mention it again.'],
@@ -2395,7 +2397,7 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Clearcart · comparing', t: 'Rain jacket A or B?', b: 'A: £48, plastic packaging, repairable 2/5. B: £50, refillable, repairable 4/5.', c: [['Choose A', 'a1'], ['Choose B', 'b1'], ['Why does it matter?', 'why']] },
+          a: { k: 'Maya · comparing', t: 'Rain jacket A or B?', b: 'A: £48, plastic packaging, repairable 2/5. B: £50, refillable, repairable 4/5.', c: [['Choose A', 'a1'], ['Choose B', 'b1'], ['Why does it matter?', 'why']] },
           why: { k: 'Your goals', t: 'You asked for less plastic', b: 'Set by you on 3 January. You can change it any time.', c: [['Choose A', 'a1'], ['Choose B', 'b1']] },
           a1: { k: 'Bought A', t: 'Noted, no judgement', b: 'This week: £48 of £60. Plastic goal: 3 of 4 weeks on track.', c: [] },
           b1: { k: 'Bought B', t: 'Goal kept', b: 'This week: £50 of £60. The refill station is two streets away.', c: [] },
@@ -2412,7 +2414,7 @@
         guardrails: ['Never sponsored', 'Never blocks a purchase', 'Never repeats a nudge after an override'],
       },
       impact: {
-        params: [['shoppers', 'Shoppers using Clearcart', 1000, 1000000, 1000, 100000, ''], ['follow', 'Suggestions people take', 5, 70, 5, 30, '%']],
+        params: [['shoppers', 'Shoppers using Maya', 1000, 1000000, 1000, 100000, ''], ['follow', 'Suggestions people take', 5, 70, 5, 30, '%']],
         outputs: [
           ['Plastic avoided each year', (p) => p.shoppers * 52 * 0.08 * p.follow / 100, 2000000, ' kg'],
           ['Repairs chosen over replacing', (p) => p.shoppers * 0.5 * p.follow / 100, 400000, ''],
@@ -2422,14 +2424,14 @@
       },
     },
     {
-      id: 'communicate', domain: 'Communicate', name: 'Bridge', hue: 176, year: '2030', device: 'Video call',
+      id: 'communicate', domain: 'Communicate', name: 'Mitra', hue: 176, year: '2030', device: 'Video call',
       line: 'Conversations across languages, with the person intact.',
       provocation: 'What if you could speak to anyone, in any language, and still sound like yourself?',
       scenario: {
         who: 'Fatima speaks Arabic. Her son’s teacher, Mr. Smith, speaks English.',
         beats: [
-          ['15:30', 'Parents’ evening, by video. Bridge translates in real time, in Fatima’s own voice, which she agreed to.'],
-          ['15:32', 'An idiom. Instead of guessing, Bridge marks it as uncertain on both screens.'],
+          ['15:30', 'Parents’ evening, by video. Mitra translates in real time, in Fatima’s own voice, which she agreed to.'],
+          ['15:32', 'An idiom. Instead of guessing, Mitra marks it as uncertain on both screens.'],
           ['15:34', '“He’s quite lively” arrives with its cultural meaning, not just its words.'],
           ['15:45', 'A summary in both languages, edited and approved by both of them before it is saved.'],
         ],
@@ -2448,10 +2450,10 @@
       prototype: {
         start: 'a',
         frames: {
-          a: { k: 'Live captions · uncertain', t: '“He has a heart of gold, but his head is in the clouds.”', b: 'Bridge is unsure about the second half. It may mean distracted, or dreamy.', c: [['Ask Fatima to rephrase', 'rephrase'], ['Show the literal meaning', 'literal'], ['Call an interpreter', 'human']] },
+          a: { k: 'Live captions · uncertain', t: '“He has a heart of gold, but his head is in the clouds.”', b: 'Mitra is unsure about the second half. It may mean distracted, or dreamy.', c: [['Ask Fatima to rephrase', 'rephrase'], ['Show the literal meaning', 'literal'], ['Call an interpreter', 'human']] },
           rephrase: { k: 'Fatima rephrased', t: '“He is kind, but he gets distracted.”', b: 'Translated with high confidence. Both screens agree.', c: [] },
           literal: { k: 'Literal meaning', t: '“His head is in the clouds”', b: 'A common idiom for being distracted. Shown to both, labelled as an idiom.', c: [] },
-          human: { k: 'Interpreter joining', t: 'About 2 minutes', b: 'Bridge pauses. The conversation is never left to a guess.', c: [] },
+          human: { k: 'Interpreter joining', t: 'About 2 minutes', b: 'Mitra pauses. The conversation is never left to a guess.', c: [] },
         },
       },
       system: {
@@ -2475,7 +2477,7 @@
       },
     },
     {
-      id: 'create', domain: 'Create', name: 'Provenance Studio', hue: 292, year: '2034', device: 'Tablet and pen',
+      id: 'create', domain: 'Create', name: 'Medha', hue: 292, year: '2034', device: 'Tablet and pen',
       line: 'Making with AI, with credit flowing back.',
       provocation: 'What if every creative work carried a living record of who, and what, made it?',
       scenario: {
@@ -2575,37 +2577,60 @@
   /* ------------------------------------------------------------------------
      Room 07 — The Future Human Experience Hub: one day in the near future
      ------------------------------------------------------------------------ */
+  // The shape of each product's screen in its full story
+  const FX_FORM = { live: 'display', work: 'desktop', travel: 'phone', shop: 'hud', communicate: 'call', learn: 'tablet', create: 'tablet' };
+
+  // Each product's mark: a circle in its own colour holding one white symbol of its idea.
+  // Original designs: a home (Sakhi), a star on a path (Tara), a focus dial (Aira), the true cost (Maya),
+  // two people sharing one meaning (Mitra), a learning loop (Veda), a spark with its sources (Medha).
+  const FX_GLYPH = {
+    live: '<path d="M18 33L32 20L46 33" stroke-width="4"/><path d="M22 30V45H42V30" stroke-width="4"/><circle cx="32" cy="37" r="3.6" fill="#fff" stroke="none"/>',
+    travel: '<path d="M37 14Q39 25 50 27Q39 29 37 40Q35 29 24 27Q35 25 37 14Z" fill="#fff" stroke="none"/><path d="M14 48C21 48 24 43 29 39" stroke-width="3.4" stroke-dasharray="1 6"/>',
+    work: '<circle cx="32" cy="32" r="14" stroke-width="4" opacity=".35"/><path d="M32 18A14 14 0 1 1 18 32" stroke-width="4"/><circle cx="32" cy="32" r="3.4" fill="#fff" stroke="none"/>',
+    shop: '<path d="M20 23H44M20 32H34M20 41H40" stroke-width="4.4"/><circle cx="44" cy="32" r="3" fill="#fff" stroke="none"/>',
+    communicate: '<circle cx="26" cy="32" r="10" stroke-width="3.6"/><circle cx="38" cy="32" r="10" stroke-width="3.6"/><path d="M32 24A10 10 0 0 1 32 40A10 10 0 0 1 32 24Z" fill="#fff" stroke="none"/>',
+    learn: '<path d="M45 33A13 13 0 1 1 39 21" stroke-width="4"/><path d="M37 14L40 22L32 24" stroke-width="4"/><circle cx="32" cy="34" r="4" fill="#fff" stroke="none"/>',
+    create: '<path d="M22 44C22 31 31 22 45 19C43 33 35 42 22 44Z" fill="#fff" stroke="none"/><circle cx="19" cy="21" r="2.6" fill="#fff" stroke="none"/><circle cx="47" cy="40" r="2.6" fill="#fff" stroke="none"/><circle cx="39" cy="49" r="2.1" fill="#fff" stroke="none" opacity=".8"/>',
+  };
+  let fxMarkId = 0;
+  const FX_MARK = (f) => {
+    const id = `fxm-${++fxMarkId}`, h = f.hue;
+    return `<svg class="fx-mark" viewBox="0 0 64 64" role="img" aria-label="${f.name} mark"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">` +
+      `<stop offset="0" stop-color="hsl(${h}, 92%, 70%)"/><stop offset="1" stop-color="hsl(${h + 26}, 78%, 44%)"/></linearGradient></defs>` +
+      `<circle cx="32" cy="32" r="32" fill="url(#${id})"/><circle cx="32" cy="32" r="30.5" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1"/>` +
+      `<g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">${FX_GLYPH[f.id] || ''}</g></svg>`;
+  };
+
+  // The stage: the seven products themselves, side by side, each as its own mark.
+  // The chosen one steps forward and listens; a soft light in its colour moves to it.
   function initFutureDay() {
     const root = $('[data-fd]');
     if (!root) return;
     const line = $('.fd-line', root);
+    const aura = $('.fd-aura', root);
+    const cap = $('.fd-cap', root);
     const card = $('.fd-card', root);
-    const sun = $('.fd-sun', root);
     const play = $('.fd-play', root);
     const N = FUTURES.length;
     const hours = (t) => { const [h, m] = t.split(':').map(Number); return h + m / 60; };
-    const partOf = (h) => (h < 9.5 ? 'morning' : h < 15 ? 'day' : h < 19 ? 'evening' : 'night');
-    const partName = { morning: 'Morning', day: 'Midday', evening: 'Afternoon', night: 'Night' };
-    // where the sun sits for each stop: across by its place in the day, up by the hour
-    const spot = (i) => {
-      const h = hours(FUTURES[i].day.time);
-      const up = h >= 19 ? 0.7 : Math.max(0, Math.sin(Math.PI * (h - 5.5) / 13.5));
-      return [((i + 0.5) / N) * 100, h >= 19 ? 22 : 78 - up * 58];
-    };
-    $('.fd-path polyline', root).setAttribute('points', FUTURES.map((_, i) => spot(i).map((v, k) => (k ? v : v * 7).toFixed(1)).join(',')).join(' '));
+    const partOf = (h) => (h < 11 ? 'Morning' : h < 14 ? 'Midday' : h < 17 ? 'Afternoon' : h < 20 ? 'Evening' : 'Night');
+    const who = (w) => { const p = w.split(', '); return /^\d+$/.test(p[1] || '') ? `${p[0]}, ${p[1]}` : p[0].replace(/ and .*/, ''); };
 
     line.innerHTML = FUTURES.map((f, i) => `
-      <li><button class="fd-stop" type="button" data-i="${i}" style="--h:${f.hue}" aria-pressed="false"
-        aria-label="${f.day.time}, ${f.domain}: ${f.name}. ${f.day.who}.">
-        <span class="fd-stop-t">${f.day.time}</span><i class="fd-dot" aria-hidden="true"></i>
-        <span class="fd-stop-n">${f.name}</span><span class="fd-stop-d">${f.domain}</span>
+      <li><button class="fd-stop" type="button" data-i="${i}" style="--h:${f.hue}; --k:${i}" aria-pressed="false"
+        aria-label="${f.name}: ${f.domain}, for ${f.day.who}, at ${f.day.time}.">
+        <span class="fd-logo" aria-hidden="true"><i class="fd-ring"></i><i class="fd-ring"></i>${FX_MARK(f)}</span>
+        <span class="fd-stop-n">${f.name}</span>
+        <span class="fd-stop-d">${f.domain}</span>
+        <span class="fd-stop-t">${f.day.time} · ${who(f.day.who).split(',')[0]}</span>
       </button></li>`).join('');
-    const stops = $$('.fd-stop', line);
+    const btns = $$('.fd-stop', line);
     let current = -1;
 
     const render = (f, i) => `
       <div class="fd-head">
-        <p class="fd-k"><b>${String(i + 1).padStart(2, '0')}</b>${f.day.time} · ${f.domain}</p>
+        <span class="fd-head-logo" aria-hidden="true">${FX_MARK(f)}</span>
+        <p class="fd-k"><b>${f.day.time}</b>${f.domain} · ${f.device}</p>
         <h3 class="fd-name">${f.name}</h3>
         <p class="fd-who">${f.day.who}</p>
         <button class="fd-open" type="button" data-i="${i}">See the full story <span aria-hidden="true">&rarr;</span></button>
@@ -2619,103 +2644,61 @@
         <div class="fd-how"><p class="fd-label">How it works</p>
           <ol class="fd-steps" role="list">${f.day.steps.map((s, k) => `<li style="--k:${k}"><b>${k + 1}</b><span>${s}</span></li>`).join('')}</ol>
         </div>
-        <p class="fd-ctrl"><span class="fd-ctrl-i" aria-hidden="true"></span><span><b>You stay in charge.</b> ${f.day.control}</span></p>
+        <p class="fd-ctrl"><span class="fd-ctrl-i" aria-hidden="true"></span><span><b>${who(f.day.who).split(',')[0]} stays in charge.</b> ${f.day.control}</span></p>
       </div>`;
+
+    // the light follows the chosen product
+    const placeAura = () => {
+      if (current < 0) return;
+      const b = btns[current], logo = $('.fd-logo', b), box = line.getBoundingClientRect(), r = logo.getBoundingClientRect();
+      aura.style.transform = `translate(${(r.left + r.width / 2 - box.left + line.scrollLeft).toFixed(1)}px, ${(r.top + r.height / 2 - box.top).toFixed(1)}px)`;
+    };
+    window.addEventListener('resize', placeAura);
 
     function select(i, quiet) {
       i = (i + N) % N;
       if (i === current) return;
       current = i;
       const f = FUTURES[i];
-      const h = hours(f.day.time);
-      const part = partOf(h);
-      const [x, y] = spot(i);
-      root.dataset.part = part;
       root.style.setProperty('--fd-h', f.hue);
-      root.style.setProperty('--fd-p', (i / (N - 1)).toFixed(4));
-      sun.style.left = `${x}%`; sun.style.top = `${y}%`;
+      btns.forEach((b, k) => { b.setAttribute('aria-pressed', String(k === i)); b.classList.toggle('is-past', k < i); });
+      aura.style.backgroundColor = `hsl(${f.hue}, 85%, 58%)`;
+      requestAnimationFrame(placeAura);
       $('.fd-time', root).textContent = f.day.time;
-      $('.fd-part', root).textContent = partName[part];
-      stops.forEach((b, k) => { b.setAttribute('aria-pressed', String(k === i)); b.classList.toggle('is-past', k < i); });
+      $('.fd-part', root).textContent = partOf(hours(f.day.time));
+      cap.innerHTML = `<span class="fd-cap-q">“${f.framework.name}”</span><span class="fd-cap-w">${f.name} · for ${who(f.day.who)}</span>`;
+      cap.classList.remove('is-in'); void cap.offsetWidth; cap.classList.add('is-in');
       card.style.setProperty('--h', f.hue);
       card.innerHTML = render(f, i);
       card.classList.remove('is-in'); void card.offsetWidth; card.classList.add('is-in');
-      if (!quiet) stops[i].scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+      if (!quiet) btns[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
     }
 
-    // "Play the day": step through the moments until someone takes over
+    // "Play the day": each product steps forward in turn, in the order of the day
     let timer = 0;
     const stop = () => { clearInterval(timer); timer = 0; play.setAttribute('aria-pressed', 'false'); $('.fd-play-t', play).textContent = 'Play the day'; };
     play.addEventListener('click', () => {
       if (timer) { stop(); return; }
       play.setAttribute('aria-pressed', 'true');
       $('.fd-play-t', play).textContent = 'Pause';
-      if (current === N - 1) select(0, true);
-      timer = setInterval(() => { if (current === N - 1) stop(); else select(current + 1, true); }, 5200);
+      if (current === N - 1) select(0);
+      timer = setInterval(() => { if (current === N - 1) stop(); else select(current + 1); }, 5200);
     });
-
     line.addEventListener('click', (e) => { const b = e.target.closest('.fd-stop'); if (b) { stop(); select(Number(b.dataset.i)); } });
+    line.addEventListener('scroll', () => requestAnimationFrame(placeAura), { passive: true });
     line.addEventListener('keydown', (e) => {
       const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
       if (!d || !e.target.closest('.fd-stop')) return;
       e.preventDefault(); stop();
       select(current + d);
-      stops[current].focus();
+      btns[current].focus();
     });
     card.addEventListener('click', (e) => { const b = e.target.closest('.fd-open'); if (b) { stop(); fxCase.open(Number(b.dataset.i)); } });
 
-    // after the full story closes, the day shows where the visitor left off
+    // after the full story closes, the stage shows the product the visitor was looking at
     fxCase.onClose = (i) => { select(i, true); const b = $('.fd-open', card); if (b) b.focus({ preventScroll: true }); };
     select(0, true);
-  }
-
-  // A glass sphere: body, iridescent rim, swirling inner light and a specular highlight
-  function drawOrb(ctx, x, y, r, hue, t, glow = 1, alpha = 1) {
-    if (r < 0.5) return;
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.globalCompositeOperation = 'lighter';
-    const halo = ctx.createRadialGradient(x, y, r * 0.6, x, y, r * 2.6);
-    halo.addColorStop(0, `hsla(${hue}, 95%, 62%, ${0.32 * glow})`);
-    halo.addColorStop(1, `hsla(${hue}, 95%, 62%, 0)`);
-    ctx.fillStyle = halo;
-    ctx.beginPath(); ctx.arc(x, y, r * 2.6, 0, Math.PI * 2); ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-    const body = ctx.createRadialGradient(x - r * 0.35, y - r * 0.42, r * 0.05, x, y, r);
-    body.addColorStop(0, `hsl(${hue}, 90%, 86%)`);
-    body.addColorStop(0.32, `hsl(${hue}, 72%, 56%)`);
-    body.addColorStop(0.78, `hsl(${hue + 40}, 62%, 22%)`);
-    body.addColorStop(1, `hsl(${hue + 70}, 60%, 9%)`);
-    ctx.fillStyle = body;
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-    // light moving inside the glass
-    ctx.save();
-    ctx.beginPath(); ctx.arc(x, y, r * 0.97, 0, Math.PI * 2); ctx.clip();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.lineWidth = Math.max(0.6, r * 0.035);
-    for (let k = 0; k < 3; k++) {
-      ctx.strokeStyle = `hsla(${hue + k * 30}, 100%, 80%, ${0.16 + 0.06 * k})`;
-      ctx.beginPath();
-      ctx.ellipse(x + Math.cos(t * 0.6 + k * 2.1) * r * 0.18, y + Math.sin(t * 0.5 + k) * r * 0.12,
-        r * (0.86 - k * 0.18), r * (0.32 + k * 0.08), t * 0.25 + k * 1.1, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-    // iridescent rim
-    const rim = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
-    rim.addColorStop(0, `hsla(${hue + 90}, 100%, 75%, .9)`);
-    rim.addColorStop(0.5, `hsla(${hue}, 100%, 70%, .25)`);
-    rim.addColorStop(1, `hsla(${hue - 60}, 100%, 70%, .85)`);
-    ctx.strokeStyle = rim;
-    ctx.lineWidth = Math.max(1, r * 0.05);
-    ctx.beginPath(); ctx.arc(x, y, r * 0.985, 0, Math.PI * 2); ctx.stroke();
-    // specular highlight
-    const spec = ctx.createRadialGradient(x - r * 0.38, y - r * 0.45, 0, x - r * 0.38, y - r * 0.45, r * 0.42);
-    spec.addColorStop(0, 'rgba(255,255,255,.85)');
-    spec.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = spec;
-    ctx.beginPath(); ctx.arc(x - r * 0.38, y - r * 0.45, r * 0.42, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
+    new ResizeObserver(placeAura).observe(line);
   }
 
   /* ---- The immersive case study ---- */
@@ -2758,18 +2741,45 @@
       const proto = f.prototype;
       const nav = [['scenario', 'The story'], ['framework', 'Design rules'], ['prototype', 'Try it'], ['system', 'Who’s involved'], ['ai', 'How the AI helps'], ['impact', 'What could change']];
       const next = FUTURES[(i + 1) % FUTURES.length];
+      const hero = f.prototype.frames[f.prototype.start];   // the product's key moment, as its screen shows it
       return `
         <header class="fxc-hero">
-          <canvas class="fxc-orb" aria-hidden="true"></canvas>
+          <div class="fxc-stage">
+            <canvas class="fxc-orb" aria-hidden="true"></canvas>
+            <div class="fxc-dev fxc-dev--${FX_FORM[f.id] || 'display'}">
+              <div class="fxc-screen fxc-compare">
+                <div class="fxc-side fxc-side--now">
+                  <p class="fxc-side-k"><i class="fxc-side-dot" aria-hidden="true"></i>Today</p>
+                  <p class="fxc-side-t">${f.day.problem}</p>
+                  <p class="fxc-side-b">${f.day.who}</p>
+                </div>
+                <div class="fxc-side fxc-side--with">
+                  <p class="fxc-side-k"><i class="fxc-scr-logo" aria-hidden="true">${FX_MARK(f)}</i>With ${f.name}<span class="fxc-side-at">${hero.k.replace(f.name, '').replace(/^\s*·\s*/, '')}</span></p>
+                  <p class="fxc-side-t">${hero.t}</p>
+                  <p class="fxc-side-b">${hero.b}</p>
+                  ${hero.c.length ? `<p class="fxc-side-c" aria-hidden="true">${hero.c.map(([l]) => `<span>${l}</span>`).join('')}</p>` : ''}
+                </div>
+                <div class="fxc-knob" role="slider" tabindex="0" aria-label="Compare today with life with ${f.name}" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50"><span aria-hidden="true"></span></div>
+              </div>
+              ${f.id === 'create' ? '<i class="fxc-pen" aria-hidden="true"></i>' : ''}
+              <i class="fxc-dev-stand" aria-hidden="true"></i>
+              <i class="fxc-plinth" aria-hidden="true"></i>
+              <p class="fxc-stage-l">Drag the line · today and with ${f.name}</p>
+            </div>
+          </div>
           <div class="fxc-hero-t">
-            <p class="fxc-k"><b>${String(i + 1).padStart(2, '0')}</b>${f.day.time} · ${f.domain} · Set in ${f.year} · ${f.device}</p>
-            <h2 class="fxc-title" id="fx-case-title" tabindex="-1">${f.name}</h2>
+            <p class="fxc-k"><b>Exhibit ${String(i + 1).padStart(2, '0')}</b>${f.domain} · Set in ${f.year} · ${f.device}</p>
+            <div class="fxc-title-row"><span class="fxc-logo" aria-hidden="true">${FX_MARK(f)}</span><h2 class="fxc-title" id="fx-case-title" tabindex="-1">${f.name}</h2></div>
             <p class="fxc-line">${f.line}</p>
             <p class="fxc-prov">${f.provocation}</p>
             <p class="fxc-tag">Future idea, not a real product</p>
           </div>
         </header>
-        <nav class="fxc-nav" aria-label="Sections of this concept"><ol>${nav.map(([id, t], k) => `<li><a href="#fxc-${id}" data-fxc-jump="${id}"><b>0${k + 1}</b>${t}</a></li>`).join('')}</ol></nav>
+        <nav class="fxc-dock" aria-label="Chapters of this story">
+          <button class="fxc-dock-btn fxc-dock-btn--prev" type="button" data-fxc-step="-1" aria-label="Previous chapter"><span aria-hidden="true">&uarr;</span></button>
+          <ol>${nav.map(([id, t], k) => `<li><a href="#fxc-${id}" data-fxc-jump="${id}" aria-label="${t}"><b>0${k + 1}</b><span class="fxc-dock-t">${t}</span><i class="fxc-dock-fill" aria-hidden="true"></i></a></li>`).join('')}</ol>
+          <button class="fxc-dock-btn" type="button" data-fxc-step="1" aria-label="Next chapter"><span aria-hidden="true">&darr;</span></button>
+        </nav>
         <div class="fxc-secs">
         ${sec('01', 'scenario', 'The story', `${f.day.who}, in ${f.year}`, `
           <p class="fxc-lede">${f.scenario.who}</p>
@@ -2827,28 +2837,86 @@
         </div>
         <footer class="fxc-foot">
           <button class="fxc-next-card" type="button" data-fxc-next style="--h:${next.hue}">
-            <span class="fxc-mini">Next in the day</span><span class="fxc-next-t">${next.name}</span><span class="fxc-next-d">${next.domain} · ${next.line}</span>
+            <span class="fxc-mini">Next exhibit</span><span class="fxc-next-t">${next.name}</span><span class="fxc-next-d">${next.domain} · ${next.line}</span>
           </button>
         </footer>`;
     }
 
-    // the hero sphere, large and slowly turning
+    // the opening: one screen split between today and life with the product; the visitor drags the line between them
     function mountHero(f) {
-      const c = $('.fxc-orb', body);
+      const stage = $('.fxc-stage', body);
+      const c = $('.fxc-orb', stage);
       const cx = c.getContext('2d');
+      const cmp = $('.fxc-compare', stage);
+      const knob = $('.fxc-knob', cmp);
+
+      // cut = how much of the screen "today" takes, in %
+      let cut = 50, pulse = 0, intro = null;
+      const set = (v) => {
+        const was = cut;
+        cut = Math.min(80, Math.max(20, v));
+        cmp.style.setProperty('--cut', `${cut.toFixed(2)}%`);
+        knob.setAttribute('aria-valuenow', String(Math.round(100 - cut)));
+        knob.setAttribute('aria-valuetext', cut < 40 ? `Mostly with ${f.name}` : cut > 60 ? 'Mostly today' : 'Half and half');
+        cmp.classList.toggle('is-now-small', cut < 34);
+        cmp.classList.toggle('is-with-small', cut > 66);
+        if ((was >= 50) !== (cut >= 50)) pulse = 1;   // crossing the middle wakes the device
+      };
+      set(50);
+
+      const fromPointer = (e) => { const r = cmp.getBoundingClientRect(); set(((e.clientX - r.left) / r.width) * 100); };
+      let dragging = false;
+      cmp.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        dragging = true; intro = null; cmp.classList.add('is-dragging');
+        cmp.setPointerCapture(e.pointerId); fromPointer(e); knob.focus({ preventScroll: true });
+      });
+      cmp.addEventListener('pointermove', (e) => { if (dragging) fromPointer(e); });
+      const end = () => { dragging = false; cmp.classList.remove('is-dragging'); };
+      cmp.addEventListener('pointerup', end);
+      cmp.addEventListener('pointercancel', end);
+      knob.addEventListener('keydown', (e) => {
+        const step = { ArrowLeft: -5, ArrowRight: 5, PageDown: -15, PageUp: 15 }[e.key];
+        if (step !== undefined) { e.preventDefault(); intro = null; set(cut + step); }
+        else if (e.key === 'Home') { e.preventDefault(); intro = null; set(20); }
+        else if (e.key === 'End') { e.preventDefault(); intro = null; set(80); }
+      });
+
+      // on arrival the line sweeps once, from mostly today to mostly the product, then rests in the middle
+      if (!reduce) intro = { t: 0, keys: [[0, 50], [0.5, 76], [1.5, 26], [2.3, 50]] };
+
+      // signals: small, anonymous, drifting in from the edges and taken in by the device
+      const spawn = (d = 1) => ({ a: Math.random() * Math.PI * 2, d, s: 0.1 + Math.random() * 0.14, curl: (Math.random() - 0.5) * 1.4, hue: f.hue + Math.random() * 40 - 20 });
+      const sig = Array.from({ length: 42 }, () => spawn(0.25 + Math.random() * 0.75));
+
       const draw = (dt, t) => {
+        if (intro) {
+          intro.t += dt;
+          const k = intro.keys, i = k.findIndex(([at]) => at > intro.t);
+          if (i < 0) { set(k[k.length - 1][1]); intro = null; }
+          else if (i > 0) {
+            const [t0, v0] = k[i - 1], [t1, v1] = k[i], q = (intro.t - t0) / (t1 - t0);
+            set(v0 + (v1 - v0) * (q < 0.5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2));
+          }
+        }
         const { w, h } = fitCanvas(c, cx);
         cx.clearRect(0, 0, w, h);
-        const r = Math.min(w, h) * 0.3;
-        // signals orbiting the concept
-        for (let k = 0; k < 40; k++) {
-          const a = t * (0.2 + (k % 5) * 0.04) + k * 0.9;
-          const rr = r * (1.25 + (k % 7) * 0.08);
-          const x = w / 2 + Math.cos(a) * rr, y = h / 2 + Math.sin(a) * rr * 0.35;
-          cx.fillStyle = `hsla(${f.hue + (k % 3) * 25}, 90%, 75%, ${0.25 + (k % 4) * 0.12})`;
-          cx.beginPath(); cx.arc(x, y, 1.2 + (k % 3) * 0.6, 0, Math.PI * 2); cx.fill();
-        }
-        drawOrb(cx, w / 2, h / 2, r, f.hue, t, 1.3, 1);
+        const x0 = w / 2, y0 = h * 0.45, R = Math.min(w, h) * 0.5;
+        const glow = cx.createRadialGradient(x0, y0, 0, x0, y0, R);
+        glow.addColorStop(0, `hsla(${f.hue}, 90%, 58%, ${0.16 + pulse * 0.16})`);
+        glow.addColorStop(1, `hsla(${f.hue}, 90%, 58%, 0)`);
+        cx.fillStyle = glow; cx.fillRect(0, 0, w, h);
+        sig.forEach((p, k) => {
+          p.d -= p.s * dt;
+          if (p.d < 0.2) { sig[k] = spawn(); return; }
+          const a = p.a + p.curl * (1 - p.d), rr = p.d * R * 0.98;
+          const x = x0 + Math.cos(a) * rr, y = y0 + Math.sin(a) * rr * 0.82;
+          const al = Math.sin(Math.PI * Math.min(1, (1 - p.d) / 0.8)) * 0.75;
+          cx.fillStyle = `hsla(${p.hue}, 95%, 80%, ${al.toFixed(3)})`;
+          cx.beginPath(); cx.arc(x, y, 1.5, 0, Math.PI * 2); cx.fill();
+        });
+        pulse = Math.max(0, pulse - dt * 0.9);
+        stage.style.setProperty('--pulse', pulse.toFixed(3));
       };
       if (reduce) requestAnimationFrame(() => draw(0, 0));
       else loops.push(fxLoop(c, draw));
@@ -3032,22 +3100,46 @@
       if (a) {
         e.preventDefault();
         const t = $(`#fxc-${a.dataset.fxcJump}`, body);
-        dlg.scrollTo({ top: t.getBoundingClientRect().top - dlg.getBoundingClientRect().top + dlg.scrollTop - 130, behavior: reduce ? 'auto' : 'smooth' });
+        dlg.scrollTo({ top: t.getBoundingClientRect().top - dlg.getBoundingClientRect().top + dlg.scrollTop - 140, behavior: reduce ? 'auto' : 'smooth' });
+      }
+      const step = e.target.closest('[data-fxc-step]');
+      if (step) {
+        const secs = $$('.fxc-sec', body);
+        const k = Number($('.fxc-dock', body).dataset.at) + Number(step.dataset.fxcStep);
+        const t = k < 0 ? null : k >= secs.length ? $('.fxc-foot', body) : secs[k];
+        dlg.scrollTo({ top: t ? t.getBoundingClientRect().top - dlg.getBoundingClientRect().top + dlg.scrollTop - 140 : 0, behavior: reduce ? 'auto' : 'smooth' });
       }
       if (e.target.closest('[data-fxc-next]')) show(current + 1);
     });
 
     function mountNav() {
-      const links = $$('[data-fxc-jump]', body);
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((en) => {
-          if (!en.isIntersecting) return;
-          const id = en.target.id.replace('fxc-', '');
-          links.forEach((l) => { if (l.dataset.fxcJump === id) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current'); });
+      const dock = $('.fxc-dock', body);
+      const links = $$('[data-fxc-jump]', dock);
+      const secs = links.map((l) => $(`#fxc-${l.dataset.fxcJump}`, body));
+      let raf = 0;
+      const update = () => {
+        raf = 0;
+        const line = dlg.clientHeight * 0.45;
+        let at = -1;
+        secs.forEach((sec, k) => {
+          const r = sec.getBoundingClientRect();
+          links[k].style.setProperty('--fill', Math.min(1, Math.max(0, (line - r.top) / r.height)).toFixed(3));
+          if (r.top <= line) at = k;
         });
-      }, { root: dlg, rootMargin: '-40% 0px -55% 0px' });
-      $$('.fxc-sec', body).forEach((s) => io.observe(s));
-      loops.push({ stop: () => io.disconnect() });
+        links.forEach((l, k) => {
+          if (k === at) l.setAttribute('aria-current', 'step'); else l.removeAttribute('aria-current');
+          l.classList.toggle('is-done', k < at);
+        });
+        dock.dataset.at = at;
+        dock.classList.toggle('is-start', at < 0);
+        const end = dlg.scrollTop + dlg.clientHeight >= dlg.scrollHeight - 4;
+        $('[data-fxc-step="1"]', dock).disabled = end;
+        $('[data-fxc-step="-1"]', dock).disabled = dlg.scrollTop < 4;
+      };
+      const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+      dlg.addEventListener('scroll', onScroll, { passive: true });
+      update();
+      loops.push({ stop: () => { dlg.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); } });
     }
 
     function show(i) {
@@ -3056,12 +3148,12 @@
       current = (i + FUTURES.length) % FUTURES.length;
       const f = FUTURES[current];
       dlg.style.setProperty('--fx-h', f.hue);
-      $('.fxc-crumb-d', dlg).textContent = `${f.day.time} · ${f.name}`;
+      $('.fxc-crumb-d', dlg).textContent = `Exhibit ${String(i + 1).padStart(2, '0')} · ${f.name}`;
       body.innerHTML = render(f, current);
       mountHero(f); mountFramework(f); mountPrototype(f); mountSystem(f); mountAI(f); mountImpact(f); mountNav();
       dlg.scrollTop = 0;
       $('#fx-case-title', body).focus({ preventScroll: true });
-      if (motion) gsap.from($$('.fxc-hero-t > *, .fxc-nav', body), { y: 30, opacity: 0, duration: 1, stagger: 0.07, ease: 'expo.out', clearProps: 'all' });
+      if (motion) gsap.from($$('.fxc-hero-t > *', body), { y: 30, opacity: 0, duration: 1, stagger: 0.07, ease: 'expo.out', clearProps: 'all' });
     }
     $('.fxc-prev', dlg).addEventListener('click', () => show(current - 1));
     $('.fxc-next', dlg).addEventListener('click', () => show(current + 1));
